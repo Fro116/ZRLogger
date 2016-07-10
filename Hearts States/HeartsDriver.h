@@ -13,7 +13,7 @@
 
 #include <chrono>
 
-#include "HeartsEngine.h"
+#include "GameEngine.h"
 #include "HeartsState.h"
 
 class HeartsDriver {
@@ -26,7 +26,7 @@ private:
     int maxSkippedDrawSteps;
     int skippedDrawSteps;
     std::chrono::steady_clock::time_point time;
-    HeartsEngine game;
+    GameEngine game;
 };
 
 #endif /* defined(__Hearts__HeartsDriver__) */

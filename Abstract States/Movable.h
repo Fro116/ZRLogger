@@ -13,9 +13,9 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-class HeartsMovable {
+class Movable {
 public:
-    HeartsMovable();
+    Movable();
     
     glm::mat4 ModelTranform();
     void MoveTo(glm::vec3 position);

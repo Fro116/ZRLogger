@@ -11,14 +11,14 @@
 #include <iostream>
 #include <memory>
 
-#include "HeartsEngine.h"
+#include "GameEngine.h"
 #include "HeartsState.h"
 
 #include "OpenGlPlayingCard.h"
 
 
 
-HeartsDriver::HeartsDriver(long nanosPerFrame, int maxSkippedDrawSteps) : nanosPerFrame(nanosPerFrame), maxSkippedDrawSteps(maxSkippedDrawSteps), game(), offset(0), skippedDrawSteps(0) {
+HeartsDriver::HeartsDriver(long nanosPerFrame, int maxSkippedDrawSteps) : nanosPerFrame(nanosPerFrame), maxSkippedDrawSteps(maxSkippedDrawSteps), game("Hearts", 800, 600), offset(0), skippedDrawSteps(0) {
     time = std::chrono::steady_clock::now();
     
     PlayingCard card = PlayingCard(PlayingCard::Rank::KING, PlayingCard::Suit::HEARTS);
@@ -56,7 +56,6 @@ void HeartsDriver::Run() {
             offset = difference + offset - nanosPerFrame;
             time = curTime;
 
-            game.HandleEvents();
             game.Update();
             
             ++skippedDrawSteps;

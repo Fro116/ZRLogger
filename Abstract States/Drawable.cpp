@@ -6,20 +6,20 @@
 //  Copyright (c) 2015 Kundan Chintamaneni. All rights reserved.
 //
 
-#include "HeartsDrawable.h"
+#include "Drawable.h"
 
-glm::mat4 HeartsDrawable::CameraTransform() const {
+glm::mat4 Drawable::CameraTransform() const {
     return transform;
 }
 
-void HeartsDrawable::SetCameraTransform(const glm::mat4 &transform) {
+void Drawable::SetCameraTransform(const glm::mat4 &transform) {
     this->transform = transform;
 }
 
-GLuint HeartsDrawable::TransformID() const {
+GLuint Drawable::TransformID() const {
     return transformID;
 }
 
-void HeartsDrawable::SetTransformID(GLuint transformID) {
+void Drawable::SetTransformID(GLuint transformID) {
     this->transformID = transformID;
 }

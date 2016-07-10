@@ -16,7 +16,7 @@
 #include <GLFW/glfw3.h>
 
 #include "GameState.h"
-#include "HeartsDrawable.h"
+#include "Drawable.h"
 #include "Updatable.h"
 #include "Bindable.h"
 
@@ -28,13 +28,9 @@ public:
     void BindObject(std::shared_ptr<Bindable> object);
     void UnbindObject(std::shared_ptr<Bindable> object);
     
-    void EnterStack() override;
-    void LeaveStack() override;
+    void EnterFocus() override;
+    void LeaveFocus() override;
     
-    void HideState() override;
-    void RevealState() override;
-    
-    void HandleEvents() override;
     void Update() override;
     void Draw(double time) override;
 private:
@@ -43,7 +39,7 @@ private:
     GLuint shaders;
     GLuint transformID;
     std::vector<std::shared_ptr<Bindable>> bindables;
-    std::vector<std::shared_ptr<HeartsDrawable>> drawables;
+    std::vector<std::shared_ptr<Drawable>> drawables;
     std::vector<std::shared_ptr<Updatable>> updatables;
 };
 

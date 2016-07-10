@@ -4,3 +4,4 @@ CMake*
 Makefile
 compile_commands.json
 ZRLogger
+*.DS_Store

@@ -13,16 +13,16 @@
 
 #include "PlayingCard.h"
 #include "Updatable.h"
-#include "HeartsDrawable.h"
 #include "OpenGLUtility.h"
 #include "Bindable.h"
-#include "HeartsMovable.h"
+#include "Movable.h"
+#include "Drawable.h"
 
 //TODO translate, rotate, scale
 //TODO texture
 //Todo backface
 
-class OpenGlPlayingCard : public Bindable, public Updatable, public HeartsDrawable, public HeartsMovable {
+class OpenGlPlayingCard : public Bindable, public Updatable, public Drawable, public Movable {
 public:
     OpenGlPlayingCard(const PlayingCard card);
     void Bind(const GameState* state) override;

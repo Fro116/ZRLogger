@@ -11,13 +11,9 @@
 
 class GameState {
 public:
-    virtual void EnterStack() = 0;
-    virtual void LeaveStack() = 0;
+    virtual void EnterFocus() = 0;
+    virtual void LeaveFocus() = 0;
     
-    virtual void HideState() = 0;
-    virtual void RevealState() = 0;
-    
-    virtual void HandleEvents() = 0;
     virtual void Update() = 0;
     virtual void Draw(double time) = 0;
 private:

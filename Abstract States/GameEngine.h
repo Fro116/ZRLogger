@@ -12,19 +12,28 @@
 #include "GameState.h"
 
 #include <memory>
+#include <stack>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <string>
 
 class GameEngine {
 public:
-    virtual void PushState(std::shared_ptr<GameState>  state) = 0;
-    virtual std::shared_ptr<GameState>  PopState() = 0;
-    
-    virtual void HandleEvents() = 0;
-    virtual void Update() = 0;
-    virtual void Draw(double time) = 0;
-    
-    virtual bool IsRunning() = 0;
-    virtual void Quit() = 0;
+  GameEngine(std::string title, int screenWidth, int screenHeight);
+  void PushState(std::shared_ptr<GameState>  state);
+  std::shared_ptr<GameState>  PopState();
+  
+  void Update();
+  void Draw(double time);
+  
+  bool IsRunning();
+  void Quit();
+  
+  GLFWwindow* Window();
 private:
+  std::stack<std::shared_ptr<GameState>> states;
+  bool isRunning;
+  GLFWwindow* window;
 };
 
 #endif /* defined(__Hearts__GameEngine__) */
