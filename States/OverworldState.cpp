@@ -27,11 +27,19 @@ OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath,
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
-  OpenGLRectangle* cardImage =  new OpenGLRectangle(0.726*2,0.726*2, "Images/Overworld/1A.png");
-  cardImage->MoveTo(glm::vec3(400,300,0));
-  cardImage->ScaleBy(glm::vec3(100,100,0));
-  std::shared_ptr<Bindable> cardObject(cardImage);
-  BindObject(cardObject);
+  std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
+  for (int row = 0; row < 7; ++row) {
+    for (int col = 0; col < 16; ++col) {
+      double px = 50;
+      double py = 50.0*336.0/512.0;
+      std::string num = std::to_string(8-row);
+      std::string let = alphabet[col];
+      OpenGLRectangle* tile =  new OpenGLRectangle(px, py, "Images/Overworld/" + num + let + ".png");
+      tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));                 
+      std::shared_ptr<Bindable> cardObject(tile);                            
+      BindObject(cardObject);                                                
+    }                                                                        
+  }  
 }
 
 void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
