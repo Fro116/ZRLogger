@@ -28,7 +28,7 @@ OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath,
   transformID = glGetUniformLocation(shaders, "transform");
 
   std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
-  for (int row = 0; row < 7; ++row) {
+  for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 16; ++col) {
       double px = 50;
       double py = 50.0*336.0/512.0;
@@ -99,18 +99,15 @@ void OverworldState::Update() {
 }
 
 void OverworldState::Draw(double time) {
-    //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shaders);
 
-    int x = 800;
-    int y = 600;
-    int z = x/2;
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
-    float fov = 2*glm::atan(static_cast<float>(height)/(2*z));
-    glm::mat4 Projection = glm::perspective(fov, aspectRatio, 10.0f, 1000.0f);
+    float x = 800;
+    float y = 300;
+    float z = y/2;
+    float aspectRatio = x/y;
+    float fov = glm::pi<float>()/2;
+    glm::mat4 Projection = glm::perspective(fov, aspectRatio, 10.0f, z+1.0f);
     glm::mat4 View       = glm::lookAt(glm::vec3(x/2,y/2,z), glm::vec3(x/2,y/2,0), glm::vec3(0,1,0));
     glm::mat4 PV       = Projection * View;
     
