@@ -1,13 +1,13 @@
 //
-//  HeartsState.h
-//  Hearts
+//  OverworldState.h
+//  Overworld
 //
 //  Created by Kundan Chintamaneni on 2/21/15.
 //  Copyright (c) 2015 Kundan Chintamaneni. All rights reserved.
 //
 
-#ifndef __Hearts__HeartsState__
-#define __Hearts__HeartsState__
+#ifndef __Overworld__OverworldState__
+#define __Overworld__OverworldState__
 
 #include <memory>
 #include <vector>
@@ -21,10 +21,10 @@
 #include "Updatable.h"
 #include "Bindable.h"
 
-class HeartsState : public GameState {
+class OverworldState : public GameState {
 public:
-  static std::shared_ptr<HeartsState> CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
-  ~HeartsState();
+  static std::shared_ptr<OverworldState> CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
+  ~OverworldState();
   
   void BindObject(std::shared_ptr<Bindable> object);
   void UnbindObject(std::shared_ptr<Bindable> object);
@@ -35,7 +35,7 @@ public:
   void Update() override;
   void Draw(double time) override;
  private:
-  HeartsState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
+  OverworldState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
   GLFWwindow* window;
   GLuint shaders;
   GLuint transformID;
@@ -44,4 +44,4 @@ public:
   std::vector<std::shared_ptr<Updatable>> updatables;
 };
 
-#endif /* defined(__Hearts__HeartsState__) */
+#endif /* defined(__Overworld__OverworldState__) */

@@ -1,12 +1,12 @@
 //
-//  HeartsState.cpp
-//  Hearts
+//  OverworldState.cpp
+//  Overworld
 //
 //  Created by Kundan Chintamaneni on 2/21/15.
 //  Copyright (c) 2015 Kundan Chintamaneni. All rights reserved.
 //
 
-#include "HeartsState.h"
+#include "OverworldState.h"
 
 #include <iostream>
 
@@ -19,11 +19,11 @@
 
 #include "OpenGLUtility.h"
 
-std::shared_ptr<HeartsState> HeartsState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
-  return std::shared_ptr<HeartsState>(new HeartsState(window, vertexShaderPath, fragmentShaderPath));
+std::shared_ptr<OverworldState> OverworldState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
+  return std::shared_ptr<OverworldState>(new OverworldState(window, vertexShaderPath, fragmentShaderPath));
 }
 
-HeartsState::HeartsState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) : window(window), drawables(), updatables() {
+OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) : window(window), drawables(), updatables() {
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
@@ -34,7 +34,7 @@ HeartsState::HeartsState(GLFWwindow* window, std::string vertexShaderPath, std::
   BindObject(cardObject);
 }
 
-void HeartsState::BindObject(std::shared_ptr<Bindable> object) {
+void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
     bindables.push_back(object);
     
     std::shared_ptr<Updatable> updatable = std::dynamic_pointer_cast<Updatable>(object);
@@ -50,7 +50,7 @@ void HeartsState::BindObject(std::shared_ptr<Bindable> object) {
     object->Bind(this);
 }
 
-void HeartsState::UnbindObject(std::shared_ptr<Bindable> object) {    
+void OverworldState::UnbindObject(std::shared_ptr<Bindable> object) {    
     std::shared_ptr<Updatable> updatable = std::dynamic_pointer_cast<Updatable>(object);
     if (updatable) {
         auto it = std::find(updatables.begin(), updatables.end(), updatable);
@@ -70,27 +70,27 @@ void HeartsState::UnbindObject(std::shared_ptr<Bindable> object) {
     object->Unbind(this);
 }
 
-HeartsState::~HeartsState() {
+OverworldState::~OverworldState() {
     for (auto object : bindables) {
         UnbindObject(object);
     }
 }
 
-void HeartsState::EnterFocus() {
+void OverworldState::EnterFocus() {
 
 }
 
-void HeartsState::LeaveFocus() {
+void OverworldState::LeaveFocus() {
 
 }
 
-void HeartsState::Update() {
+void OverworldState::Update() {
     for (std::shared_ptr<Updatable> object : updatables) {
         object->Update();
     }
 }
 
-void HeartsState::Draw(double time) {
+void OverworldState::Draw(double time) {
     //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shaders);
