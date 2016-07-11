@@ -14,16 +14,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "OpenGLDoubleSidedRectangle.h"
+#include "OpenGLRectangle.h"
+
 #include "OpenGLUtility.h"
 
-std::shared_ptr<HeartsState> HeartsState::CreateInstance(GLFWwindow* window) {
-    return std::shared_ptr<HeartsState>(new HeartsState(window));
+std::shared_ptr<HeartsState> HeartsState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
+  return std::shared_ptr<HeartsState>(new HeartsState(window, vertexShaderPath, fragmentShaderPath));
 }
 
-HeartsState::HeartsState(GLFWwindow* window) : window(window), drawables(), updatables() {
-//    shaders = OpenGLUtility::LoadShaders("Abstract Graphics/Shaders/ColorShader.vertexshader", "Abstract Graphics/Shaders/ColorShader.fragmentshader");
-    shaders = OpenGLUtility::LoadShaders("Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
-     transformID = glGetUniformLocation(shaders, "transform");
+HeartsState::HeartsState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) : window(window), drawables(), updatables() {
+  shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+  transformID = glGetUniformLocation(shaders, "transform");
+
+  OpenGLRectangle* cardImage =  new OpenGLRectangle(0.726*2,0.726*2, "Images/Overworld/1A.png");
+  cardImage->MoveTo(glm::vec3(400,300,0));
+  cardImage->ScaleBy(glm::vec3(100,100,0));
+  std::shared_ptr<Bindable> cardObject(cardImage);
+  BindObject(cardObject);
 }
 
 void HeartsState::BindObject(std::shared_ptr<Bindable> object) {
@@ -85,15 +93,17 @@ void HeartsState::Update() {
 void HeartsState::Draw(double time) {
     //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
     glUseProgram(shaders);
-    
+
+    int x = 800;
+    int y = 600;
+    int z = x/2;
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
-    
-    glm::mat4 Projection = glm::perspective(glm::pi<float>()/2, aspectRatio, 10.0f, 1000.0f);
-    glm::mat4 View       = glm::lookAt(glm::vec3(400,300,300), glm::vec3(400,300,0), glm::vec3(0,1,0));
+    float fov = 2*glm::atan(static_cast<float>(height)/(2*z));
+    glm::mat4 Projection = glm::perspective(fov, aspectRatio, 10.0f, 1000.0f);
+    glm::mat4 View       = glm::lookAt(glm::vec3(x/2,y/2,z), glm::vec3(x/2,y/2,0), glm::vec3(0,1,0));
     glm::mat4 PV       = Projection * View;
     
     for (auto object : drawables) {
@@ -103,8 +113,6 @@ void HeartsState::Draw(double time) {
     }
     
     glfwSwapBuffers(window);
-    
-    glUseProgram(0);
-    
+    glUseProgram(0);    
     glfwPollEvents();
 }

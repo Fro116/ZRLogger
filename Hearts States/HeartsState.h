@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -22,25 +23,25 @@
 
 class HeartsState : public GameState {
 public:
-    static std::shared_ptr<HeartsState> CreateInstance(GLFWwindow* window);
-    ~HeartsState();
-    
-    void BindObject(std::shared_ptr<Bindable> object);
-    void UnbindObject(std::shared_ptr<Bindable> object);
-    
-    void EnterFocus() override;
-    void LeaveFocus() override;
-    
-    void Update() override;
-    void Draw(double time) override;
-private:
-    HeartsState(GLFWwindow* window);
-    GLFWwindow* window;
-    GLuint shaders;
-    GLuint transformID;
-    std::vector<std::shared_ptr<Bindable>> bindables;
-    std::vector<std::shared_ptr<Drawable>> drawables;
-    std::vector<std::shared_ptr<Updatable>> updatables;
+  static std::shared_ptr<HeartsState> CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
+  ~HeartsState();
+  
+  void BindObject(std::shared_ptr<Bindable> object);
+  void UnbindObject(std::shared_ptr<Bindable> object);
+  
+  void EnterFocus() override;
+  void LeaveFocus() override;
+  
+  void Update() override;
+  void Draw(double time) override;
+ private:
+  HeartsState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
+  GLFWwindow* window;
+  GLuint shaders;
+  GLuint transformID;
+  std::vector<std::shared_ptr<Bindable>> bindables;
+  std::vector<std::shared_ptr<Drawable>> drawables;
+  std::vector<std::shared_ptr<Updatable>> updatables;
 };
 
 #endif /* defined(__Hearts__HeartsState__) */

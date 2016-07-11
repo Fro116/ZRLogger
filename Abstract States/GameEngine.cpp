@@ -9,7 +9,6 @@
 #include "GameEngine.h"
 
 #include "OpenGLUtility.h"
-
 GameEngine::GameEngine(std::string title, int screenWidth, int screenHeight) : states(), isRunning(true) {
     GLFWwindow* window = OpenGLUtility::InitializeWindow(title.c_str(), screenWidth, screenHeight);
     this->window = window;
@@ -35,11 +34,13 @@ std::shared_ptr<GameState>  GameEngine::PopState() {
 
 void GameEngine::Update() {
     isRunning = glfwWindowShouldClose(window) == 0;
-    states.top()->Update();
+    if (!states.empty()) 
+      states.top()->Update();
 }
 
 void GameEngine::Draw(double time) {
-    states.top()->Draw(time);
+    if (!states.empty()) 
+      states.top()->Draw(time);
 }
 
 bool GameEngine::IsRunning() {

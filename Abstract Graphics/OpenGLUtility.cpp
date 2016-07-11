@@ -15,7 +15,6 @@
 #include "SOIL.h"
 
 GLuint OpenGLUtility::LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
-    
     // Create the shaders
     GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -105,7 +104,7 @@ GLuint OpenGLUtility::LoadShaders(const char * vertex_file_path,const char * fra
 GLFWwindow* OpenGLUtility::InitializeWindow(const char* name, const int width, const int height) {
     //Initialize window
     glfwInit();
-    
+
     //Require OpenGL Version 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -118,6 +117,8 @@ GLFWwindow* OpenGLUtility::InitializeWindow(const char* name, const int width, c
     //Create Window
     GLFWwindow* window;
     window = glfwCreateWindow(width, height, name, NULL, NULL);
+
+    
     
     //Set up window for use
     glfwMakeContextCurrent(window);
@@ -133,6 +134,7 @@ GLFWwindow* OpenGLUtility::InitializeWindow(const char* name, const int width, c
     glCullFace(GL_BACK);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     
     return window;
 }
