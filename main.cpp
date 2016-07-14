@@ -23,7 +23,7 @@ void GraphicsThread() {
   double npf = 1e9 / fps;
   long nanosPerFrame = static_cast<long>(npf);
   
-  ZRDriver driver("ZRLogger", 800, 300, nanosPerFrame,5);  
+  ZRDriver driver("ZRLogger", 600, 300, nanosPerFrame,5);  
   GameEngine& engine = driver.Engine();
   auto state = OverworldState::CreateInstance(engine.Window(), "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
   engine.PushState(state);

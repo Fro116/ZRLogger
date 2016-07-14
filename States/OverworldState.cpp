@@ -111,7 +111,7 @@ void OverworldState::Draw(double time) {
     glUseProgram(shaders);
 
     float x = 800;
-    float y = 300;
+    float y = 400;
     float z = y/2;
     float aspectRatio = x/y;
     float fov = glm::pi<float>()/2;
