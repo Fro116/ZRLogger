@@ -8,5 +8,5 @@ OverworldSelector::OverworldSelector() : OpenGLRectangle(512, 336, "Images/Selec
 void OverworldSelector::Update() {
   double px = 50;
   double py = 50.0*336.0/512.0;
-  MoveTo(glm::vec3(px*mapx + px/2, py*mapy+py/2,0.001));
+  MoveTo(glm::vec3(px*mapx + px/2, py*(7-mapy)+py/2,0.001));
 }
