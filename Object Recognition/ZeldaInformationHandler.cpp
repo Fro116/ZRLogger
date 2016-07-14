@@ -7,19 +7,21 @@ ZeldaInformationHandler::ZeldaInformationHandler() {
 std::mutex ZeldaInformationHandler::mapLocationMutex;
 int ZeldaInformationHandler::mapx = -1;
 int ZeldaInformationHandler::mapy = -1;
+bool ZeldaInformationHandler::inSecretCave;
 
 std::mutex ZeldaInformationHandler::isRunningMutex;
 bool ZeldaInformationHandler::isRunning = true;
 
-void ZeldaInformationHandler::SetMapLocation(int x, int y) {
+void ZeldaInformationHandler::SetMapLocation(int x, int y, bool inCave) {
   std::lock_guard<std::mutex> guard(mapLocationMutex);
   mapx = x;
   mapy = y;
+  inSecretCave = inCave;
 }
 
-std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
+std::tuple<int, int, bool> ZeldaInformationHandler::GetMapLocation() {
   std::lock_guard<std::mutex> guard(mapLocationMutex);
-  return std::make_pair(mapx, mapy);
+  return std::make_tuple(mapx, mapy, inSecretCave);
 }
 
 void ZeldaInformationHandler::SetIsRunning(bool running) {

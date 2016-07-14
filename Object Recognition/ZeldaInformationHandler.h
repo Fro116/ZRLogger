@@ -20,14 +20,15 @@
 class ZeldaInformationHandler {
  public:
   ZeldaInformationHandler();
-  static void SetMapLocation(int x, int y);
-  static std::pair<int, int> GetMapLocation();
+  static void SetMapLocation(int x, int y, bool inCave);
+  static std::tuple<int, int, bool> GetMapLocation();
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
  private:
   static std::mutex mapLocationMutex;
   static int mapx;
   static int mapy;
+  static bool inSecretCave;
 
   static std::mutex isRunningMutex;
   static bool isRunning;

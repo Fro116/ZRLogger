@@ -17,6 +17,7 @@
 #include "OpenGLDoubleSidedRectangle.h"
 #include "OpenGLRectangle.h"
 #include "OverworldSelector.h"
+#include "OverworldMarker.h"
 #include "OpenGLUtility.h"
 
 std::shared_ptr<OverworldState> OverworldState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
@@ -37,7 +38,11 @@ OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath,
       OpenGLRectangle* tile =  new OpenGLRectangle(px, py, "Images/Overworld/" + num + let + ".png");
       tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));                 
       std::shared_ptr<Bindable> cardObject(tile);                            
-      BindObject(cardObject);                                                
+      BindObject(cardObject);
+      OpenGLRectangle* marker =  new OverworldMarker(col, 7-row);
+      marker->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0.001));                 
+      std::shared_ptr<Bindable> markerObject(marker);
+      BindObject(markerObject);
     }                                                                        
   }
   OpenGLRectangle* selector =  new OverworldSelector();
