@@ -18,7 +18,7 @@
 class GameDriver {
 public:
   GameDriver(std::string title, int width, int height, long nanosPerFrame, int maxSkippedDrawSteps);
-  void Run();
+  virtual void Run();
   GameEngine& Engine();
  private:
   long nanosPerFrame;

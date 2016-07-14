@@ -26,6 +26,7 @@ class ZeldaInformationHandler {
   static std::pair<int, int> GetDungeonLocation();
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
+  static bool GetIsInDungeon();
   enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
   static Secrets GetSecret(int x, int y);
@@ -38,6 +39,10 @@ class ZeldaInformationHandler {
   static std::mutex dungeonLocationMutex;
   static int dungeonx;
   static int dungeony;
+
+  static std::mutex isInDungeonMutex;
+  static void SetIsInDungeon(bool isInDungeon);
+  static bool isInDungeon;
 
   static std::mutex secretsMutex;
   static std::map<std::pair<int,int>, Secrets> overworldSecrets;

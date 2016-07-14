@@ -23,7 +23,7 @@
 class ZRDriver : public GameDriver {
  public:
   ZRDriver(std::string title, int width, int height, long nanosPerFrame, int maxSkippedDrawSteps);
-  void Run();
+  void Run() override;
  private:
 };
 

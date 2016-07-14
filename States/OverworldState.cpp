@@ -19,12 +19,11 @@
 #include "OverworldSelector.h"
 #include "OverworldMarker.h"
 #include "OpenGLUtility.h"
+#include "ZeldaInformationHandler.h"
 
-std::shared_ptr<OverworldState> OverworldState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
-  return std::shared_ptr<OverworldState>(new OverworldState(window, vertexShaderPath, fragmentShaderPath));
-}
-
-OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) : window(window), drawables(), updatables() {
+OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
+  driver = gameDriver;
+  GLFWwindow* window = gameDriver->Engine().Window();
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
@@ -103,6 +102,9 @@ void OverworldState::LeaveFocus() {
 void OverworldState::Update() {
     for (std::shared_ptr<Updatable> object : updatables) {
         object->Update();
+    }
+    if (ZeldaInformationHandler::GetIsInDungeon()) {
+      std::cout << "PUSH DUNGEON STATE" << std::endl;
     }
 }
 

@@ -21,9 +21,11 @@
 #include "Updatable.h"
 #include "Bindable.h"
 
+#include "GameDriver.h"
+
 class OverworldState : public GameState {
 public:
-  static std::shared_ptr<OverworldState> CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
+  OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath);
   ~OverworldState();
   
   void BindObject(std::shared_ptr<Bindable> object);
@@ -35,13 +37,13 @@ public:
   void Update() override;
   void Draw(double time) override;
  private:
-  OverworldState(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath);
   GLFWwindow* window;
   GLuint shaders;
   GLuint transformID;
   std::vector<std::shared_ptr<Bindable>> bindables;
   std::vector<std::shared_ptr<Drawable>> drawables;
   std::vector<std::shared_ptr<Updatable>> updatables;
+  std::shared_ptr<GameDriver> driver;
 };
 
 #endif /* defined(__Overworld__OverworldState__) */

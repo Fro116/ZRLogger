@@ -22,12 +22,11 @@ void GraphicsThread() {
   double fps = 60;
   double npf = 1e9 / fps;
   long nanosPerFrame = static_cast<long>(npf);
-  
-  ZRDriver driver("ZRLogger", 600, 300, nanosPerFrame,5);  
-  GameEngine& engine = driver.Engine();
-  auto state = OverworldState::CreateInstance(engine.Window(), "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
-  engine.PushState(state);
-  driver.Run();
+
+  std::shared_ptr<GameDriver> driver = std::make_shared<ZRDriver>("ZRLogger", 600, 300, nanosPerFrame,5);
+  auto state = std::make_shared<OverworldState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
+  driver->Engine().PushState(state);
+  driver->Run();
 }
 
 void ProcessingThread() {

@@ -18,7 +18,12 @@ std::map<std::pair<int,int>, ZeldaInformationHandler::Secrets> ZeldaInformationH
 std::mutex ZeldaInformationHandler::isRunningMutex;
 bool ZeldaInformationHandler::isRunning = true;
 
+std::mutex ZeldaInformationHandler::isInDungeonMutex;
+bool ZeldaInformationHandler::isInDungeon = false;
+
+
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
+  SetIsInDungeon(false);
   std::lock_guard<std::mutex> guard(mapLocationMutex);
   mapx = x;
   mapy = y;
@@ -31,6 +36,7 @@ std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
 }
 
 void ZeldaInformationHandler::SetDungeonLocation(int x, int y) {
+  SetIsInDungeon(true);
   std::lock_guard<std::mutex> guard(dungeonLocationMutex);
   std::pair<int, int> oloc = GetMapLocation();
   if (GetSecret(oloc.first, oloc.second) == Secrets::UNEXPLORED) {
@@ -80,4 +86,14 @@ void ZeldaInformationHandler::SetIsRunning(bool running) {
 bool ZeldaInformationHandler::GetIsRunning() {
   std::lock_guard<std::mutex> guard(isRunningMutex);
   return isRunning;
+}
+
+void ZeldaInformationHandler::SetIsInDungeon(bool inDungeon) {
+  std::lock_guard<std::mutex> guard(isInDungeonMutex);
+  isInDungeon = inDungeon;
+}
+
+bool ZeldaInformationHandler::GetIsInDungeon() {
+  std::lock_guard<std::mutex> guard(isInDungeonMutex);
+  return isInDungeon;
 }
