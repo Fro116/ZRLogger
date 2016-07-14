@@ -16,7 +16,7 @@
 
 #include "OpenGLDoubleSidedRectangle.h"
 #include "OpenGLRectangle.h"
-
+#include "OverworldSelector.h"
 #include "OpenGLUtility.h"
 
 std::shared_ptr<OverworldState> OverworldState::CreateInstance(GLFWwindow* window, std::string vertexShaderPath, std::string fragmentShaderPath) {
@@ -39,7 +39,10 @@ OverworldState::OverworldState(GLFWwindow* window, std::string vertexShaderPath,
       std::shared_ptr<Bindable> cardObject(tile);                            
       BindObject(cardObject);                                                
     }                                                                        
-  }  
+  }
+  OpenGLRectangle* selector =  new OverworldSelector();
+  std::shared_ptr<Bindable> selObject(selector);
+  BindObject(selObject);
 }
 
 void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
