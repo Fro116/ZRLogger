@@ -9,11 +9,7 @@ OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(512, 33
 
 void OverworldMarker::Update() {
   if (!secret) {
-    std::tuple<int, int, bool> coor = ZeldaInformationHandler::GetMapLocation();
-    int cx = std::get<0>(coor);
-    int cy = std::get<1>(coor);
-    bool cs = std::get<2>(coor);
-    if (cx == mapx && cy == mapy && cs) {
+    if (ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE) {
       secret = true;
     }
   }

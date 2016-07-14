@@ -81,11 +81,7 @@ void ZeldaImageProcessor::UpdateData() {
     std::tuple<int, int, int> rgb = minimap.MostCommonRGB();
     std::tuple<int, int, int> minimapGray = std::make_tuple(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B);
     if (rgb == minimapGray) {
-      //check if in secret cave
-      ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
-      double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
-      bool inSecretCave = (bp > SECRET_CAVE_BLACK_THRESHOLD);
-      //check every minimap spot
+      //determine location
       for (int mapx = 0; mapx < 16; ++mapx) {
 	for (int mapy = 0; mapy < 8; ++mapy) {
 	  int tx = (static_cast<double>(mapx) / 16) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
@@ -95,7 +91,15 @@ void ZeldaImageProcessor::UpdateData() {
 	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th);
 	  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	  if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
-	    ZeldaInformationHandler::SetMapLocation(mapx, mapy, inSecretCave);
+	    //location found
+	    ZeldaInformationHandler::SetMapLocation(mapx, mapy);
+	    //check if in secret cave
+	    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
+	    double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
+	    bool inSecretCave = (bp > SECRET_CAVE_BLACK_THRESHOLD);
+	    if (inSecretCave) {
+	      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::UNKNOWN_CAVE);
+	    }
 	  }
 	}
       }
