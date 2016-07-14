@@ -8,6 +8,10 @@ std::mutex ZeldaInformationHandler::mapLocationMutex;
 int ZeldaInformationHandler::mapx = -1;
 int ZeldaInformationHandler::mapy = -1;
 
+std::mutex ZeldaInformationHandler::dungeonLocationMutex;
+int ZeldaInformationHandler::dungeonx = -1;
+int ZeldaInformationHandler::dungeony = -1;
+
 std::mutex ZeldaInformationHandler::secretsMutex;
 std::map<std::pair<int,int>, ZeldaInformationHandler::Secrets> ZeldaInformationHandler::overworldSecrets;
 
@@ -19,6 +23,30 @@ void ZeldaInformationHandler::SetMapLocation(int x, int y) {
   mapx = x;
   mapy = y;
 }
+
+
+std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
+  std::lock_guard<std::mutex> guard(mapLocationMutex);
+  return std::make_pair(mapx, mapy);
+}
+
+void ZeldaInformationHandler::SetDungeonLocation(int x, int y) {
+  std::lock_guard<std::mutex> guard(dungeonLocationMutex);
+  std::pair<int, int> oloc = GetMapLocation();
+  if (GetSecret(oloc.first, oloc.second) == Secrets::UNEXPLORED) {
+    SetSecret(oloc.first, oloc.second, Secrets::UNKNOWN_DUNGEON);
+  }
+  dungeonx = x;
+  dungeony = y;
+}
+
+
+std::pair<int, int> ZeldaInformationHandler::GetDungeonLocation() {
+  std::lock_guard<std::mutex> guard(dungeonLocationMutex);
+  return std::make_pair(dungeonx, dungeony);
+}
+
+
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y) {
   std::lock_guard<std::mutex> guard(secretsMutex);
@@ -42,11 +70,6 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
     }
   }  
   overworldSecrets[std::make_pair(x,y)] = secret;
-}
-
-std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
-  std::lock_guard<std::mutex> guard(mapLocationMutex);
-  return std::make_pair(mapx, mapy);
 }
 
 void ZeldaInformationHandler::SetIsRunning(bool running) {

@@ -22,15 +22,22 @@ class ZeldaInformationHandler {
   ZeldaInformationHandler();
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
+  static void SetDungeonLocation(int x, int y);
+  static std::pair<int, int> GetDungeonLocation();
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
-  enum class Secrets {UNEXPLORED, UNKNOWN_CAVE};
+  enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
+      DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
   static Secrets GetSecret(int x, int y);
   static void SetSecret(int x, int y, Secrets secret);
  private:
   static std::mutex mapLocationMutex;
   static int mapx;
   static int mapy;
+
+  static std::mutex dungeonLocationMutex;
+  static int dungeonx;
+  static int dungeony;
 
   static std::mutex secretsMutex;
   static std::map<std::pair<int,int>, Secrets> overworldSecrets;

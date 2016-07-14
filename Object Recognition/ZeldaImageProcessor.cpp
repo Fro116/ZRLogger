@@ -104,6 +104,29 @@ void ZeldaImageProcessor::UpdateData() {
 	}
       }
     }
+    else {
+      //check for dungeon location
+      int grayCount = minimap.PixelsWithRGB(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B).size();
+      if (grayCount == 0) {
+	for (int mapx = 0; mapx < 8; ++mapx) {
+	  for (int mapy = 0; mapy < 8; ++mapy) {
+	    int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+	    int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+	    int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+	    int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+	    int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+	    int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+	    int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+	    int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+	    ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+	    std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+	    if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
+	      ZeldaInformationHandler::SetDungeonLocation(mapx, mapy);
+	    }
+	  }
+	}
+      }
+    }
   }
 }
 

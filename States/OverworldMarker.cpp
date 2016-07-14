@@ -9,7 +9,8 @@ OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(512, 33
 
 void OverworldMarker::Update() {
   if (!secret) {
-    if (ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE) {
+    if (ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE
+	|| ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_DUNGEON) {
       secret = true;
     }
   }

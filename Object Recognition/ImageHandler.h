@@ -34,7 +34,7 @@ class ImageHandler {
   std::tuple<int, int, int> RGBAtPixel(int pixelx, int pixely); //Zero indexed
   std::vector<std::pair<int, int>> PixelsWithRGB(int red, int green, int blue); //returns all pixel coordinates (x,y) matching color
   double Similarity(ImageHandler& other); //Scales other and returns the fraction of pixels that have the same RGBA values
-  std::tuple<int, int, int> MostCommonRGB(); //Returns the color that appears most often in the image
+  std::tuple<int, int, int> MostCommonRGB(); //Returns the color that appears most often in the image. Note: slow
  private:
   ImageHandler() = delete;
   ImageHandler(CGImageRef image);
