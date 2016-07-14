@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.11)
 project(ZRLogger)
 include_directories("Abstract Graphics" "Abstract States" "States" "Utility" "Object Recognition")
 
-add_executable (ZRLogger main.cpp "Abstract Graphics/OpenGLUtility.cpp" "Abstract States/Drawable.cpp" "Abstract Graphics/SOIL.c" "Abstract Graphics/image_DXT.c" "Abstract States/GameEngine.cpp" "Abstract States/GameDriver.cpp" "Abstract Graphics/image_helper.c" "Abstract States/Movable.cpp" "Abstract Graphics/stb_image_aug.c" "States/OverworldState.cpp" "States/OverworldSelector.cpp" "Abstract Graphics/OpenGLDoubleSidedRectangle.cpp" "Abstract Graphics/OpenGLRectangle.cpp" "Object Recognition/ZeldaImageProcessor.cpp" "Object Recognition/ImageHandler.cpp" "Object Recognition/ZeldaInformationHandler.cpp")
+add_executable (ZRLogger main.cpp "Abstract Graphics/OpenGLUtility.cpp" "Abstract States/Drawable.cpp" "Abstract Graphics/SOIL.c" "Abstract Graphics/image_DXT.c" "Abstract States/GameEngine.cpp" "Abstract States/GameDriver.cpp" "Abstract Graphics/image_helper.c" "Abstract States/Movable.cpp" "Abstract Graphics/stb_image_aug.c" "States/OverworldState.cpp" "States/OverworldSelector.cpp" "States/ZRDriver.cpp" "Abstract Graphics/OpenGLDoubleSidedRectangle.cpp" "Abstract Graphics/OpenGLRectangle.cpp" "Object Recognition/ZeldaImageProcessor.cpp" "Object Recognition/ImageHandler.cpp" "Object Recognition/ZeldaInformationHandler.cpp")
 
 find_library(CORE_FOUNDATION CoreFoundation)
 target_link_libraries(ZRLogger ${CORE_FOUNDATION})

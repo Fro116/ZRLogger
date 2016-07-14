@@ -13,16 +13,17 @@
 #include <fstream>
 #include "OpenGLUtility.h"
 
-#include "GameDriver.h"
+#include "ZRDriver.h"
 #include "OverworldState.h"
 #include "ZeldaImageProcessor.h"
+#include "ZeldaInformationHandler.h"
 
 void GraphicsThread() {
   double fps = 60;
   double npf = 1e9 / fps;
   long nanosPerFrame = static_cast<long>(npf);
   
-  GameDriver driver("ZRLogger", 800, 300, nanosPerFrame,5);  
+  ZRDriver driver("ZRLogger", 800, 300, nanosPerFrame,5);  
   GameEngine& engine = driver.Engine();
   auto state = OverworldState::CreateInstance(engine.Window(), "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
   engine.PushState(state);
@@ -32,7 +33,7 @@ void GraphicsThread() {
 void ProcessingThread() {
   ZeldaImageProcessor zir;
   zir.PrintDebugData();
-  while (true) {
+  while (ZeldaInformationHandler::GetIsRunning()) {
     zir.UpdateData();
   }
 }
