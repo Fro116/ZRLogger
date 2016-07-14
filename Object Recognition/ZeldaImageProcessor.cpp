@@ -1,4 +1,5 @@
 #include "ZeldaImageProcessor.h"
+#include "ZeldaInformationHandler.h"
 
 ZeldaImageProcessor::ZeldaImageProcessor() {
   FindZeldaScreen();
@@ -83,7 +84,6 @@ void ZeldaImageProcessor::UpdateData() {
     }
   }
   if (INITIALIZED_CURRENT_TUNIC) {
-    std::cout << "CHECKING POSITION: " <<  std::endl;
     ImageHandler minimap = screen.Crop(REFERENCE_OVERWORLD_MINIMAP_XCOOR*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_YCOOR*SCALE_Y, REFERENCE_OVERWORLD_MINIMAP_WIDTH*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_HEIGHT*SCALE_Y);
     std::tuple<int, int, int> rgb = minimap.MostCommonRGB();
     std::tuple<int, int, int> minimapGray = std::make_tuple(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B);
@@ -98,7 +98,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th);
 	  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	  if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
-	    std::cout << "POSITION: " << mapx << " " << mapy << std::endl;
+	    ZeldaInformationHandler::SetMapLocation(mapx, mapy);
 	  }
 	}
       }

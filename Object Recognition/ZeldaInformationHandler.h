@@ -15,16 +15,17 @@
 #include <cstdlib>
 #include <tuple>
 #include <map>
+#include <mutex>
 
 class ZeldaInformationHandler {
  public:
   ZeldaInformationHandler();
-  void SetMapLocation(int x, int y);
-  std::pair<int, int> GetMapLocation();
+  static void SetMapLocation(int x, int y);
+  static std::pair<int, int> GetMapLocation();
  private:
-  std::mutex mapLocationMutex;
-  int mapx;
-  int mapy;
+  static std::mutex mapLocationMutex;
+  static int mapx;
+  static int mapy;
 };
 
 #endif

@@ -15,12 +15,12 @@
 
 #include "GameDriver.h"
 #include "OverworldState.h"
+#include "ZeldaImageProcessor.h"
 
 void GraphicsThread() {
   double fps = 60;
   double npf = 1e9 / fps;
   long nanosPerFrame = static_cast<long>(npf);
-
   
   GameDriver driver("ZRLogger", 800, 300, nanosPerFrame,5);  
   GameEngine& engine = driver.Engine();
@@ -29,8 +29,18 @@ void GraphicsThread() {
   driver.Run();
 }
 
+void ProcessingThread() {
+  ZeldaImageProcessor zir;
+  zir.PrintDebugData();
+  while (true) {
+    zir.UpdateData();
+  }
+}
+
 int main(int argc, const char * argv[]) {
+  std::thread processing(ProcessingThread);
   GraphicsThread();
+  processing.join();
   return 0;
 }
 
