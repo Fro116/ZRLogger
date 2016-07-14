@@ -46,6 +46,10 @@ void OpenGLRectangle::Update() {
 
 }
 
+void OpenGLRectangle::SetTexture(std::string texturePath) {
+    texture = OpenGLUtility::Load2DTexture(texturePath.c_str(), GL_RGBA);
+}
+
 void OpenGLRectangle::Draw(double time) {
     glm::mat4 PVM = CameraTransform() * ModelTranform();
     

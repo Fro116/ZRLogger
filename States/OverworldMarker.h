@@ -19,6 +19,7 @@
 #include <mutex>
 
 #include "OpenGLRectangle.h"
+#include "ZeldaInformationHandler.h"
 
 class OverworldMarker : public OpenGLRectangle {
  public:
@@ -28,7 +29,7 @@ class OverworldMarker : public OpenGLRectangle {
  private:
   int mapx;
   int mapy;
-  bool secret;
+  ZeldaInformationHandler::Secrets secret;
 };
 
 #endif

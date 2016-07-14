@@ -24,6 +24,7 @@ public:
   void Unbind(const GameState* state) override;
   void Update() override;
   void Draw(double time) override;
+  void SetTexture(std::string texturePath);
  private:
   GLuint model;
   GLuint texture;

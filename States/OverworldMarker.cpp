@@ -1,23 +1,26 @@
 #include "OverworldMarker.h"
-#include "ZeldaInformationHandler.h"
 
 OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(512, 336, "Images/Selectors/OverworldExplored.png") {
   mapx = tilex;
   mapy = tiley;
-  secret = false;
+  secret = ZeldaInformationHandler::Secrets::UNEXPLORED;
 }
 
 void OverworldMarker::Update() {
-  if (!secret) {
-    if (ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE
-	|| ZeldaInformationHandler::GetSecret(mapx, mapy) == ZeldaInformationHandler::Secrets::UNKNOWN_DUNGEON) {
-      secret = true;
+  ZeldaInformationHandler::Secrets newSecret = ZeldaInformationHandler::GetSecret(mapx, mapy);
+  if (newSecret != secret) {
+    secret = newSecret;
+    if (secret == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE) {
+      SetTexture("Images/Selectors/OverworldExplored.png");
+    }
+    if (secret == ZeldaInformationHandler::Secrets::UNKNOWN_DUNGEON) {
+      SetTexture("Images/Selectors/OverworldUnkownDungeon.png");
     }
   }
 }
 
 void OverworldMarker::Draw(double time) {
-  if (secret) {
+  if (secret != ZeldaInformationHandler::Secrets::UNEXPLORED) {
     OpenGLRectangle::Draw(time);
   }
 }
