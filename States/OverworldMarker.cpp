@@ -1,6 +1,6 @@
 #include "OverworldMarker.h"
 
-OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(512, 336, "Images/Selectors/OverworldExplored.png") {
+OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(50, 50.0*336.0/512.0, "Images/Selectors/OverworldExplored.png") {
   mapx = tilex;
   mapy = tiley;
   secret = ZeldaInformationHandler::Secrets::UNEXPLORED;

@@ -1,7 +1,7 @@
 #include "OverworldSelector.h"
 #include "ZeldaInformationHandler.h"
 
-OverworldSelector::OverworldSelector() : OpenGLRectangle(512, 336, "Images/Selectors/OverworldSelector.png") {
+OverworldSelector::OverworldSelector() : OpenGLRectangle(50, 50.0*336.0/512.0, "Images/Selectors/OverworldSelector.png") {
   mapx = 0;
   mapy = 0;
 }

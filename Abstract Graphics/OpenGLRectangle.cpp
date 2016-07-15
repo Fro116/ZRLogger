@@ -11,26 +11,23 @@
 #include <iostream>
 
 OpenGLRectangle::OpenGLRectangle(float width, float height, std::string texturePath) {
-    GLuint vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-
-    static const GLfloat vertexBufferData[] = {
+    GLfloat vertexBufferData[] = {
         -width/2, -height/2,
         -width/2, height/2,
         width/2, height/2,
         width/2, -height/2
     }; //BL, BR, TR, TL
-    static const GLfloat textureBufferData[] = {
+    GLfloat textureBufferData[] = {
         0, 1,
         0, 0,
         1, 0,
         1, 1
     };
-    static const GLushort elementBufferData[] = {3, 2, 0, 1};
+    GLushort elementBufferData[] = {3, 2, 0, 1};
     
     model = OpenGLUtility::CreateVertexArrayObject(vertexBufferData, sizeof(vertexBufferData), 2, textureBufferData, sizeof(textureBufferData), 2, elementBufferData, sizeof(elementBufferData));
-    
+    std::cout << "MODEL IS: " << model << std::endl;
+    std::cout << "VB IS: " << vertexBufferData[0] << " " << vertexBufferData[1] << std::endl;
     texture = OpenGLUtility::Load2DTexture(texturePath.c_str(), GL_RGBA);
 }
 

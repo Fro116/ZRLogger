@@ -15,7 +15,7 @@ OpenGLDoubleSidedRectangle::OpenGLDoubleSidedRectangle(float width, float height
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     
-    static const GLfloat vertexBufferData[] = {
+    GLfloat vertexBufferData[] = {
         -width/2, -height/2,
         -width/2, height/2,
         width/2, height/2,
@@ -25,7 +25,7 @@ OpenGLDoubleSidedRectangle::OpenGLDoubleSidedRectangle(float width, float height
         width/2, height/2,
         width/2, -height/2
     }; //BL, BR, TR, TL
-    static const GLfloat textureBufferData[] = {
+    GLfloat textureBufferData[] = {
         0, 0,
         0, 1,
         1, 1,
@@ -35,7 +35,7 @@ OpenGLDoubleSidedRectangle::OpenGLDoubleSidedRectangle(float width, float height
         1, 0,
         1, 1
     };
-    static const GLushort elementBufferData[] = {0, 1, 3, 2, 7, 6, 4, 5};
+    GLushort elementBufferData[] = {0, 1, 3, 2, 7, 6, 4, 5};
     
     model = OpenGLUtility::CreateVertexArrayObject(vertexBufferData, sizeof(vertexBufferData), 2, textureBufferData, sizeof(textureBufferData), 2, elementBufferData, sizeof(elementBufferData));
     
