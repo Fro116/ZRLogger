@@ -82,7 +82,6 @@ void DungeonState::Update() {
     auto os = driver->Engine().PopState();
     driver->Engine().PushState(ds);
     driver->Engine().PushState(os);
-    // driver->Engine().PopState();
   }
 }
 

@@ -16,9 +16,18 @@ bool ZeldaInformationHandler::isInDungeon = false;
 
 std::vector<ZeldaInformationHandler::Dungeon> ZeldaInformationHandler::dungeons;
 
-void ZeldaInformationHandler::SetMapLocation(int x, int y) {
-  SetIsInDungeon(false);
+void ZeldaInformationHandler::Init() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  for (int a = 0; a < 8; ++a) {
+    for (int b = 0; b < 16; ++b) {
+      overworldSecrets[std::make_pair(a,b)] = Secrets::UNEXPLORED;
+    }
+  }
+}
+
+void ZeldaInformationHandler::SetMapLocation(int x, int y) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  SetIsInDungeon(false);
   mapx = x;
   mapy = y;
 }
@@ -63,25 +72,11 @@ std::pair<int, int> ZeldaInformationHandler::GetDungeonLocation() {
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  if (overworldSecrets.empty()) {
-    for (int a = 0; a < 8; ++a) {
-      for (int b = 0; b < 16; ++b) {
-	overworldSecrets[std::make_pair(a,b)] = Secrets::UNEXPLORED;
-      }
-    }
-  }  
   return overworldSecrets[std::make_pair(x,y)];
 }
 
 void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  if (overworldSecrets.empty()) {
-    for (int a = 0; a < 8; ++a) {
-      for (int b = 0; b < 16; ++b) {
-	overworldSecrets[std::make_pair(a,b)] = Secrets::UNEXPLORED;
-      }
-    }
-  }  
   overworldSecrets[std::make_pair(x,y)] = secret;
 }
 

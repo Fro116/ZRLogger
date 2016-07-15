@@ -22,7 +22,8 @@ class ZeldaInformationHandler {
   enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
   enum class RoomType {UNEXPLORED, UNKNOWN_ROOM};    
-  
+
+  static void Init();
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
   static void SetDungeonLocation(int x, int y, RoomType type);

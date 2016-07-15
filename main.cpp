@@ -41,6 +41,7 @@ void ProcessingThread() {
 }
 
 int main(int argc, const char * argv[]) {
+  ZeldaInformationHandler::Init();
   std::thread processing(ProcessingThread);
   GraphicsThread();
   processing.join();

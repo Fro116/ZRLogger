@@ -19,7 +19,6 @@
 #include "OverworldMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
-// #include "DungeonState.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
@@ -46,17 +45,6 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
   OpenGLRectangle* selector =  new OverworldSelector();
   std::shared_ptr<Bindable> selObject(selector);
   BindObject(selObject);
-  // OpenGLRectangle* tile2 =  new OpenGLRectangle(200, 200, "Images/Selectors/DungeonRoom.png");
-  // tile2->MoveTo(glm::vec3(200, 100 ,0.01));
-  // // tile->ScaleBy(glm::vec3(2,1,1));
-  // std::shared_ptr<Bindable> cardObject2(tile2);
-  // BindObject(cardObject2);
-  
-  // OpenGLRectangle* tile =  new OpenGLRectangle(100, 200, "Images/Selectors/DungeonRoom.png");
-  // tile->MoveTo(glm::vec3(400, 200 ,0.01));
-  // // tile->ScaleBy(glm::vec3(2,1,1));
-  // std::shared_ptr<Bindable> cardObject(tile);
-  // BindObject(cardObject);
 }
 
 void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
@@ -108,12 +96,10 @@ void OverworldState::Update() {
         object->Update();
     }
     if (ZeldaInformationHandler::GetIsInDungeon()) {
-      // auto state = std::make_shared<DungeonState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
       auto os = driver->Engine().PopState();
       auto ds = driver->Engine().PopState();
       driver->Engine().PushState(os);
       driver->Engine().PushState(ds);
-      // driver->Engine().PushState(state);
     }
 }
 
