@@ -26,8 +26,6 @@ OpenGLRectangle::OpenGLRectangle(float width, float height, std::string textureP
     GLushort elementBufferData[] = {3, 2, 0, 1};
     
     model = OpenGLUtility::CreateVertexArrayObject(vertexBufferData, sizeof(vertexBufferData), 2, textureBufferData, sizeof(textureBufferData), 2, elementBufferData, sizeof(elementBufferData));
-    std::cout << "MODEL IS: " << model << std::endl;
-    std::cout << "VB IS: " << vertexBufferData[0] << " " << vertexBufferData[1] << std::endl;
     texture = OpenGLUtility::Load2DTexture(texturePath.c_str(), GL_RGBA);
 }
 

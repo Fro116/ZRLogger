@@ -34,7 +34,7 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
       std::string num = std::to_string(8-row);
       std::string let = alphabet[col];
       OpenGLRectangle* tile =  new OpenGLRectangle(px, py, "Images/Overworld/" + num + let + ".png");
-      tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));                 
+      tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));
       std::shared_ptr<Bindable> cardObject(tile);                            
       BindObject(cardObject);
       OpenGLRectangle* marker =  new OverworldMarker(col, 7-row);
@@ -46,6 +46,17 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
   OpenGLRectangle* selector =  new OverworldSelector();
   std::shared_ptr<Bindable> selObject(selector);
   BindObject(selObject);
+  // OpenGLRectangle* tile2 =  new OpenGLRectangle(200, 200, "Images/Selectors/DungeonRoom.png");
+  // tile2->MoveTo(glm::vec3(200, 100 ,0.01));
+  // // tile->ScaleBy(glm::vec3(2,1,1));
+  // std::shared_ptr<Bindable> cardObject2(tile2);
+  // BindObject(cardObject2);
+  
+  // OpenGLRectangle* tile =  new OpenGLRectangle(100, 200, "Images/Selectors/DungeonRoom.png");
+  // tile->MoveTo(glm::vec3(400, 200 ,0.01));
+  // // tile->ScaleBy(glm::vec3(2,1,1));
+  // std::shared_ptr<Bindable> cardObject(tile);
+  // BindObject(cardObject);
 }
 
 void OverworldState::BindObject(std::shared_ptr<Bindable> object) {

@@ -4,9 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "OpenGLRectangle.h"
-#include "OverworldSelector.h"
-#include "OverworldMarker.h"
+#include "DungeonSelector.h"
+#include "DungeonMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
 
@@ -15,26 +14,19 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
-  // std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
-  // for (int row = 0; row < 8; ++row) {
-  //   for (int col = 0; col < 16; ++col) {
-  //     double px = 50;
-  //     double py = 50.0*336.0/512.0;
-  //     std::string num = std::to_string(8-row);
-  //     std::string let = alphabet[col];
-  //     OpenGLRectangle* tile =  new OpenGLRectangle(px, py, "Images/Overworld/" + num + let + ".png");
-  //     tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));                 
-  //     std::shared_ptr<Bindable> cardObject(tile);                            
-  //     BindObject(cardObject);
-  //     OpenGLRectangle* marker =  new OverworldMarker(col, 7-row);
-  //     marker->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0.001));                 
-  //     std::shared_ptr<Bindable> markerObject(marker);
-  //     BindObject(markerObject);
-  //   }                                                                        
-  // }
-  // OpenGLRectangle* selector =  new OverworldSelector();
-  // std::shared_ptr<Bindable> selObject(selector);
-  // BindObject(selObject);
+  for (int row = 0; row < 8; ++row) {
+    for (int col = 0; col < 8; ++col) {
+      double px = 100;
+      double py = px*336.0/1024.0;
+      OpenGLRectangle* marker =  new DungeonMarker(col, 7-row);
+      marker->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0.001));                 
+      std::shared_ptr<Bindable> markerObject(marker);
+      BindObject(markerObject);
+    }                                                                        
+  }
+  OpenGLRectangle* selector =  new DungeonSelector();
+  std::shared_ptr<Bindable> selObject(selector);
+  BindObject(selObject);
 }
 
 void DungeonState::BindObject(std::shared_ptr<Bindable> object) {
@@ -82,12 +74,12 @@ void DungeonState::LeaveFocus() {
 }
 
 void DungeonState::Update() {
-    for (std::shared_ptr<Updatable> object : updatables) {
-        object->Update();
-    }
-    if (!ZeldaInformationHandler::GetIsInDungeon()) {
-      driver->Engine().PopState();
-    }
+  for (std::shared_ptr<Updatable> object : updatables) {
+    object->Update();
+  }
+  if (!ZeldaInformationHandler::GetIsInDungeon()) {
+    driver->Engine().PopState();
+  }
 }
 
 void DungeonState::Draw(double time) {

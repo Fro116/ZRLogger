@@ -108,7 +108,7 @@ ZeldaInformationHandler::RoomType ZeldaInformationHandler::GetDungeonRoomType(in
       return el.GetRoomType(x, y);
     }
   }
-  return RoomType::NO_ROOM;
+  return RoomType::UNEXPLORED;
 }
 
 bool ZeldaInformationHandler::GetIsInDungeon() {
@@ -129,7 +129,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 ZeldaInformationHandler::RoomType ZeldaInformationHandler::Dungeon::GetRoomType(int x, int y) {
   auto it = rooms.find(std::make_pair(x,y));
   if (it == rooms.end()) {
-    return RoomType::NO_ROOM;
+    return RoomType::UNEXPLORED;
   }
   else {
     return it->second;
