@@ -19,35 +19,50 @@
 
 class ZeldaInformationHandler {
  public:
-  ZeldaInformationHandler();
+  enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
+      DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
+  enum class RoomType {NO_ROOM, UNKNOWN};    
+  
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
-  static void SetDungeonLocation(int x, int y);
+  static void SetDungeonLocation(int x, int y, RoomType type);
   static std::pair<int, int> GetDungeonLocation();
+  static RoomType GetDungeonRoomType(int x, int y);
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
   static bool GetIsInDungeon();
-  enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
-      DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
+
   static Secrets GetSecret(int x, int y);
   static void SetSecret(int x, int y, Secrets secret);
+  
  private:
-  static std::mutex mapLocationMutex;
+  static std::recursive_mutex dataMutex;
+
   static int mapx;
   static int mapy;
 
-  static std::mutex dungeonLocationMutex;
   static int dungeonx;
   static int dungeony;
-
-  static std::mutex isInDungeonMutex;
+  class Dungeon {
+  public:
+    Dungeon(int overworldx, int overworldy);
+    void SetLocation(int x, int y, RoomType type);
+    RoomType GetRoomType(int x, int y);
+    std::pair<int, int> GetLocation();
+    Secrets Number();
+  private:
+    int overworldx;
+    int overworldy;
+    Secrets levelNumber;
+    std::map<std::pair<int, int>, RoomType> rooms;
+  };
+  static std::vector<Dungeon> dungeons;
+  
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
 
-  static std::mutex secretsMutex;
   static std::map<std::pair<int,int>, Secrets> overworldSecrets;
 
-  static std::mutex isRunningMutex;
   static bool isRunning;
 };
 
