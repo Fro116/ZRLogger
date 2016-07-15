@@ -17,13 +17,16 @@
 #include <map>
 #include <mutex>
 
+#include "OpenGLUtility.h"
+
 class ZeldaInformationHandler {
  public:
   enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
-  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM};    
+  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM};    
 
   static void Init();
+  static void InitTextures();
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
   static void SetDungeonLocation(int x, int y, RoomType type);
@@ -32,12 +35,15 @@ class ZeldaInformationHandler {
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
   static bool GetIsInDungeon();
-
   static Secrets GetSecret(int x, int y);
   static void SetSecret(int x, int y, Secrets secret);
-  
+  static GLuint GetTexture(Secrets type);
+  static GLuint GetTexture(RoomType type);
  private:
   static std::recursive_mutex dataMutex;
+
+  static std::map<Secrets, GLuint> overworldTextures;
+  static std::map<RoomType, GLuint> dungeonTextures;
 
   static int mapx;
   static int mapy;

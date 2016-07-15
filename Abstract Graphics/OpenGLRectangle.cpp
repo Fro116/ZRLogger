@@ -29,6 +29,25 @@ OpenGLRectangle::OpenGLRectangle(float width, float height, std::string textureP
     texture = OpenGLUtility::Load2DTexture(texturePath.c_str(), GL_RGBA);
 }
 
+OpenGLRectangle::OpenGLRectangle(float width, float height, GLuint texturePath) {
+    GLfloat vertexBufferData[] = {
+        -width/2, -height/2,
+        -width/2, height/2,
+        width/2, height/2,
+        width/2, -height/2
+    }; //BL, BR, TR, TL
+    GLfloat textureBufferData[] = {
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 1
+    };
+    GLushort elementBufferData[] = {3, 2, 0, 1};
+    
+    model = OpenGLUtility::CreateVertexArrayObject(vertexBufferData, sizeof(vertexBufferData), 2, textureBufferData, sizeof(textureBufferData), 2, elementBufferData, sizeof(elementBufferData));
+    texture = texturePath;
+}
+
 void OpenGLRectangle::Bind(const GameState *state) {
     
 }
@@ -43,6 +62,10 @@ void OpenGLRectangle::Update() {
 
 void OpenGLRectangle::SetTexture(std::string texturePath) {
     texture = OpenGLUtility::Load2DTexture(texturePath.c_str(), GL_RGBA);
+}
+
+void OpenGLRectangle::SetTexture(GLuint tex) {
+    texture = tex;
 }
 
 void OpenGLRectangle::Draw(double time) {

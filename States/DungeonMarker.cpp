@@ -1,6 +1,6 @@
 #include "DungeonMarker.h"
 
-DungeonMarker::DungeonMarker(int tilex, int tiley) : OpenGLRectangle(100, 100.0*336.0/1024.0, "Images/Selectors/DungeonRoom.png") {
+DungeonMarker::DungeonMarker(int tilex, int tiley) : OpenGLRectangle(100, 100.0*336.0/1024.0, ZeldaInformationHandler::GetTexture(ZeldaInformationHandler::RoomType::UNEXPLORED)) {
   mapx = tilex;
   mapy = tiley;
   type = ZeldaInformationHandler::RoomType::UNEXPLORED;
@@ -10,9 +10,7 @@ void DungeonMarker::Update() {
   ZeldaInformationHandler::RoomType newType = ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy);
   if (newType != type) {
     type = newType;
-    if (type == ZeldaInformationHandler::RoomType::UNKNOWN_ROOM) {
-      SetTexture("Images/Selectors/DungeonRoom.png");
-    }
+    SetTexture(ZeldaInformationHandler::GetTexture(type));
   }
 }
 

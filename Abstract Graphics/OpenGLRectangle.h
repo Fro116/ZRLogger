@@ -19,12 +19,14 @@
 
 class OpenGLRectangle : public Bindable, public Updatable, public Drawable, public Movable {
 public:
+  OpenGLRectangle(float width, float height, GLuint texture);
   OpenGLRectangle(float width, float height, std::string texturePath);
   void Bind(const GameState* state) override;
   void Unbind(const GameState* state) override;
   void Update() override;
   void Draw(double time) override;
   void SetTexture(std::string texturePath);
+  void SetTexture(GLuint tex);
  private:
   GLuint model;
   GLuint texture;

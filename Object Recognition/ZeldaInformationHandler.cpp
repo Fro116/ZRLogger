@@ -13,6 +13,9 @@ bool ZeldaInformationHandler::isInDungeon = false;
 std::vector<ZeldaInformationHandler::Dungeon> ZeldaInformationHandler::dungeons;
 std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShapes;
 
+std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
+std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
+
 void ZeldaInformationHandler::Init() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   for (int a = 0; a < 8; ++a) {
@@ -103,6 +106,25 @@ void ZeldaInformationHandler::Init() {
   dungeonShapes.push_back(FormatShape(d7data));
   dungeonShapes.push_back(FormatShape(d8data));
   dungeonShapes.push_back(FormatShape(d9data));
+}
+
+void ZeldaInformationHandler::InitTextures() {
+  OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
+  overworldTextures[Secrets::UNKNOWN_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
+  overworldTextures[Secrets::UNKNOWN_DUNGEON] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldUnknownDungeon.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_1] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon1.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_2] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon2.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_3] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_4] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon4.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_5] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon5.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_6] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon6.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_7] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon7.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_8] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon8.png", GL_RGBA);
+  overworldTextures[Secrets::DUNGEON_9] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon9.png", GL_RGBA);
+
+  dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
+  dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
+  dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
 }
 
 std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[]) {
@@ -247,22 +269,37 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
     }
     if (possible.size() == 1) {
       int level = possible[0];
-      if (level == 0)
+      if (level == 0) {
 	levelNumber = Secrets::DUNGEON_1;
-      if (level == 1)
+      }
+      if (level == 1) {
 	levelNumber = Secrets::DUNGEON_2;
-      if (level == 2)
+      }
+      if (level == 2) {
 	levelNumber = Secrets::DUNGEON_3;
-      if (level == 3)
+      }
+      if (level == 3) {
 	levelNumber = Secrets::DUNGEON_4;
-      if (level == 4)
+      }
+      if (level == 4) {
 	levelNumber = Secrets::DUNGEON_5;
-      if (level == 5)
+      }
+      if (level == 5) {
 	levelNumber = Secrets::DUNGEON_6;
-      if (level == 6)
+      }
+      if (level == 6) {
 	levelNumber = Secrets::DUNGEON_7;
-      if (level == 7)
+      }
+      if (level == 7) {
 	levelNumber = Secrets::DUNGEON_8;
+      }
+      for (int a = 0; a < 8; ++a) {
+	for (int b = 0; b < 8; ++b) {
+	  if (dungeonShapes[level][a][b] && GetRoomType(a,b) == RoomType::UNEXPLORED) {
+	    rooms[std::make_pair(a, b)] = RoomType::UNSEEN_ROOM;
+	  }
+	}
+      }
     }
   }
 }
@@ -283,4 +320,12 @@ std::pair<int, int> ZeldaInformationHandler::Dungeon::GetLocation() {
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::Dungeon::Number() {
   return levelNumber;
+}
+
+GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
+  return overworldTextures[type];
+}
+
+GLuint ZeldaInformationHandler::GetTexture(RoomType type) {
+  return dungeonTextures[type];
 }
