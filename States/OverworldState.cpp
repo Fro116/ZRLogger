@@ -19,7 +19,7 @@
 #include "OverworldMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
-#include "DungeonState.h"
+// #include "DungeonState.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
@@ -108,8 +108,12 @@ void OverworldState::Update() {
         object->Update();
     }
     if (ZeldaInformationHandler::GetIsInDungeon()) {
-      auto state = std::make_shared<DungeonState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
-      driver->Engine().PushState(state);
+      // auto state = std::make_shared<DungeonState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
+      auto os = driver->Engine().PopState();
+      auto ds = driver->Engine().PopState();
+      driver->Engine().PushState(os);
+      driver->Engine().PushState(ds);
+      // driver->Engine().PushState(state);
     }
 }
 

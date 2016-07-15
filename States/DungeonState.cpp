@@ -78,7 +78,11 @@ void DungeonState::Update() {
     object->Update();
   }
   if (!ZeldaInformationHandler::GetIsInDungeon()) {
-    driver->Engine().PopState();
+    auto ds = driver->Engine().PopState();
+    auto os = driver->Engine().PopState();
+    driver->Engine().PushState(ds);
+    driver->Engine().PushState(os);
+    // driver->Engine().PopState();
   }
 }
 

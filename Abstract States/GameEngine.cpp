@@ -27,8 +27,9 @@ std::shared_ptr<GameState>  GameEngine::PopState() {
     std::shared_ptr<GameState> state = states.top();
     state->LeaveFocus();
     states.pop();
-    states.top()->EnterFocus();
-    
+    if (!states.empty()) {
+      states.top()->EnterFocus();
+    }
     return state;
 }
 
