@@ -106,7 +106,6 @@ void ZeldaInformationHandler::Init() {
 }
 
 std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[]) {
-  std::cout << shape[0] << shape[1] << shape[2] << std::endl;
   std::vector<std::vector<bool>> format;
   for (int y = 0; y < 8; ++y) {
     std::vector<bool> row;
@@ -121,7 +120,16 @@ std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[])
     }
     format.push_back(row);
   }
-  return format;
+  std::reverse(std::begin(format), std::end(format));
+  std::vector<std::vector<bool>> reformat;
+  for (int x = 0; x < 8; ++x) {
+    std::vector<bool> col;
+    for (int y = 0; y < 8; ++y) {
+      col.push_back(format[y][x]);
+    }
+    reformat.push_back(col);
+  }
+  return reformat;
 }
 
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
@@ -217,7 +225,46 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
-  rooms[std::make_pair(x, y)] = type;
+  RoomType prev = GetRoomType(x,y);
+  if (prev != type) {
+    rooms[std::make_pair(x, y)] = type;
+    //Check which dungeon you are in
+    std::vector<int> possible;
+    for (int level = 0; level < 8; ++level) {
+      int right = 0;
+      int wrong = 0;
+      for (auto& el : rooms) {
+	if (dungeonShapes[level][el.first.first][el.first.second]) {
+	  right++;
+	}
+	else {
+	  wrong++;
+	}
+      }
+      if (wrong == 0) {
+	possible.push_back(level);
+      }
+    }
+    if (possible.size() == 1) {
+      int level = possible[0];
+      if (level == 0)
+	levelNumber = Secrets::DUNGEON_1;
+      if (level == 1)
+	levelNumber = Secrets::DUNGEON_2;
+      if (level == 2)
+	levelNumber = Secrets::DUNGEON_3;
+      if (level == 3)
+	levelNumber = Secrets::DUNGEON_4;
+      if (level == 4)
+	levelNumber = Secrets::DUNGEON_5;
+      if (level == 5)
+	levelNumber = Secrets::DUNGEON_6;
+      if (level == 6)
+	levelNumber = Secrets::DUNGEON_7;
+      if (level == 7)
+	levelNumber = Secrets::DUNGEON_8;
+    }
+  }
 }
 
 ZeldaInformationHandler::RoomType ZeldaInformationHandler::Dungeon::GetRoomType(int x, int y) {
