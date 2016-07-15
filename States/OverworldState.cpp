@@ -14,16 +14,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "OpenGLDoubleSidedRectangle.h"
 #include "OpenGLRectangle.h"
 #include "OverworldSelector.h"
 #include "OverworldMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
+#include "DungeonState.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
-  GLFWwindow* window = gameDriver->Engine().Window();
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
@@ -85,12 +84,6 @@ void OverworldState::UnbindObject(std::shared_ptr<Bindable> object) {
     object->Unbind(this);
 }
 
-OverworldState::~OverworldState() {
-    for (auto object : bindables) {
-        UnbindObject(object);
-    }
-}
-
 void OverworldState::EnterFocus() {
 
 }
@@ -104,7 +97,8 @@ void OverworldState::Update() {
         object->Update();
     }
     if (ZeldaInformationHandler::GetIsInDungeon()) {
-      std::cout << "PUSH DUNGEON STATE" << std::endl;
+      auto state = std::make_shared<DungeonState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
+      driver->Engine().PushState(state);
     }
 }
 
