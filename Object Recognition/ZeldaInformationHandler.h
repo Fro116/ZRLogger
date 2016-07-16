@@ -23,15 +23,18 @@ class ZeldaInformationHandler {
  public:
   enum class Secrets {UNEXPLORED, UNKNOWN_CAVE, UNKNOWN_DUNGEON, DUNGEON_1, DUNGEON_2,
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9};
-  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM};    
+  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM};
+  enum class DoorType {UNEXPLORED, OPEN, KEY, SHUTTER, BOMB};
 
   static void Init();
   static void InitTextures();
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
-  static void SetDungeonLocation(int x, int y, RoomType type);
   static std::pair<int, int> GetDungeonLocation();
+  static void SetDungeonLocation(int x, int y, RoomType type);
   static RoomType GetDungeonRoomType(int x, int y);
+  static DoorType GetDungeonDoor(int x1, int y1, int x2, int y2);
+  static void SetDungeonDoor(int x1, int y1, int x2, int y2, DoorType type);
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
   static bool GetIsInDungeon();
@@ -54,6 +57,8 @@ class ZeldaInformationHandler {
   public:
     Dungeon(int overworldx, int overworldy);
     void SetLocation(int x, int y, RoomType type);
+    void SetDoorType(int x1, int y1, int x2, int y2, DoorType type);
+    DoorType GetDoorType(int x1, int y1, int x2, int y2);    
     RoomType GetRoomType(int x, int y);
     std::pair<int, int> GetLocation();
     Secrets Number();
@@ -62,6 +67,7 @@ class ZeldaInformationHandler {
     int overworldy;
     Secrets levelNumber;
     std::map<std::pair<int, int>, RoomType> rooms;
+    std::map<std::tuple<int, int, int, int>, DoorType> doors;
   };
   static std::vector<Dungeon> dungeons;
   static std::vector<std::vector<std::vector<bool>>> dungeonShapes;

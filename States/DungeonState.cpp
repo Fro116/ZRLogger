@@ -6,6 +6,7 @@
 
 #include "DungeonSelector.h"
 #include "DungeonMarker.h"
+#include "DungeonDoor.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
 
@@ -13,7 +14,24 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
   driver = gameDriver;
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
-
+  for (int row = 0; row < 8; ++row) {
+    for (int col = 0; col < 8; ++col) {
+      double px = 100;
+      double py = px*336.0/1024.0;
+      OpenGLRectangle* rdoor =  new DungeonDoor(col, 7-row, col+1, 7-row);
+      double rx = ((px*col + px/2) + (px*(col+1) + px/2)) / 2;
+      double ry = py*row+py/2;
+      rdoor->MoveTo(glm::vec3(rx, ry,0.000));                 
+      std::shared_ptr<Bindable> rdoorObject(rdoor);
+      BindObject(rdoorObject);
+      OpenGLRectangle* ddoor =  new DungeonDoor(col, 7-row, col, 7-(row+1));
+      double dx = (px*col + px/2);
+      double dy = ((py*row+py/2) + (py*(row+1)+py/2)) / 2;
+      ddoor->MoveTo(glm::vec3(dx, dy,0.000));                 
+      std::shared_ptr<Bindable> ddoorObject(ddoor);
+      BindObject(ddoorObject);      
+    }                                                                        
+  }
   for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 8; ++col) {
       double px = 100;

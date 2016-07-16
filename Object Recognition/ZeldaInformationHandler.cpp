@@ -259,6 +259,27 @@ bool ZeldaInformationHandler::GetIsInDungeon() {
   return isInDungeon;
 }
 
+ZeldaInformationHandler::DoorType ZeldaInformationHandler::GetDungeonDoor(int x1, int y1, int x2, int y2) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  std::pair<int, int> loc = GetMapLocation();
+  for (auto& el : dungeons) {
+    if (el.GetLocation() == loc) {
+      return el.GetDoorType(x1, y1, x2, y2);
+    }
+  }
+  return DoorType::UNEXPLORED;  
+}
+
+void ZeldaInformationHandler::SetDungeonDoor(int x1, int y1, int x2, int y2, DoorType type) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  std::pair<int, int> loc = GetMapLocation();
+  for (auto& el : dungeons) {
+    if (el.GetLocation() == loc) {
+      el.SetDoorType(x1, y1, x2, y2, type);
+    }
+  }
+}
+
 ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
   overworldx = x;
   overworldy = y;
@@ -342,6 +363,25 @@ ZeldaInformationHandler::RoomType ZeldaInformationHandler::Dungeon::GetRoomType(
   else {
     return it->second;
   }
+}
+
+void ZeldaInformationHandler::Dungeon::SetDoorType(int x1, int y1, int x2, int y2, DoorType type) {
+  std::tuple<int, int, int, int> d1 = std::make_tuple(x1,y1,x2,y2);
+  std::tuple<int, int, int, int> d2 = std::make_tuple(x2,y2,x1,y1);
+  doors[d1] = type;
+  doors[d2] = type;  
+}
+
+ZeldaInformationHandler::DoorType ZeldaInformationHandler::Dungeon::GetDoorType(int x1, int y1, int x2, int y2) {
+  std::tuple<int, int, int, int> d1 = std::make_tuple(x1,y1,x2,y2);
+  std::tuple<int, int, int, int> d2 = std::make_tuple(x2,y2,x1,y1);
+  if (doors.find(d1) != doors.end()) {
+    return doors[d1];
+  }
+  if (doors.find(d2) != doors.end()) {
+    return doors[d2];
+  }
+  return DoorType::UNEXPLORED;
 }
 
 std::pair<int, int> ZeldaInformationHandler::Dungeon::GetLocation() {
