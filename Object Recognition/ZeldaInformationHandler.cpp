@@ -247,8 +247,16 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
+  bool write = true;
   RoomType prev = GetRoomType(x,y);
-  if (prev != type) {
+  if (prev == type) {
+    write = false;
+  }
+  if (type == RoomType::UNSEEN_ROOM && prev != RoomType::UNEXPLORED) {
+    //prevent overriding data
+    write = false;
+  }
+  if (write) {
     rooms[std::make_pair(x, y)] = type;
     //Check which dungeon you are in
     std::vector<int> possible;
@@ -301,6 +309,12 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	}
       }
     }
+    // else {
+    //   for (auto& el : possible) {
+    // 	std::cout << el << " ";
+    //   }
+    //   std::cout << std::endl;
+    // }
   }
 }
 

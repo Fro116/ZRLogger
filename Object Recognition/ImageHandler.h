@@ -30,6 +30,7 @@ class ImageHandler {
   ImageHandler Crop(int topleftx, int toplefty, int cropwidth, int cropheight);
   ImageHandler Scale(int newWidth, int newHeight);
   ImageHandler ConvertToBlackAndWhite();
+  ImageHandler FilterRGB(int red, int green, int blue); //selected color is turned to black, all other colors will be turned to white
   void SaveAsPPM(std::string outfile);
   std::tuple<int, int, int> RGBAtPixel(int pixelx, int pixely); //Zero indexed
   std::vector<std::pair<int, int>> PixelsWithRGB(int red, int green, int blue); //returns all pixel coordinates (x,y) matching color
