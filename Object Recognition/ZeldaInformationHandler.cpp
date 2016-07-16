@@ -106,6 +106,25 @@ void ZeldaInformationHandler::Init() {
   dungeonShapes.push_back(FormatShape(d7data));
   dungeonShapes.push_back(FormatShape(d8data));
   dungeonShapes.push_back(FormatShape(d9data));
+
+  int overworldDeadData[] = {0,0,1,1,0,0,0,0,0,0,1,0,0,0,1,1,
+			     1,1,0,0,0,1,0,0,0,1,0,0,1,0,1,0,
+			     1,0,1,1,1,1,0,1,1,1,1,0,1,1,0,1,
+			     1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
+			     1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,
+			     1,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,
+			     0,1,0,0,0,1,0,1,1,1,0,1,0,0,0,0,
+			     1,0,1,0,0,0,1,0,1,1,0,0,0,0,0,0};
+  for (int x = 0; x < 16; ++x) {
+    for (int y = 0; y < 8; ++y) {
+      if (overworldDeadData[x + 16*(7-y)]) {
+	overworldSecrets[std::make_pair(x,y)] = Secrets::UNKNOWN_CAVE;
+      }
+      else {
+	overworldSecrets[std::make_pair(x,y)] = Secrets::UNEXPLORED;
+      }
+    }
+  }
 }
 
 void ZeldaInformationHandler::InitTextures() {
@@ -278,7 +297,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	possible.push_back(level);
       }
     }
-    if (possible.size() == 1) {
+    if (levelNumber == Secrets::UNKNOWN_DUNGEON && possible.size() == 1) {
       int level = possible[0];
       if (level == 0) {
 	levelNumber = Secrets::DUNGEON_1;
