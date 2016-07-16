@@ -256,6 +256,9 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
     //prevent overriding data
     write = false;
   }
+  if (x < 0 || y < 0 || x >= 8 || y >=8) {
+    write = false;
+  }
   if (write) {
     rooms[std::make_pair(x, y)] = type;
     //Check which dungeon you are in
@@ -309,12 +312,6 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	}
       }
     }
-    // else {
-    //   for (auto& el : possible) {
-    // 	std::cout << el << " ";
-    //   }
-    //   std::cout << std::endl;
-    // }
   }
 }
 
