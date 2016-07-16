@@ -15,6 +15,7 @@ std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShap
 
 std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
 std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
+std::map<ZeldaInformationHandler::DoorType, GLuint> ZeldaInformationHandler::doorTextures;
 
 void ZeldaInformationHandler::Init() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -144,6 +145,12 @@ void ZeldaInformationHandler::InitTextures() {
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
   dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
+
+  doorTextures[DoorType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
+  doorTextures[DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
+  doorTextures[DoorType::SHUTTER] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonShutterDoor.png", GL_RGBA);
+  doorTextures[DoorType::KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonKeyDoor.png", GL_RGBA);
+  doorTextures[DoorType::BOMB] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonBombDoor.png", GL_RGBA);  
 }
 
 std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[]) {
@@ -206,8 +213,10 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
     number = dungeon.Number();
   }
   SetSecret(loc.first, loc.second, number);
-  dungeonx = x;
-  dungeony = y;
+  if (type != RoomType::UNSEEN_ROOM) {
+    dungeonx = x;
+    dungeony = y;
+  }
 }
 
 
@@ -398,4 +407,8 @@ GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
 
 GLuint ZeldaInformationHandler::GetTexture(RoomType type) {
   return dungeonTextures[type];
+}
+
+GLuint ZeldaInformationHandler::GetTexture(DoorType type) {
+  return doorTextures[type];
 }

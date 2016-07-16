@@ -42,11 +42,13 @@ class ZeldaInformationHandler {
   static void SetSecret(int x, int y, Secrets secret);
   static GLuint GetTexture(Secrets type);
   static GLuint GetTexture(RoomType type);
+  static GLuint GetTexture(DoorType type);  
  private:
   static std::recursive_mutex dataMutex;
 
   static std::map<Secrets, GLuint> overworldTextures;
   static std::map<RoomType, GLuint> dungeonTextures;
+  static std::map<DoorType, GLuint> doorTextures;  
 
   static int mapx;
   static int mapy;
