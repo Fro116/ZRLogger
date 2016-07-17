@@ -152,7 +152,7 @@ void ZeldaImageProcessor::UpdateData() {
 	    int sh = REFERENCE_OVERWORLD_MINIMAP_CURSOR_HEIGHT * SCALE_Y;	  
 	    ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);	  	    
       	    std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
-      	    if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && maprgb != minimapGray) {
+      	    if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && maprgb != minimapGray && screen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() == 0) {
       	      CURRENT_TUNIC_R = std::get<0>(maprgb);
       	      CURRENT_TUNIC_G = std::get<1>(maprgb);
       	      CURRENT_TUNIC_B = std::get<2>(maprgb);
@@ -380,7 +380,7 @@ void ZeldaImageProcessor::UpdateData() {
 	    }
 	  }
 	}
-	if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0)) {
+	if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0) && screen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() == 0) {
 	  //check for heart red, start blue,  and white pixels to discount possibility of start screen
 	  int possibles = 0;
 	  std::tuple<int, int, int> color;
