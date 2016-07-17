@@ -27,9 +27,15 @@ void ZeldaImageProcessor::PrintDebugData() {
   std::cout << "MINIMAP_GRAY_G: " << MINIMAP_GRAY_G << std::endl;
   std::cout << "MINIMAP_GRAY_B: " << MINIMAP_GRAY_B << std::endl;
 
+  std::cout << "HEART_RED_R: " << HEART_RED_R << std::endl;
+  std::cout << "HEART_RED_G: " << HEART_RED_G << std::endl;
+  std::cout << "HEART_RED_B: " << HEART_RED_B << std::endl;
+
   std::cout << "CURRENT_TUNIC_R: " << CURRENT_TUNIC_R << std::endl;
   std::cout << "CURRENT_TUNIC_G: " << CURRENT_TUNIC_G << std::endl;
   std::cout << "CURRENT_TUNIC_B: " << CURRENT_TUNIC_B << std::endl;
+
+  std::cout << std::endl;
 }
 
 void ZeldaImageProcessor::UpdateData() {
@@ -40,7 +46,7 @@ void ZeldaImageProcessor::UpdateData() {
     int r = std::get<0>(rgb);
     int g = std::get<1>(rgb);
     int b = std::get<2>(rgb);
-    if (r != 0 && g != 0 && b != 0) {
+    if (!(r == BLACK_R && g == BLACK_G && b == BLACK_B)) {
       MINIMAP_GRAY_R = r;
       MINIMAP_GRAY_G = g;
       MINIMAP_GRAY_B = b;
@@ -59,7 +65,11 @@ void ZeldaImageProcessor::UpdateData() {
 	  int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
 	  int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 16;
 	  int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
-	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th);
+	  int sx = REFERENCE_OVERWORLD_MINIMAP_CURSOR_XCOOR * SCALE_X;
+	  int sy = REFERENCE_OVERWORLD_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+	  int sw = REFERENCE_OVERWORLD_MINIMAP_CURSOR_WIDTH * SCALE_X;
+	  int sh = REFERENCE_OVERWORLD_MINIMAP_CURSOR_HEIGHT * SCALE_Y;	  
+	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
 	  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	  if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && maprgb != minimapGray) {
 	    TUNIC_GREEN_R = std::get<0>(maprgb);
@@ -68,6 +78,18 @@ void ZeldaImageProcessor::UpdateData() {
 	    CURRENT_TUNIC_R = TUNIC_GREEN_R;
 	    CURRENT_TUNIC_G = TUNIC_GREEN_G;
 	    CURRENT_TUNIC_B = TUNIC_GREEN_B;
+	    {
+	      std::tuple<int, int, int> heartrgb = screen.Crop(REFERENCE_HEART_RED_XCOOR*SCALE_X, REFERENCE_HEART_RED_YCOOR*SCALE_Y, REFERENCE_HEART_RED_WIDTH*SCALE_X, REFERENCE_HEART_RED_HEIGHT*SCALE_Y).MostCommonRGB();
+	      HEART_RED_R = std::get<0>(heartrgb);
+	      HEART_RED_G = std::get<1>(heartrgb);
+	      HEART_RED_B = std::get<2>(heartrgb);
+	    }
+	    {
+	      std::tuple<int, int, int> heartrgb = screen.Crop(REFERENCE_START_BLUE_XCOOR*SCALE_X, REFERENCE_START_BLUE_YCOOR*SCALE_Y, REFERENCE_START_BLUE_WIDTH*SCALE_X, REFERENCE_START_BLUE_HEIGHT*SCALE_Y).MostCommonRGB();
+	      START_BLUE_R = std::get<0>(heartrgb);
+	      START_BLUE_G = std::get<1>(heartrgb);
+	      START_BLUE_B = std::get<2>(heartrgb);
+	    }
 	    INITIALIZED_TUNIC_GREEN = true;
 	    INITIALIZED_CURRENT_TUNIC = true;
 	  }
@@ -82,16 +104,22 @@ void ZeldaImageProcessor::UpdateData() {
     std::tuple<int, int, int> minimapGray = std::make_tuple(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B);
     if (rgb == minimapGray) {
       //determine location
+      bool foundLink = false;
       for (int mapx = 0; mapx < 16; ++mapx) {
 	for (int mapy = 0; mapy < 8; ++mapy) {
 	  int tx = (static_cast<double>(mapx) / 16) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
 	  int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
 	  int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 16;
 	  int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
-	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th);
+	  int sx = REFERENCE_OVERWORLD_MINIMAP_CURSOR_XCOOR * SCALE_X;
+	  int sy = REFERENCE_OVERWORLD_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+	  int sw = REFERENCE_OVERWORLD_MINIMAP_CURSOR_WIDTH * SCALE_X;
+	  int sh = REFERENCE_OVERWORLD_MINIMAP_CURSOR_HEIGHT * SCALE_Y;	  
+	  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);	  
 	  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	  if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
 	    //location found
+	    foundLink = true;
 	    ZeldaInformationHandler::SetMapLocation(mapx, mapy);
 	    //check if in secret cave
 	    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
@@ -103,11 +131,34 @@ void ZeldaImageProcessor::UpdateData() {
 	  }
 	}
       }
+      if (!foundLink) {
+      	//check for blue or red ring
+      	for (int mapx = 0; mapx < 16; ++mapx) {
+      	  for (int mapy = 0; mapy < 8; ++mapy) {
+      	    int tx = (static_cast<double>(mapx) / 16) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+      	    int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+      	    int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 16;
+      	    int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+	    int sx = REFERENCE_OVERWORLD_MINIMAP_CURSOR_XCOOR * SCALE_X;
+	    int sy = REFERENCE_OVERWORLD_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+	    int sw = REFERENCE_OVERWORLD_MINIMAP_CURSOR_WIDTH * SCALE_X;
+	    int sh = REFERENCE_OVERWORLD_MINIMAP_CURSOR_HEIGHT * SCALE_Y;	  
+	    ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);	  	    
+      	    std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+      	    if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && maprgb != minimapGray) {
+      	      CURRENT_TUNIC_R = std::get<0>(maprgb);
+      	      CURRENT_TUNIC_G = std::get<1>(maprgb);
+      	      CURRENT_TUNIC_B = std::get<2>(maprgb);
+      	    }
+      	  }
+      	}
+      }
     }
     else {
       //check for dungeon location
       int grayCount = minimap.PixelsWithRGB(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B).size();
       if (grayCount == 0) {
+	bool foundLink = false;
 	for (int mapx = 0; mapx < 8; ++mapx) {
 	  for (int mapy = 0; mapy < 8; ++mapy) {
 	    int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
@@ -121,6 +172,7 @@ void ZeldaImageProcessor::UpdateData() {
 	    ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
 	    std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	    if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
+	      foundLink = true;
 	      ZeldaInformationHandler::RoomType type = ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy);
 	      if (type == ZeldaInformationHandler::RoomType::UNEXPLORED || type == ZeldaInformationHandler::RoomType::UNSEEN_ROOM) {
 		//check for doors
@@ -321,6 +373,34 @@ void ZeldaImageProcessor::UpdateData() {
 	    }
 	  }
 	}
+	if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0)) {
+	  //check for heart red, start blue,  and white pixels to discount possibility of start screen
+	  int possibles = 0;
+	  std::tuple<int, int, int> color;
+	  for (int mapx = 0; mapx < 8; ++mapx) {
+	    for (int mapy = 0; mapy < 8; ++mapy) {
+	      int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+	      int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+	      int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+	      int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+	      int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+	      int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+	      int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+	      int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+	      ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+	      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+	      if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B)) {
+		possibles++;
+		color = maprgb;
+	      }
+	    }
+	  }
+	  if (possibles == 1) {
+	    CURRENT_TUNIC_R = std::get<0>(color);
+	    CURRENT_TUNIC_G = std::get<1>(color);
+	    CURRENT_TUNIC_B = std::get<2>(color);
+	  }
+	}
       }
     }
   }
@@ -382,8 +462,13 @@ void ZeldaImageProcessor::FindZeldaScreen() {
       for (size_t i = 0; i < components.size(); ++i) {
 	std::vector<int> box = BoundingBox(components[i]);      
 	ImageHandler selection = screen.Crop(box[0], box[1], box[2], box[3]).ConvertToBlackAndWhite();
-	double similarityC = std::min(zeldaC.Similarity(selection), selection.Similarity(zeldaC));
-	double similarityG = std::min(zeldaG.Similarity(selection), selection.Similarity(zeldaG));
+	double similarityC = 0;
+	double similarityG = 0;
+	if (!(selection.Width() < zeldaC.Width() || selection.Width() < zeldaG.Width() || selection.Height() < zeldaC.Height() || selection.Height() < zeldaC.Height())) {
+	  //if selection is big enough
+	  similarityC = selection.Similarity(zeldaC);
+	  similarityG = selection.Similarity(zeldaG);
+	}
 	if (similarityC > maxSimC) {
 	  maxSimC = similarityC;
 	  maxSimIndexC = i;
