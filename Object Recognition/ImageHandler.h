@@ -23,6 +23,7 @@ class ImageHandler {
   static ImageHandler LoadPNG(std::string pngFilePath);
   ImageHandler(const ImageHandler& other);
   ImageHandler& operator=(const ImageHandler& other);
+  ImageHandler(); //constructs empty image;  
   ~ImageHandler();
 
   int Height();
@@ -37,7 +38,6 @@ class ImageHandler {
   double Similarity(ImageHandler& other); //Scales other and returns the fraction of pixels that have the same RGBA values
   std::tuple<int, int, int> MostCommonRGB(); //Returns the color that appears most often in the image. Note: slow
  private:
-  ImageHandler() = delete;
   ImageHandler(CGImageRef image);
   ImageHandler(uint8_t* argb, int imagewidth, int imageheight);
   CGContextRef CreateARGBBitmapContext(CGImageRef inImage);

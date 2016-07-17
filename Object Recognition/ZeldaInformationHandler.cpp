@@ -143,6 +143,10 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::DUNGEON_7] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon7.png", GL_RGBA);
   overworldTextures[Secrets::DUNGEON_8] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon8.png", GL_RGBA);
   overworldTextures[Secrets::DUNGEON_9] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon9.png", GL_RGBA);
+  overworldTextures[Secrets::ARROW_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/ArrowShop.png", GL_RGBA);
+  overworldTextures[Secrets::BAIT_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BaitShop.png", GL_RGBA);
+  overworldTextures[Secrets::CANDLE_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
+  overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);    
 
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
@@ -236,7 +240,17 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y
 
 void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  overworldSecrets[std::make_pair(x,y)] = secret;
+  bool set = true;
+  if (secret == Secrets::UNKNOWN_CAVE) {
+    //prevent overriding with less specific data
+    Secrets prev = GetSecret(x, y);
+    if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP) {
+      set = false;
+    }
+  }
+  if (set) {
+    overworldSecrets[std::make_pair(x,y)] = secret;
+  }
 }
 
 void ZeldaInformationHandler::SetIsRunning(bool running) {

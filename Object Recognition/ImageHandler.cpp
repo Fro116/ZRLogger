@@ -16,6 +16,12 @@ ImageHandler ImageHandler::LoadPNG(std::string pngFilePath) {
   return a;
 }
 
+ImageHandler::ImageHandler() {
+  pixels = NULL;
+  width = 0;
+  height = 0;
+}
+
 ImageHandler::ImageHandler(uint8_t* argb, int imagewidth, int imageheight) {
   pixels = argb;
   width = imagewidth;
