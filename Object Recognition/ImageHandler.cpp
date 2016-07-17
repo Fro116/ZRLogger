@@ -2,13 +2,18 @@
 
 ImageHandler ImageHandler::Screenshot() {
   CGImageRef screenShot = CGWindowListCreateImage(CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID, kCGWindowImageDefault);
-  return ImageHandler(screenShot);
+  ImageHandler a = ImageHandler(screenShot);
+  CGImageRelease(screenShot);
+  return a;
 }
 
 ImageHandler ImageHandler::LoadPNG(std::string pngFilePath) {
   CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename(pngFilePath.c_str());
   CGImageRef image = CGImageCreateWithPNGDataProvider(dataProvider, NULL, false, kCGRenderingIntentDefault);
-  return ImageHandler(image);
+  ImageHandler a = ImageHandler(image);
+  CGImageRelease(image);
+  CGDataProviderRelease(dataProvider);
+  return a;
 }
 
 ImageHandler::ImageHandler(uint8_t* argb, int imagewidth, int imageheight) {
@@ -270,6 +275,7 @@ ImageHandler::ImageHandler(CGImageRef image) {
   
   void* data = CGBitmapContextGetData (cgctx);
   pixels = static_cast<uint8_t*>(data);
+  CGContextRelease(cgctx);
 }
 
 CGContextRef ImageHandler::CreateARGBBitmapContext(CGImageRef inImage) {
