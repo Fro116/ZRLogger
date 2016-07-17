@@ -23,7 +23,7 @@ class ZeldaImageProcessor {
   void UpdateData();
   void PrintDebugData();
  private:
-  void FindZeldaScreen();
+  bool FindZeldaScreen();
   std::vector<int> BoundingBox(std::vector<std::pair<int,int>> coordinates); //returns topleftx, toplefty, width, height
   std::vector<std::vector<std::pair<int,int>>> ConnectedComponents(std::vector<std::pair<int,int>> coordinates);
 
@@ -54,7 +54,7 @@ class ZeldaImageProcessor {
   int CAPTURED_REGISTRATION_SCREEN_HEIGHT;
   int CAPTURED_REGISTRATION_SCREEN_XCOOR;
   int CAPTURED_REGISTRATION_SCREEN_YCOOR;
-  double CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD = 0.50;
+  double CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD = 0.80;
 
   double SCALE_X;
   double SCALE_Y;

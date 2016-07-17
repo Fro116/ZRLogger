@@ -28,6 +28,8 @@ class ZeldaInformationHandler {
 
   static void Init();
   static void InitTextures();
+  static void SetZeldaSceenFound(bool found);
+  static bool GetZeldaSceenFound();  
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
   static std::pair<int, int> GetDungeonLocation();
@@ -45,6 +47,8 @@ class ZeldaInformationHandler {
   static GLuint GetTexture(DoorType type);  
  private:
   static std::recursive_mutex dataMutex;
+
+  static bool zeldaScreenFound;
 
   static std::map<Secrets, GLuint> overworldTextures;
   static std::map<RoomType, GLuint> dungeonTextures;

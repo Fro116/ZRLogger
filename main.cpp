@@ -35,7 +35,6 @@ void GraphicsThread() {
 
 void ProcessingThread() {
   ZeldaImageProcessor zir;
-  zir.PrintDebugData();
   while (ZeldaInformationHandler::GetIsRunning()) {
     zir.UpdateData();
   }

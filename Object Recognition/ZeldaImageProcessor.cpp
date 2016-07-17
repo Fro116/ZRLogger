@@ -2,7 +2,10 @@
 #include "ZeldaInformationHandler.h"
 
 ZeldaImageProcessor::ZeldaImageProcessor() {
-  FindZeldaScreen();
+  while (!FindZeldaScreen()) {
+    //Find zelda screen
+  }
+  ZeldaInformationHandler::SetZeldaSceenFound(true);
 }
 
 void ZeldaImageProcessor::PrintDebugData() {
@@ -30,6 +33,10 @@ void ZeldaImageProcessor::PrintDebugData() {
   std::cout << "HEART_RED_R: " << HEART_RED_R << std::endl;
   std::cout << "HEART_RED_G: " << HEART_RED_G << std::endl;
   std::cout << "HEART_RED_B: " << HEART_RED_B << std::endl;
+
+  std::cout << "START_BLUE_R: " << START_BLUE_R << std::endl;
+  std::cout << "START_BLUE_G: " << START_BLUE_G << std::endl;
+  std::cout << "START_BLUE_B: " << START_BLUE_B << std::endl;
 
   std::cout << "CURRENT_TUNIC_R: " << CURRENT_TUNIC_R << std::endl;
   std::cout << "CURRENT_TUNIC_G: " << CURRENT_TUNIC_G << std::endl;
@@ -411,7 +418,7 @@ ImageHandler ZeldaImageProcessor::GetScreen() {
   return fullscreen.Crop(CAPTURED_REGISTRATION_SCREEN_XCOOR, CAPTURED_REGISTRATION_SCREEN_YCOOR, CAPTURED_REGISTRATION_SCREEN_WIDTH, CAPTURED_REGISTRATION_SCREEN_HEIGHT);
 }
 
-void ZeldaImageProcessor::FindZeldaScreen() {
+bool ZeldaImageProcessor::FindZeldaScreen() {
   {
     //First index reference image
     ImageHandler reference = ImageHandler::LoadPNG("Images/Registration/RegistrationScreen.png");
@@ -419,7 +426,7 @@ void ZeldaImageProcessor::FindZeldaScreen() {
     REFERENCE_SCREEN_HEIGHT = reference.Height();
     std::vector<std::pair<int,int>> coordinates = reference.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
     if (coordinates.empty()) {
-      std::cout << "FAILED TO RECOGNIZE IMAGE: RegistrationScreen.png" << std::endl;
+      return false;
     }
     else {
       auto components = ConnectedComponents(coordinates);
@@ -449,7 +456,7 @@ void ZeldaImageProcessor::FindZeldaScreen() {
     screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]);
     std::vector<std::pair<int,int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
     if (coordinates.empty()) {
-      std::cout << "FAILED TO FIND ZELDA REGISTRATION SCREEN" << std::endl;
+      return false;
     }
     else {
       auto components = ConnectedComponents(coordinates);
@@ -493,10 +500,11 @@ void ZeldaImageProcessor::FindZeldaScreen() {
 	CAPTURED_REGISTRATION_SCREEN_YCOOR = gy - SCALE_Y * REFERENCE_REGISTRATION_SCREEN_G_YCOOR + blackbox[1];
       }
       else{
-	std::cout << "FAILED TO FIND ZELDA REGISTRATION SCREEN" << std::endl;
+	return false;
       }
     }
   }
+  return true;
 }
 
 std::vector<int> ZeldaImageProcessor::BoundingBox(std::vector<std::pair<int,int>> coordinates) {

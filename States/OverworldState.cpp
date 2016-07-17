@@ -18,12 +18,18 @@
 #include "OverworldSelector.h"
 #include "OverworldMarker.h"
 #include "OpenGLUtility.h"
+#include "ZeldaFindingScreen.h"
 #include "ZeldaInformationHandler.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
+
+  OpenGLRectangle* tile =  new ZeldaFindingScreen();
+  tile->MoveTo(glm::vec3(400, 200 , 0.005));
+  std::shared_ptr<Bindable> cardObject(tile);
+  BindObject(cardObject);  
 
   std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
   for (int row = 0; row < 8; ++row) {
