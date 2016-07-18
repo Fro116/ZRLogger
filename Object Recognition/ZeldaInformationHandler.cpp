@@ -147,7 +147,9 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::BAIT_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BaitShop.png", GL_RGBA);
   overworldTextures[Secrets::CANDLE_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
   overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);    
-
+  overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
+  overworldTextures[Secrets::MAGICAL_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
+      
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
   dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
@@ -241,12 +243,16 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y
 void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   bool set = true;
+  //prevent overriding with less specific data
+  Secrets prev = GetSecret(x, y);  
   if (secret == Secrets::UNKNOWN_CAVE) {
-    //prevent overriding with less specific data
-    Secrets prev = GetSecret(x, y);
-    if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP) {
+    if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP
+	|| prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD) {
       set = false;
     }
+  }
+  if (secret == Secrets::BAIT_SHOP && prev == Secrets::BLUE_RING_SHOP) {
+    set = false;
   }
   if (set) {
     overworldSecrets[std::make_pair(x,y)] = secret;

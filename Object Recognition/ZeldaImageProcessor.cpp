@@ -8,7 +8,9 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bait = ImageHandler::LoadPNG("Images/Shops/Bait.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bluering =ImageHandler::LoadPNG("Images/Shops/BlueRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-  bluecandle =ImageHandler::LoadPNG("Images/Shops/BlueCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);    
+  bluecandle =ImageHandler::LoadPNG("Images/Shops/BlueCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  whitesword =ImageHandler::LoadPNG("Images/Shops/WhiteSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+  magicalsword =ImageHandler::LoadPNG("Images/Shops/MagicalSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);      
   ZeldaInformationHandler::SetZeldaSceenFound(true);
 }
 
@@ -138,8 +140,20 @@ void ZeldaImageProcessor::UpdateData() {
 	    bool inSecretCave = (bp > SECRET_CAVE_BLACK_THRESHOLD);
 	    if (inSecretCave) {
 	      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::UNKNOWN_CAVE);
+	      //check if in sword cave
+	      {
+		ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+		if (sword.Similarity(whitesword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
+		  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WHITE_SWORD);		  
+		}
+	      }
+	      {
+		ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+		if (sword.Similarity(magicalsword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
+		  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::MAGICAL_SWORD);		  
+		}
+	      }
 	      //check if in a shop
-	      //check for bluering last because bluering shop also contains bait	      
 	      {
 		ImageHandler item = screen.Crop(REFERENCE_SHOP_LEFT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_LEFT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
 		if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {

@@ -108,6 +108,16 @@ class ZeldaImageProcessor {
   int START_BLUE_G;
   int START_BLUE_B;
 
+  int REFERENCE_WHITE_SWORD_XCOOR = 124;
+  int REFERENCE_WHITE_SWORD_YCOOR = 145;
+  int REFERENCE_WHITE_SWORD_WIDTH = 7;
+  int REFERENCE_WHITE_SWORD_HEIGHT =16;
+
+  int REFERENCE_MAGICAL_SWORD_XCOOR = 124;
+  int REFERENCE_MAGICAL_SWORD_YCOOR = 145;
+  int REFERENCE_MAGICAL_SWORD_WIDTH = 8;
+  int REFERENCE_MAGICAL_SWORD_HEIGHT =16;  
+
   int REFERENCE_SHOP_LEFT_ITEM_XCOOR = 92;
   int REFERENCE_SHOP_LEFT_ITEM_YCOOR = 145;
   int REFERENCE_SHOP_LEFT_ITEM_WIDTH = 8;
@@ -128,8 +138,8 @@ class ZeldaImageProcessor {
   int REFERENCE_START_BLUE_WIDTH = 2;
   int REFERENCE_START_BLUE_HEIGHT = 24;
 
+  double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.80;    
   double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.80;  
-
   double SECRET_CAVE_BLACK_THRESHOLD = 0.4;
 
   int REFERENCE_LEFT_DUNGEON_DOOR_XCOOR = 12;
@@ -171,7 +181,9 @@ class ZeldaImageProcessor {
   ImageHandler arrow;
   ImageHandler bait;
   ImageHandler bluering;
-  ImageHandler bluecandle;  
+  ImageHandler bluecandle;
+  ImageHandler whitesword;
+  ImageHandler magicalsword;   
 
 };
 
