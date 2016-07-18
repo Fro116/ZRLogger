@@ -501,6 +501,13 @@ void ZeldaImageProcessor::UpdateData() {
 		  }
 		}
 		ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
+		//check for triforce
+		ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);		
+		double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
+		bool onScreen = playScreen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() != 0;
+		if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && onScreen) {
+		  ZeldaInformationHandler::SetTriforce();
+		}
 	      }
 	    }
 	  }

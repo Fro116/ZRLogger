@@ -48,7 +48,7 @@ class ZeldaInformationHandler {
   static GLuint GetTexture(RoomType type);
   static GLuint GetTexture(DoorType type);
   static bool GetTriforce(int level); //zero indexed
-  static void SetTriforce(int level); //zero indexed  
+  static void SetTriforce();  
  private:
   static std::recursive_mutex dataMutex;
 
@@ -73,10 +73,13 @@ class ZeldaInformationHandler {
     RoomType GetRoomType(int x, int y);
     std::pair<int, int> GetLocation();
     Secrets Number();
+    void SetTriforce();
+    bool GetTriforce();    
   private:
     int overworldx;
     int overworldy;
     Secrets levelNumber;
+    bool triforce;
     std::map<std::pair<int, int>, RoomType> rooms;
     std::map<std::tuple<int, int, int, int>, DoorType> doors;
   };

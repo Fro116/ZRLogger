@@ -195,6 +195,8 @@ class ZeldaImageProcessor {
   double CAPTURED_BOTTOM_SHUTTER_DOOR_SIMILARITY_THRESHOLD = 0.60;
   double CAPTURED_BOTTOM_BOMB_DOOR_SIMILARITY_THRESHOLD = 0.80;
 
+  double DUNGEON_TRIFORCE_BLACK_THRESHOLD = 0.9;  
+
   ImageHandler arrow;
   ImageHandler bait;
   ImageHandler bluering;

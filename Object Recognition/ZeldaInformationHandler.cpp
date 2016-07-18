@@ -220,6 +220,9 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
       el.SetLocation(x, y, type);
       found = true;
       number = el.Number();
+      if (el.GetTriforce()) {
+	SetTriforce();
+      }
     }
   }
   if (!found) {
@@ -246,8 +249,39 @@ bool ZeldaInformationHandler::GetTriforce(int level) {
   return triforces[level];
 }
 
-void ZeldaInformationHandler::SetTriforce(int level) {
-  triforces[level] = true;
+void ZeldaInformationHandler::SetTriforce() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  std::pair<int, int> loc = GetMapLocation();
+  for (auto& el : dungeons) {
+    if (el.GetLocation() == loc) {
+      el.SetTriforce();
+      Secrets level = el.Number();
+      if (level == Secrets::DUNGEON_1) {
+	triforces[0] = true;	
+      }
+      if (level == Secrets::DUNGEON_2) {
+	triforces[1] = true;	
+      }
+      if (level == Secrets::DUNGEON_3) {
+	triforces[2] = true;	
+      }
+      if (level == Secrets::DUNGEON_4) {
+	triforces[3] = true;	
+      }
+      if (level == Secrets::DUNGEON_5) {
+	triforces[4] = true;	
+      }
+      if (level == Secrets::DUNGEON_6) {
+	triforces[5] = true;	
+      }
+      if (level == Secrets::DUNGEON_7) {
+	triforces[6] = true;	
+      }
+      if (level == Secrets::DUNGEON_8) {
+	triforces[7] = true;	
+      }
+    }
+  }
 }
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y) {
@@ -472,6 +506,14 @@ std::pair<int, int> ZeldaInformationHandler::Dungeon::GetLocation() {
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::Dungeon::Number() {
   return levelNumber;
+}
+
+bool ZeldaInformationHandler::Dungeon::GetTriforce() {
+  return triforce;
+}
+
+void ZeldaInformationHandler::Dungeon::SetTriforce() {
+  triforce = true;
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
