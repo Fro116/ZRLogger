@@ -20,6 +20,7 @@
 #include "OpenGLUtility.h"
 #include "ZeldaFindingScreen.h"
 #include "ZeldaInformationHandler.h"
+#include "TriforceMarker.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
@@ -29,7 +30,14 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
   OpenGLRectangle* tile =  new ZeldaFindingScreen();
   tile->MoveTo(glm::vec3(400, 200 , 0.005));
   std::shared_ptr<Bindable> cardObject(tile);
-  BindObject(cardObject);  
+  BindObject(cardObject);
+
+  for (int level = 0; level < 8; ++level) {
+    OpenGLRectangle* marker =  new TriforceMarker(level);
+    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
+  }    
 
   std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
   for (int row = 0; row < 8; ++row) {
@@ -50,7 +58,7 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
   }
   OpenGLRectangle* selector =  new OverworldSelector();
   std::shared_ptr<Bindable> selObject(selector);
-  BindObject(selObject);
+  BindObject(selObject);  
 }
 
 void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
