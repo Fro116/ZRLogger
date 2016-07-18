@@ -64,6 +64,7 @@ class ZeldaInformationHandler {
   class Dungeon {
   public:
     Dungeon(int overworldx, int overworldy);
+    void SetLevelNine();
     void SetLocation(int x, int y, RoomType type);
     void SetDoorType(int x1, int y1, int x2, int y2, DoorType type);
     DoorType GetDoorType(int x1, int y1, int x2, int y2);    

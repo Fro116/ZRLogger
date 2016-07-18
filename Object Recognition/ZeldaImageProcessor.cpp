@@ -12,6 +12,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   potion =ImageHandler::LoadPNG("Images/Shops/Potion.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);          
   whitesword =ImageHandler::LoadPNG("Images/Shops/WhiteSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
   magicalsword =ImageHandler::LoadPNG("Images/Shops/MagicalSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+  dungeonnine =ImageHandler::LoadPNG("Images/Dungeon/DungeonNine.png");
   ZeldaInformationHandler::SetZeldaSceenFound(true);
 }
 
@@ -296,6 +297,12 @@ void ZeldaImageProcessor::UpdateData() {
 	      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
 		foundLink = true;
+		//check if this is level 9
+		ImageHandler lnumber = screen.Crop(REFERENCE_DUNGEON_NINE_XCOOR*SCALE_X, REFERENCE_DUNGEON_NINE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_NINE_WIDTH*SCALE_X, REFERENCE_DUNGEON_NINE_HEIGHT*SCALE_Y).ConvertToBlackAndWhite();
+		if (lnumber.Similarity(dungeonnine) > CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD) {
+		  std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();
+		  ZeldaInformationHandler::SetSecret(oloc.first, oloc.second, ZeldaInformationHandler::Secrets::DUNGEON_9);
+		}
 		ZeldaInformationHandler::RoomType type = ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy);
 		if (type == ZeldaInformationHandler::RoomType::UNEXPLORED || type == ZeldaInformationHandler::RoomType::UNSEEN_ROOM) {
 		  //check for doors

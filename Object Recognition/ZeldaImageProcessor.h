@@ -148,6 +148,12 @@ class ZeldaImageProcessor {
   int REFERENCE_START_BLUE_WIDTH = 2;
   int REFERENCE_START_BLUE_HEIGHT = 24;
 
+  int REFERENCE_DUNGEON_NINE_XCOOR = 64;
+  int REFERENCE_DUNGEON_NINE_YCOOR = 8;
+  int REFERENCE_DUNGEON_NINE_WIDTH = 7;
+  int REFERENCE_DUNGEON_NINE_HEIGHT = 7;
+  double CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD = 0.80;  
+
   double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.80;    
   double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.80;  
   double SECRET_CAVE_BLACK_THRESHOLD = 0.4;
@@ -195,7 +201,8 @@ class ZeldaImageProcessor {
   ImageHandler bluecandle;
   ImageHandler whitesword;
   ImageHandler magicalsword;
-  ImageHandler potion;     
+  ImageHandler potion;
+  ImageHandler dungeonnine;       
 
 };
 
