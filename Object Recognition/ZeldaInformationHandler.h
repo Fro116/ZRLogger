@@ -46,7 +46,9 @@ class ZeldaInformationHandler {
   static void SetSecret(int x, int y, Secrets secret);
   static GLuint GetTexture(Secrets type);
   static GLuint GetTexture(RoomType type);
-  static GLuint GetTexture(DoorType type);  
+  static GLuint GetTexture(DoorType type);
+  static bool GetTriforce(int level); //zero indexed
+  static void SetTriforce(int level); //zero indexed  
  private:
   static std::recursive_mutex dataMutex;
 
@@ -81,6 +83,7 @@ class ZeldaInformationHandler {
   static std::vector<Dungeon> dungeons;
   static std::vector<std::vector<std::vector<bool>>> dungeonShapes;
   static std::vector<std::vector<bool>> FormatShape(int shape[]);
+  static std::vector<bool> triforces;
   
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
@@ -91,3 +94,4 @@ class ZeldaInformationHandler {
 };
 
 #endif
+B

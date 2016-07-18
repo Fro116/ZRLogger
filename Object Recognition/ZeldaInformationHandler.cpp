@@ -12,6 +12,7 @@ bool ZeldaInformationHandler::isRunning = true;
 bool ZeldaInformationHandler::isInDungeon = false;
 std::vector<ZeldaInformationHandler::Dungeon> ZeldaInformationHandler::dungeons;
 std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShapes;
+std::vector<bool> ZeldaInformationHandler::triforces;
 
 std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
 std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
@@ -128,6 +129,10 @@ void ZeldaInformationHandler::Init() {
       }
     }
   }
+
+  for (int level = 0; level < 8; ++level) {
+    triforces.push_back(false);
+  }
 }
 
 void ZeldaInformationHandler::InitTextures() {
@@ -236,7 +241,14 @@ std::pair<int, int> ZeldaInformationHandler::GetDungeonLocation() {
   return std::make_pair(dungeonx, dungeony);
 }
 
+bool ZeldaInformationHandler::GetTriforce(int level) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);  
+  return triforces[level];
+}
 
+void ZeldaInformationHandler::SetTriforce(int level) {
+  triforces[level] = true;
+}
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::GetSecret(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
