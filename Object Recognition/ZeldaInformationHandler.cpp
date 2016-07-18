@@ -133,6 +133,7 @@ void ZeldaInformationHandler::Init() {
 void ZeldaInformationHandler::InitTextures() {
   OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
   overworldTextures[Secrets::UNKNOWN_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
+  overworldTextures[Secrets::EXPLORED_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);  
   overworldTextures[Secrets::UNKNOWN_DUNGEON] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldUnknownDungeon.png", GL_RGBA);
   overworldTextures[Secrets::DUNGEON_1] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon1.png", GL_RGBA);
   overworldTextures[Secrets::DUNGEON_2] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon2.png", GL_RGBA);
@@ -146,7 +147,9 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::ARROW_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/ArrowShop.png", GL_RGBA);
   overworldTextures[Secrets::BAIT_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BaitShop.png", GL_RGBA);
   overworldTextures[Secrets::CANDLE_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
-  overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);    
+  overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);
+  overworldTextures[Secrets::PRE_POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
+  overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);        
   overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
   overworldTextures[Secrets::MAGICAL_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
       
@@ -245,14 +248,20 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   bool set = true;
   //prevent overriding with less specific data
   Secrets prev = GetSecret(x, y);  
-  if (secret == Secrets::UNKNOWN_CAVE) {
+  if ((secret == Secrets::UNKNOWN_CAVE) || (secret == Secrets::EXPLORED_CAVE)) {
     if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP
-	|| prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD) {
+	|| prev == Secrets::POTION_SHOP || prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD) {
       set = false;
     }
   }
+  //becase the blue ring shop also contains bait
   if (secret == Secrets::BAIT_SHOP && prev == Secrets::BLUE_RING_SHOP) {
     set = false;
+  }
+  if (secret == Secrets::UNKNOWN_CAVE) {
+    if (prev == Secrets::EXPLORED_CAVE) {
+      set = false;
+    }
   }
   if (set) {
     overworldSecrets[std::make_pair(x,y)] = secret;
