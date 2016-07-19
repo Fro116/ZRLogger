@@ -21,7 +21,6 @@ class ZeldaImageProcessor {
  public:
   ZeldaImageProcessor();
   void UpdateData();
-  void PrintDebugData();
  private:
   bool FindZeldaScreen();
   std::vector<int> BoundingBox(std::vector<std::pair<int,int>> coordinates); //returns topleftx, toplefty, width, height

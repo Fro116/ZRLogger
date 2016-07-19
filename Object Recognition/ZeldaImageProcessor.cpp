@@ -16,43 +16,6 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   ZeldaInformationHandler::SetZeldaSceenFound(true);
 }
 
-void ZeldaImageProcessor::PrintDebugData() {
-  std::cout << "CAPTURED_REGISTRATION_SCREEN_WIDTH: " << CAPTURED_REGISTRATION_SCREEN_WIDTH << std::endl;
-  std::cout << "CAPTURED_REGISTRATION_SCREEN_HEIGHT: " << CAPTURED_REGISTRATION_SCREEN_HEIGHT << std::endl;
-  std::cout << "CAPTURED_REGISTRATION_SCREEN_XCOOR: " << CAPTURED_REGISTRATION_SCREEN_XCOOR << std::endl;
-  std::cout << "CAPTURED_REGISTRATION_SCREEN_YCOOR: " << CAPTURED_REGISTRATION_SCREEN_YCOOR << std::endl;
-  std::cout << "CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD: " <<  CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD << std::endl;
-
-  std::cout << "SCALE_X: " << SCALE_X << std::endl;
-  std::cout << "SCALE_Y: " << SCALE_Y << std::endl;
-
-  std::cout << "INITIALIZED_MINIMAP_GRAY: " << INITIALIZED_MINIMAP_GRAY << std::endl;
-  std::cout << "INITIALIZED_TUNIC_GREEN: " << INITIALIZED_TUNIC_GREEN << std::endl;
-  std::cout << "INITIALIZED_CURRENT_TUNIC: " << INITIALIZED_CURRENT_TUNIC << std::endl;
-  
-  std::cout << "TUNIC_GREEN_R: " << TUNIC_GREEN_R << std::endl;
-  std::cout << "TUNIC_GREEN_G: " << TUNIC_GREEN_G << std::endl;
-  std::cout << "TUNIC_GREEN_B: " << TUNIC_GREEN_B << std::endl;
-
-  std::cout << "MINIMAP_GRAY_R: " << MINIMAP_GRAY_R << std::endl;
-  std::cout << "MINIMAP_GRAY_G: " << MINIMAP_GRAY_G << std::endl;
-  std::cout << "MINIMAP_GRAY_B: " << MINIMAP_GRAY_B << std::endl;
-
-  std::cout << "HEART_RED_R: " << HEART_RED_R << std::endl;
-  std::cout << "HEART_RED_G: " << HEART_RED_G << std::endl;
-  std::cout << "HEART_RED_B: " << HEART_RED_B << std::endl;
-
-  std::cout << "START_BLUE_R: " << START_BLUE_R << std::endl;
-  std::cout << "START_BLUE_G: " << START_BLUE_G << std::endl;
-  std::cout << "START_BLUE_B: " << START_BLUE_B << std::endl;
-
-  std::cout << "CURRENT_TUNIC_R: " << CURRENT_TUNIC_R << std::endl;
-  std::cout << "CURRENT_TUNIC_G: " << CURRENT_TUNIC_G << std::endl;
-  std::cout << "CURRENT_TUNIC_B: " << CURRENT_TUNIC_B << std::endl;
-
-  std::cout << std::endl;
-}
-
 void ZeldaImageProcessor::UpdateData() {
   ImageHandler screen = GetScreen();
   if (!INITIALIZED_MINIMAP_GRAY) {
