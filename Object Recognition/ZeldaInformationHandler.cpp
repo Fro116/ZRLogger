@@ -300,9 +300,11 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
       set = false;
     }
   }
-  //becase the blue ring shop also contains bait
-  if (secret == Secrets::BAIT_SHOP && prev == Secrets::BLUE_RING_SHOP) {
-    set = false;
+  //becase the blue ring shop can be hidden by other shops
+  if (prev == Secrets::BLUE_RING_SHOP) {
+    if (secret == Secrets::ARROW_SHOP || secret == Secrets::BAIT_SHOP || secret == Secrets::CANDLE_SHOP) {
+      set = false;
+    }
   }
   if (secret == Secrets::UNKNOWN_CAVE) {
     if (prev == Secrets::EXPLORED_CAVE) {
