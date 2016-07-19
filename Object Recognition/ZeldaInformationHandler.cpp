@@ -157,6 +157,7 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);        
   overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
   overworldTextures[Secrets::MAGICAL_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
+  overworldTextures[Secrets::BONUS_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);  
       
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
@@ -296,7 +297,8 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   Secrets prev = GetSecret(x, y);  
   if ((secret == Secrets::UNKNOWN_CAVE) || (secret == Secrets::EXPLORED_CAVE)) {
     if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP
-	|| prev == Secrets::POTION_SHOP || prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD) {
+	|| prev == Secrets::POTION_SHOP || prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD
+	|| prev == Secrets::BONUS_CAVE) {
       set = false;
     }
   }
@@ -305,6 +307,10 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
     if (secret == Secrets::ARROW_SHOP || secret == Secrets::BAIT_SHOP || secret == Secrets::CANDLE_SHOP) {
       set = false;
     }
+  }
+  //because bonus caves can have candles
+  if (prev == Secrets::BONUS_CAVE && secret == Secrets::CANDLE_SHOP) {
+    set = false;
   }
   if (secret == Secrets::UNKNOWN_CAVE) {
     if (prev == Secrets::EXPLORED_CAVE) {

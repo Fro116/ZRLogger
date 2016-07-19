@@ -180,7 +180,7 @@ void ZeldaImageProcessor::UpdateData() {
 		}
 		//check if in a shop
 		bool lpotionshop = false;
-		bool rpotionshop = false;		
+		bool rpotionshop = false;
 		{
 		  ImageHandler item = screen.Crop(REFERENCE_SHOP_LEFT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_LEFT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
 		  if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
@@ -242,12 +242,16 @@ void ZeldaImageProcessor::UpdateData() {
 		  }
 		  if (item.Similarity(potion) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    rpotionshop = true;
-		  }		  
+		  }
 		}
 		//Distinguish potion shop from bonus caves
 		if (lpotionshop && rpotionshop) {
 		  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::POTION_SHOP);
 		  foundSecret = true;
+		}
+		if (lpotionshop && !rpotionshop) {
+		  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BONUS_CAVE);
+		  foundSecret = true;		  
 		}
 		if (!foundSecret) {
 		  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::UNKNOWN_CAVE);
