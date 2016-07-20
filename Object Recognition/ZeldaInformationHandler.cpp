@@ -12,7 +12,6 @@ bool ZeldaInformationHandler::isRunning = true;
 bool ZeldaInformationHandler::isInDungeon = false;
 std::vector<ZeldaInformationHandler::Dungeon> ZeldaInformationHandler::dungeons;
 std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShapes;
-std::vector<bool> ZeldaInformationHandler::triforces;
 
 std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
 std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
@@ -130,9 +129,6 @@ void ZeldaInformationHandler::Init() {
     }
   }
 
-  for (int level = 0; level < 8; ++level) {
-    triforces.push_back(false);
-  }
 }
 
 void ZeldaInformationHandler::InitTextures() {
@@ -221,9 +217,6 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
       el.SetLocation(x, y, type);
       found = true;
       number = el.Number();
-      if (el.GetTriforce()) {
-	SetTriforce();
-      }
     }
   }
   if (!found) {
@@ -246,8 +239,38 @@ std::pair<int, int> ZeldaInformationHandler::GetDungeonLocation() {
 }
 
 bool ZeldaInformationHandler::GetTriforce(int level) {
-  std::lock_guard<std::recursive_mutex> guard(dataMutex);  
-  return triforces[level];
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  Secrets levelNumber;
+  if (level == 0) {
+    levelNumber = Secrets::DUNGEON_1;
+  }
+  if (level == 1) {
+    levelNumber = Secrets::DUNGEON_2;
+  }
+  if (level == 2) {
+    levelNumber = Secrets::DUNGEON_3;
+  }
+  if (level == 3) {
+    levelNumber = Secrets::DUNGEON_4;
+  }
+  if (level == 4) {
+    levelNumber = Secrets::DUNGEON_5;
+  }
+  if (level == 5) {
+    levelNumber = Secrets::DUNGEON_6;
+  }
+  if (level == 6) {
+    levelNumber = Secrets::DUNGEON_7;
+  }
+  if (level == 7) {
+    levelNumber = Secrets::DUNGEON_8;
+  }
+  for (auto& el : dungeons) {
+    if (el.Number() == levelNumber) {
+      return el.GetTriforce();
+    }
+  }  
+  return false;
 }
 
 void ZeldaInformationHandler::SetTriforce() {
@@ -256,31 +279,6 @@ void ZeldaInformationHandler::SetTriforce() {
   for (auto& el : dungeons) {
     if (el.GetLocation() == loc) {
       el.SetTriforce();
-      Secrets level = el.Number();
-      if (level == Secrets::DUNGEON_1) {
-	triforces[0] = true;	
-      }
-      if (level == Secrets::DUNGEON_2) {
-	triforces[1] = true;	
-      }
-      if (level == Secrets::DUNGEON_3) {
-	triforces[2] = true;	
-      }
-      if (level == Secrets::DUNGEON_4) {
-	triforces[3] = true;	
-      }
-      if (level == Secrets::DUNGEON_5) {
-	triforces[4] = true;	
-      }
-      if (level == Secrets::DUNGEON_6) {
-	triforces[5] = true;	
-      }
-      if (level == Secrets::DUNGEON_7) {
-	triforces[6] = true;	
-      }
-      if (level == Secrets::DUNGEON_8) {
-	triforces[7] = true;	
-      }
     }
   }
 }

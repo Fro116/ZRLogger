@@ -86,7 +86,6 @@ class ZeldaInformationHandler {
   static std::vector<Dungeon> dungeons;
   static std::vector<std::vector<std::vector<bool>>> dungeonShapes;
   static std::vector<std::vector<bool>> FormatShape(int shape[]);
-  static std::vector<bool> triforces;
   
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
