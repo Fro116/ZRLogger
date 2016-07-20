@@ -7,6 +7,7 @@
 #include "DungeonSelector.h"
 #include "DungeonMarker.h"
 #include "DungeonDoor.h"
+#include "TriforceMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
 
@@ -14,6 +15,14 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
   driver = gameDriver;
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
+
+  for (int level = 0; level < 8; ++level) {
+    OpenGLRectangle* marker =  new TriforceMarker(level);
+    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
+  }      
+  
   for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 8; ++col) {
       double px = 100;
