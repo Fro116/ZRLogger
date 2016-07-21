@@ -477,14 +477,14 @@ void ZeldaImageProcessor::UpdateData() {
 		{
 		  //check for triforce
 		  ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+		  //remove edges
+		  playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
 		  double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
 		  if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
-		    //remove edges
-		    playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
 		    std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
-		    playScreen.SaveAsPPM("triforce.ppm");		  
 		    if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
 		      ZeldaInformationHandler::SetTriforce();
+		      playScreen.SaveAsPPM("triforce.ppm");		  		      
 		    }
 		  }
 		}

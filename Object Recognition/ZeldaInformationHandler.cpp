@@ -300,6 +300,10 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
       set = false;
     }
   }
+  //Potion shops look different (like a bonus cave) after you take a potion
+  if (prev == Secrets::POTION_SHOP && secret == Secrets::BONUS_CAVE) {
+    set = false;
+  }
   //becase the blue ring shop can be hidden by other shops
   if (prev == Secrets::BLUE_RING_SHOP) {
     if (secret == Secrets::ARROW_SHOP || secret == Secrets::BAIT_SHOP || secret == Secrets::CANDLE_SHOP) {
