@@ -413,7 +413,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
   }
   if (write) {
     rooms[std::make_pair(x, y)] = type;
-    if (levelNumber == Secrets::UNKNOWN_DUNGEON) {
+    if (levelNumber != Secrets::DUNGEON_9) {
       //Check which dungeon you are in
       std::vector<int> possible;
       for (int level = 0; level < 8; ++level) {
@@ -431,6 +431,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	  possible.push_back(level);
 	}
       }
+      int level = -1;
       if (possible.size() == 1) {
 	int level = possible[0];
 	if (level == 0) {
@@ -457,10 +458,32 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	if (level == 7) {
 	  levelNumber = Secrets::DUNGEON_8;
 	}
+      }
+      //Because some dungeons look alike, make an educated guess
+      if (possible.size() == 2) {
+	int a = possible[0];
+	int b = possible[1];
+	if ((a == 0 && b == 2) || (a == 2 && b == 0)) {
+	  level = 2;
+	  levelNumber = Secrets::DUNGEON_3;
+	}
+	if ((a == 6 && b == 3) || (a == 3 && b == 6)) {
+	  level = 3;
+	  levelNumber = Secrets::DUNGEON_4;
+	}
+	if ((a == 6 && b == 5) || (a == 5 && b == 6)) {
+	  level = 5;
+	  levelNumber = Secrets::DUNGEON_6;
+	}
+      }
+      if(level != -1) {
 	for (int a = 0; a < 8; ++a) {
 	  for (int b = 0; b < 8; ++b) {
 	    if (dungeonShapes[level][a][b] && GetRoomType(a,b) == RoomType::UNEXPLORED) {
 	      rooms[std::make_pair(a, b)] = RoomType::UNSEEN_ROOM;
+	    }
+	    if (!dungeonShapes[level][a][b]) {
+	      rooms[std::make_pair(a, b)] = RoomType::UNEXPLORED;
 	    }
 	  }
 	}
