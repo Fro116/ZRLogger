@@ -497,7 +497,6 @@ void ZeldaImageProcessor::UpdateData() {
 		    std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
 		    if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
 		      ZeldaInformationHandler::SetTriforce();
-		      playScreen.SaveAsPPM("triforce.ppm");		  		      
 		    }
 		  }
 		}
