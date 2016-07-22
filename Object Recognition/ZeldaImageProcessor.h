@@ -200,6 +200,7 @@ class ZeldaImageProcessor {
 
   ImageHandler arrow;
   ImageHandler bait;
+  ImageHandler bomb;  
   ImageHandler bluering;
   ImageHandler bluecandle;
   ImageHandler whitesword;

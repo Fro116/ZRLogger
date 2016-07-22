@@ -7,6 +7,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   }
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bait = ImageHandler::LoadPNG("Images/Shops/Bait.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  bomb = ImageHandler::LoadPNG("Images/Shops/Bomb.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   bluering =ImageHandler::LoadPNG("Images/Shops/BlueRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bluecandle =ImageHandler::LoadPNG("Images/Shops/BlueCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   potion =ImageHandler::LoadPNG("Images/Shops/Potion.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);          
@@ -155,7 +156,11 @@ void ZeldaImageProcessor::UpdateData() {
 		  if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
 		    foundSecret = true;
-		  }		
+		  }
+		  if (item.Similarity(bomb) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BOMB_SHOP);
+		    foundSecret = true;
+		  }		  
 		  if (item.Similarity(arrow) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ARROW_SHOP);
 		    foundSecret = true;
@@ -177,7 +182,11 @@ void ZeldaImageProcessor::UpdateData() {
 		  if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
 		    foundSecret = true;
-		  }		
+		  }
+		  if (item.Similarity(bomb) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BOMB_SHOP);
+		    foundSecret = true;
+		  }
 		  if (item.Similarity(arrow) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ARROW_SHOP);
 		    foundSecret = true;
@@ -196,7 +205,11 @@ void ZeldaImageProcessor::UpdateData() {
 		  if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
 		    foundSecret = true;
-		  }		
+		  }
+		  if (item.Similarity(bomb) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BOMB_SHOP);
+		    foundSecret = true;
+		  }
 		  if (item.Similarity(arrow) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
 		    ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ARROW_SHOP);
 		    foundSecret = true;
