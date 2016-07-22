@@ -27,6 +27,9 @@ class ZeldaImageProcessor {
   std::vector<std::vector<std::pair<int,int>>> ConnectedComponents(std::vector<std::pair<int,int>> coordinates);
 
   ImageHandler GetScreen(); //returns a cropped screenshot that captures the zelda playing screen
+  void RecordDoors(ImageHandler screen, int mapx, int mapy);
+  void RecordDarkDoors(ImageHandler screen, int mapx, int mapy);
+  void RecordSecretCave(ImageHandler screen, int mapx, int mapy);
   
   int topleftx;
   int toplefty;
@@ -193,6 +196,9 @@ class ZeldaImageProcessor {
   double CAPTURED_BOTTOM_KEY_DOOR_SIMILARITY_THRESHOLD = 0.60;
   double CAPTURED_BOTTOM_SHUTTER_DOOR_SIMILARITY_THRESHOLD = 0.60;
   double CAPTURED_BOTTOM_BOMB_DOOR_SIMILARITY_THRESHOLD = 0.80;
+
+  double CAPTURED_DUNGEON_ROOM_BLACK_THRESHOLD = 0.4;
+  double CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD = 0.8;
 
   double DUNGEON_TRIFORCE_BLACK_THRESHOLD = 0.90;  
   int DUNGEON_TRIFORCE_WIDTH_THRESHOLD = 20;
