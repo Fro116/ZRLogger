@@ -433,7 +433,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
       }
       int level = -1;
       if (possible.size() == 1) {
-	int level = possible[0];
+	level = possible[0];
 	if (level == 0) {
 	  levelNumber = Secrets::DUNGEON_1;
 	}
