@@ -10,7 +10,8 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   bomb = ImageHandler::LoadPNG("Images/Shops/Bomb.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   bluering =ImageHandler::LoadPNG("Images/Shops/BlueRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bluecandle = ImageHandler::LoadPNG("Images/Shops/BlueCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-  potion = ImageHandler::LoadPNG("Images/Shops/Potion.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);          
+  potion = ImageHandler::LoadPNG("Images/Shops/Potion.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  woodsword = ImageHandler::LoadPNG("Images/Shops/WoodSword.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   whitesword = ImageHandler::LoadPNG("Images/Shops/WhiteSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
   magicalsword = ImageHandler::LoadPNG("Images/Shops/MagicalSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
   anyroad = ImageHandler::LoadPNG("Images/Shops/Anyroad.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
@@ -942,6 +943,10 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BLUE_RING_SHOP);
       foundSecret = true;
     }
+    if (item.Similarity(woodsword) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WOOD_SWORD);
+      foundSecret = true;
+    }
     if (item.Similarity(potion) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
       lpotionshop = true;
     }		  
@@ -968,6 +973,10 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BLUE_RING_SHOP);
       foundSecret = true;
     }
+    if (item.Similarity(woodsword) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WOOD_SWORD);
+      foundSecret = true;
+    }
   }
   {
     ImageHandler item = screen.Crop(REFERENCE_SHOP_RIGHT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_RIGHT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -989,6 +998,10 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     }
     if (item.Similarity(bluering) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::BLUE_RING_SHOP);
+      foundSecret = true;
+    }
+    if (item.Similarity(woodsword) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WOOD_SWORD);
       foundSecret = true;
     }
     if (item.Similarity(potion) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {

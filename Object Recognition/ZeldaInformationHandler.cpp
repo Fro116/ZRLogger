@@ -154,7 +154,8 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);
   overworldTextures[Secrets::ANYROAD] = OpenGLUtility::Load2DTexture("Images/Selectors/Anyroad.png", GL_RGBA);          
   overworldTextures[Secrets::PRE_POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
-  overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);        
+  overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA); 
+  overworldTextures[Secrets::WOOD_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodSword.png", GL_RGBA); 
   overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
   overworldTextures[Secrets::MAGICAL_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
   overworldTextures[Secrets::BONUS_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);  
@@ -300,7 +301,7 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   if ((secret == Secrets::UNKNOWN_CAVE) || (secret == Secrets::EXPLORED_CAVE)) {
     if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP
 	|| prev == Secrets::POTION_SHOP || prev == Secrets::BOMB_SHOP || prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD
-	|| prev == Secrets::BONUS_CAVE || prev == Secrets::ANYROAD) {
+	|| prev == Secrets::BONUS_CAVE || prev == Secrets::ANYROAD || prev == Secrets::WOOD_SWORD) {
       set = false;
     }
   }
@@ -322,6 +323,10 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   }
   //because bonus caves can have candles
   if (prev == Secrets::BONUS_CAVE && secret == Secrets::CANDLE_SHOP) {
+    set = false;
+  }
+  //because wooden sword cave can have candle
+  if (prev == Secrets::WOOD_SWORD && secret == Secrets::CANDLE_SHOP) {
     set = false;
   }
   if (secret == Secrets::UNKNOWN_CAVE) {

@@ -224,6 +224,7 @@ class ZeldaImageProcessor {
   ImageHandler bomb;  
   ImageHandler bluering;
   ImageHandler bluecandle;
+  ImageHandler woodsword;  
   ImageHandler whitesword;
   ImageHandler magicalsword;
   ImageHandler potion;
