@@ -522,10 +522,18 @@ ZeldaInformationHandler::RoomType ZeldaInformationHandler::Dungeon::GetRoomType(
 }
 
 void ZeldaInformationHandler::Dungeon::SetDoorType(int x1, int y1, int x2, int y2, DoorType type) {
-  std::tuple<int, int, int, int> d1 = std::make_tuple(x1,y1,x2,y2);
-  std::tuple<int, int, int, int> d2 = std::make_tuple(x2,y2,x1,y1);
-  doors[d1] = type;
-  doors[d2] = type;  
+  bool set = true;
+  DoorType prev = GetDoorType(x1, y1, x2, y2);
+  //Shutter doors can be overwritten when you walk through them
+  if (prev == DoorType::SHUTTER) {
+    set = false;
+  }
+  if (set) {
+    std::tuple<int, int, int, int> d1 = std::make_tuple(x1,y1,x2,y2);
+    std::tuple<int, int, int, int> d2 = std::make_tuple(x2,y2,x1,y1);
+    doors[d1] = type;
+    doors[d2] = type;
+  }
 }
 
 ZeldaInformationHandler::DoorType ZeldaInformationHandler::Dungeon::GetDoorType(int x1, int y1, int x2, int y2) {

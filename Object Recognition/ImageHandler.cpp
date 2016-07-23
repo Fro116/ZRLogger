@@ -29,7 +29,6 @@ ImageHandler::ImageHandler(uint8_t* argb, int imagewidth, int imageheight) {
 }
 
 ImageHandler::ImageHandler(const ImageHandler& other) {
-  free(pixels);
   height = other.height;
   width = other.width;
   void* block = malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * 4);
@@ -65,6 +64,22 @@ ImageHandler& ImageHandler::operator=(const ImageHandler& other) {
   }
   pixels = newPixels;
   return *this;
+}
+
+ImageHandler& ImageHandler::operator=(ImageHandler&& other) {
+  free(pixels);
+  height = other.height;
+  width = other.width;
+  pixels = other.pixels;
+  other.pixels = NULL;
+  return *this;
+}
+
+ImageHandler::ImageHandler(ImageHandler&& other) {
+  height = other.height;
+  width = other.width;
+  pixels = other.pixels;
+  other.pixels = NULL;
 }
 
 int ImageHandler::Height() {

@@ -23,7 +23,9 @@ class ImageHandler {
   static ImageHandler LoadPNG(std::string pngFilePath);
   ImageHandler(const ImageHandler& other);
   ImageHandler& operator=(const ImageHandler& other);
-  ImageHandler(); //constructs empty image;  
+  ImageHandler(); //constructs empty image;
+  ImageHandler& operator=(ImageHandler&& other);
+  ImageHandler(ImageHandler&& other);
   ~ImageHandler();
 
   int Height();
