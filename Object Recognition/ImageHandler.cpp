@@ -9,7 +9,7 @@ ImageHandler ImageHandler::Screenshot() {
 
 ImageHandler ImageHandler::LoadPNG(std::string pngFilePath) {
   CGDataProviderRef dataProvider = CGDataProviderCreateWithFilename(pngFilePath.c_str());
-  CGImageRef image = CGImageCreateWithPNGDataProvider(dataProvider, NULL, false, kCGRenderingIntentDefault);
+  CGImageRef image = CGImageCreateWithPNGDataProvider(dataProvider, nullptr, false, kCGRenderingIntentDefault);
   ImageHandler a = ImageHandler(image);
   CGImageRelease(image);
   CGDataProviderRelease(dataProvider);
@@ -17,7 +17,7 @@ ImageHandler ImageHandler::LoadPNG(std::string pngFilePath) {
 }
 
 ImageHandler::ImageHandler() {
-  pixels = NULL;
+  pixels = nullptr;
   width = 0;
   height = 0;
 }
@@ -71,7 +71,7 @@ ImageHandler& ImageHandler::operator=(ImageHandler&& other) {
   height = other.height;
   width = other.width;
   pixels = other.pixels;
-  other.pixels = NULL;
+  other.pixels = nullptr;
   return *this;
 }
 
@@ -79,7 +79,7 @@ ImageHandler::ImageHandler(ImageHandler&& other) {
   height = other.height;
   width = other.width;
   pixels = other.pixels;
-  other.pixels = NULL;
+  other.pixels = nullptr;
 }
 
 int ImageHandler::Height() {
