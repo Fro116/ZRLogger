@@ -13,6 +13,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   potion = ImageHandler::LoadPNG("Images/Shops/Potion.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);          
   whitesword = ImageHandler::LoadPNG("Images/Shops/WhiteSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
   magicalsword = ImageHandler::LoadPNG("Images/Shops/MagicalSword.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+  anyroad = ImageHandler::LoadPNG("Images/Shops/Anyroad.png").FilterRGB(WHITE_R, WHITE_G, WHITE_B);
   dungeonnine = ImageHandler::LoadPNG("Images/Dungeon/DungeonNine.png");
   dungeonld = ImageHandler::LoadPNG("Images/Dungeon/DungeonLeftDoor.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeonlk = ImageHandler::LoadPNG("Images/Dungeon/LeftKeyDoor.png");
@@ -886,7 +887,15 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
 	foundSecret = true;
       }
     }
-  }		
+  }
+  //check if in anyroad
+  {
+    ImageHandler road = screen.Crop(REFERENCE_ANYROAD_XCOOR*SCALE_X, REFERENCE_ANYROAD_YCOOR*SCALE_Y, REFERENCE_ANYROAD_WIDTH*SCALE_X, REFERENCE_ANYROAD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+    if (road.Similarity(anyroad) > CAPTURED_ANYROAD_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ANYROAD);
+      foundSecret = true;
+    }
+  }
   //check if in sword cave
   {
     bool foundWhiteSword = false;

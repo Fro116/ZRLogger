@@ -143,7 +143,12 @@ class ZeldaImageProcessor {
   int REFERENCE_SHOP_RIGHT_ITEM_XCOOR = 156;
   int REFERENCE_SHOP_RIGHT_ITEM_YCOOR = 145;
   int REFERENCE_SHOP_RIGHT_ITEM_WIDTH = 8;
-  int REFERENCE_SHOP_RIGHT_ITEM_HEIGHT =16;  
+  int REFERENCE_SHOP_RIGHT_ITEM_HEIGHT =16;
+
+  int REFERENCE_ANYROAD_XCOOR = 80;
+  int REFERENCE_ANYROAD_YCOOR = 152;
+  int REFERENCE_ANYROAD_WIDTH = 16;
+  int REFERENCE_ANYROAD_HEIGHT = 16;  
 
   int REFERENCE_START_BLUE_XCOOR = 123;
   int REFERENCE_START_BLUE_YCOOR = 20;
@@ -156,6 +161,7 @@ class ZeldaImageProcessor {
   int REFERENCE_DUNGEON_NINE_HEIGHT = 7;
   double CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD = 0.80;  
 
+  double CAPTURED_ANYROAD_SIMILARITY_THRESHOLD = 0.80;    
   double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.80;    
   double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.80;  
   double SECRET_CAVE_BLACK_THRESHOLD = 0.4;
@@ -221,6 +227,7 @@ class ZeldaImageProcessor {
   ImageHandler whitesword;
   ImageHandler magicalsword;
   ImageHandler potion;
+  ImageHandler anyroad;  
   ImageHandler dungeonnine;
 
   //doors

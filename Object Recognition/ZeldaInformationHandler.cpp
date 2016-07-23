@@ -152,6 +152,7 @@ void ZeldaInformationHandler::InitTextures() {
   overworldTextures[Secrets::BOMB_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BombShop.png", GL_RGBA);  
   overworldTextures[Secrets::CANDLE_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
   overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);
+  overworldTextures[Secrets::ANYROAD] = OpenGLUtility::Load2DTexture("Images/Selectors/Anyroad.png", GL_RGBA);          
   overworldTextures[Secrets::PRE_POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
   overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);        
   overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
@@ -299,7 +300,7 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   if ((secret == Secrets::UNKNOWN_CAVE) || (secret == Secrets::EXPLORED_CAVE)) {
     if (prev == Secrets::ARROW_SHOP || prev == Secrets::BAIT_SHOP || prev == Secrets::CANDLE_SHOP || prev == Secrets::BLUE_RING_SHOP
 	|| prev == Secrets::POTION_SHOP || prev == Secrets::BOMB_SHOP || prev == Secrets::WHITE_SWORD || prev == Secrets::MAGICAL_SWORD
-	|| prev == Secrets::BONUS_CAVE) {
+	|| prev == Secrets::BONUS_CAVE || prev == Secrets::ANYROAD) {
       set = false;
     }
   }
