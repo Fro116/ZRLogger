@@ -18,6 +18,7 @@ std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dun
 std::map<ZeldaInformationHandler::DoorType, GLuint> ZeldaInformationHandler::doorTextures;
 
 bool ZeldaInformationHandler::zeldaScreenFound;
+int ZeldaInformationHandler::hearts;
 
 void ZeldaInformationHandler::Init() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -345,6 +346,18 @@ void ZeldaInformationHandler::SetIsRunning(bool running) {
 bool ZeldaInformationHandler::GetIsRunning() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   return isRunning;
+}
+
+void ZeldaInformationHandler::SetHearts(int numHearts) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  if (numHearts > 0) {
+    hearts = numHearts;
+  }
+}
+
+int ZeldaInformationHandler::GetHearts() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  return hearts;
 }
 
 void ZeldaInformationHandler::SetIsInDungeon(bool inDungeon) {

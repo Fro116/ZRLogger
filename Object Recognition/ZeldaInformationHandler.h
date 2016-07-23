@@ -48,7 +48,9 @@ class ZeldaInformationHandler {
   static GLuint GetTexture(RoomType type);
   static GLuint GetTexture(DoorType type);
   static bool GetTriforce(int level); //zero indexed
-  static void SetTriforce();  
+  static void SetTriforce();
+  static void SetHearts(int numHearts);
+  static int GetHearts();
  private:
   static std::recursive_mutex dataMutex;
 
@@ -60,9 +62,9 @@ class ZeldaInformationHandler {
 
   static int mapx;
   static int mapy;
-
   static int dungeonx;
   static int dungeony;
+  
   class Dungeon {
   public:
     Dungeon(int overworldx, int overworldy);
@@ -89,9 +91,9 @@ class ZeldaInformationHandler {
   
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
-
   static std::map<std::pair<int,int>, Secrets> overworldSecrets;
-
+  static int hearts;
+  
   static bool isRunning;
 };
 

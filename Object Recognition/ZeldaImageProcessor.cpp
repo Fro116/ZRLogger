@@ -207,14 +207,32 @@ void ZeldaImageProcessor::UpdateData() {
 		ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
 		{
 		  //check for triforce
-		  ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-		  //remove edges
-		  playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
-		  double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
-		  if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
-		    std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
-		    if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
-		      ZeldaInformationHandler::SetTriforce();
+		  //first see if at full health
+		  int numhearts = 0;
+		  //check for hearts
+		  for (int xsep = 0; xsep < 8; ++xsep) {
+		    for (int ysep = 0; ysep < 2; ++ysep) {
+		      int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
+		      int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
+		      ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y);
+		      double rp = static_cast<double>(heartloc.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size()) / (heartloc.Width() * heartloc.Height());
+		      if (rp > CAPTURED_HEART_COLOR_THRESHOLD) {
+			numhearts++;
+		      }
+		    }
+		  }
+		  bool fullhealth = (numhearts == ZeldaInformationHandler::GetHearts());
+		  if (fullhealth) {
+		    //then check for link holding triforce over a black screen
+		    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+		    //remove edges
+		    playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
+		    double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
+		    if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
+		      std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
+		      if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
+			ZeldaInformationHandler::SetTriforce();
+		      }
 		    }
 		  }
 		}
@@ -250,6 +268,22 @@ void ZeldaImageProcessor::UpdateData() {
 	    }
 	  }
 	}
+      }
+      {
+	int numhearts = 0;
+	//check for hearts
+	for (int xsep = 0; xsep < 8; ++xsep) {
+	  for (int ysep = 0; ysep < 2; ++ysep) {
+	    int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
+	    int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
+	    ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y);
+	    double bp = static_cast<double>(heartloc.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (heartloc.Width() * heartloc.Height());
+	    if (!(bp > CAPTURED_HEART_COLOR_THRESHOLD)) {
+	      numhearts++;
+	    }
+	  }
+	}
+	ZeldaInformationHandler::SetHearts(numhearts);
       }
     }
   }
@@ -658,6 +692,13 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
 	bestFit = ZeldaInformationHandler::DoorType::BOMB;
       }
     }
+    {
+      //prevent false positives
+      double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+      if (bp == 1) {
+	bestSim = 0;
+      }
+    }
     if (bestSim > CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD &&
 	!((bestSim < CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
       ZeldaInformationHandler::SetDungeonLocation(mapx-1, mapy, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);	
@@ -704,6 +745,13 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
 	bestFit = ZeldaInformationHandler::DoorType::BOMB;
       }
     }
+    {
+      //prevent false positives
+      double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+      if (bp == 1) {
+	bestSim = 0;
+      }
+    }    
     if (bestSim > CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD &&
 	!((bestSim < CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
       ZeldaInformationHandler::SetDungeonLocation(mapx+1, mapy, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);	
@@ -750,6 +798,13 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
 	bestFit = ZeldaInformationHandler::DoorType::BOMB;
       }
     }
+    {
+      //prevent false positives
+      double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+      if (bp == 1) {
+	bestSim = 0;
+      }
+    }    
     if (bestSim > CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD &&
 	!((bestSim < CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
       ZeldaInformationHandler::SetDungeonLocation(mapx, mapy-1, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);	
@@ -796,8 +851,18 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
 	bestFit = ZeldaInformationHandler::DoorType::BOMB;
       }
     }
+    {
+      //prevent false positives
+      double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+      if (bp == 1) {
+	bestSim = 0;
+      }
+    }
     if (bestSim > CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD &&
 	!((bestSim < CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
+      while (true) {
+
+      }
       ZeldaInformationHandler::SetDungeonLocation(mapx, mapy+1, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);	
       ZeldaInformationHandler::SetDungeonDoor(mapx, mapy, mapx, mapy+1, bestFit);
     }
