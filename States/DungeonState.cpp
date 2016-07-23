@@ -8,6 +8,7 @@
 #include "DungeonMarker.h"
 #include "DungeonDoor.h"
 #include "TriforceMarker.h"
+#include "HeartMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
 
@@ -21,7 +22,13 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
     marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
-  }      
+  }
+  for (int level = 0; level < 8; ++level) {
+    OpenGLRectangle* marker =  new HeartMarker(level);
+    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5-40,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
+  }  
   
   for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 8; ++col) {

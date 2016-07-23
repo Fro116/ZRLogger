@@ -50,6 +50,7 @@ class ZeldaInformationHandler {
   static bool GetTriforce(int level); //zero indexed
   static void SetTriforce();
   static void SetHearts(int numHearts);
+  static bool GetHeart(int level); //zero indexed  
   static int GetHearts();
  private:
   static std::recursive_mutex dataMutex;
@@ -76,12 +77,15 @@ class ZeldaInformationHandler {
     std::pair<int, int> GetLocation();
     Secrets Number();
     void SetTriforce();
-    bool GetTriforce();    
+    bool GetTriforce();
+    void SetHeart();
+    bool GetHeart();    
   private:
     int overworldx;
     int overworldy;
     Secrets levelNumber;
     bool triforce;
+    bool heart;
     std::map<std::pair<int, int>, RoomType> rooms;
     std::map<std::tuple<int, int, int, int>, DoorType> doors;
   };

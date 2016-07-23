@@ -130,6 +130,7 @@ void ZeldaInformationHandler::Init() {
     }
   }
 
+  hearts = 0;
 }
 
 void ZeldaInformationHandler::InitTextures() {
@@ -351,13 +352,60 @@ bool ZeldaInformationHandler::GetIsRunning() {
 void ZeldaInformationHandler::SetHearts(int numHearts) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   if (numHearts > 0) {
-    hearts = numHearts;
-  }
+    if (hearts < numHearts) {
+      hearts = numHearts;      
+      //check if heart was found in dungeon
+      //TODO check for heart item found in staircase
+      if (GetIsInDungeon()) {
+	std::pair<int, int> loc = GetMapLocation();
+	for (auto& el : dungeons) {
+	  if (el.GetLocation() == loc) {
+	    el.SetHeart();
+	  }
+	}
+      }
+    }
+  }  
 }
 
 int ZeldaInformationHandler::GetHearts() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   return hearts;
+}
+
+bool ZeldaInformationHandler::GetHeart(int level) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  Secrets levelNumber;
+  if (level == 0) {
+    levelNumber = Secrets::DUNGEON_1;
+  }
+  if (level == 1) {
+    levelNumber = Secrets::DUNGEON_2;
+  }
+  if (level == 2) {
+    levelNumber = Secrets::DUNGEON_3;
+  }
+  if (level == 3) {
+    levelNumber = Secrets::DUNGEON_4;
+  }
+  if (level == 4) {
+    levelNumber = Secrets::DUNGEON_5;
+  }
+  if (level == 5) {
+    levelNumber = Secrets::DUNGEON_6;
+  }
+  if (level == 6) {
+    levelNumber = Secrets::DUNGEON_7;
+  }
+  if (level == 7) {
+    levelNumber = Secrets::DUNGEON_8;
+  }
+  for (auto& el : dungeons) {
+    if (el.Number() == levelNumber) {
+      return el.GetHeart();
+    }
+  }  
+  return false;
 }
 
 void ZeldaInformationHandler::SetIsInDungeon(bool inDungeon) {
@@ -416,6 +464,8 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
   overworldx = x;
   overworldy = y;
   levelNumber = Secrets::UNKNOWN_DUNGEON;
+  triforce = false;
+  heart = false;
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
@@ -575,6 +625,14 @@ bool ZeldaInformationHandler::Dungeon::GetTriforce() {
 
 void ZeldaInformationHandler::Dungeon::SetTriforce() {
   triforce = true;
+}
+
+bool ZeldaInformationHandler::Dungeon::GetHeart() {
+  return heart;
+}
+
+void ZeldaInformationHandler::Dungeon::SetHeart() {
+  heart = true;
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {

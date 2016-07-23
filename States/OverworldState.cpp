@@ -21,6 +21,7 @@
 #include "ZeldaFindingScreen.h"
 #include "ZeldaInformationHandler.h"
 #include "TriforceMarker.h"
+#include "HeartMarker.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
@@ -37,7 +38,13 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
     marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
-  }    
+  }
+  for (int level = 0; level < 8; ++level) {
+    OpenGLRectangle* marker =  new HeartMarker(level);
+    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5-40,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
+  }
 
   std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
   for (int row = 0; row < 8; ++row) {

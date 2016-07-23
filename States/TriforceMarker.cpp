@@ -1,6 +1,6 @@
 #include "TriforceMarker.h"
 
-TriforceMarker::TriforceMarker(int levelNumber) : OpenGLRectangle(40, 40, "Images/Selectors/PreTriforce.png") {
+TriforceMarker::TriforceMarker(int levelNumber) : OpenGLRectangle(32, 32, "Images/Selectors/PreTriforce.png") {
   level = levelNumber;
   hasTriforce = false;
 }
