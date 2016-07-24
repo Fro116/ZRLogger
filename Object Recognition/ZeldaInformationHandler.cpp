@@ -164,6 +164,7 @@ void ZeldaInformationHandler::InitTextures() {
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
   dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
+  dungeonTextures[RoomType::GUESS_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);  
 
   doorTextures[DoorType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   doorTextures[DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
@@ -346,6 +347,10 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   if (prev == Secrets::WOOD_SWORD && secret == Secrets::CANDLE_SHOP) {
     set = false;
   }
+  //because swords look alike
+  if (prev == Secrets::WHITE_SWORD && secret == Secrets::WOOD_SWORD) {
+    set = false;
+  }  
   if (secret == Secrets::UNKNOWN_CAVE) {
     if (prev == Secrets::EXPLORED_CAVE) {
       set = false;
@@ -549,7 +554,7 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
   if (prev == type) {
     write = false;
   }
-  if (type == RoomType::UNSEEN_ROOM && prev != RoomType::UNEXPLORED) {
+  if (type == RoomType::UNSEEN_ROOM && !(prev == RoomType::UNEXPLORED || prev == RoomType::GUESS_ROOM)) {
     //prevent overriding data
     write = false;
   }
@@ -565,11 +570,13 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	int right = 0;
 	int wrong = 0;
 	for (auto& el : rooms) {
-	  if (dungeonShapes[level][el.first.first][el.first.second]) {
-	    right++;
-	  }
-	  else {
-	    wrong++;
+	  if (el.second != RoomType::GUESS_ROOM && el.second != RoomType::UNEXPLORED) {
+	    if (dungeonShapes[level][el.first.first][el.first.second]) {
+	      right++;
+	    }
+	    else {
+	      wrong++;
+	    }
 	  }
 	}
 	if (wrong == 0) {
@@ -612,20 +619,28 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
 	  level = 2;
 	  levelNumber = Secrets::DUNGEON_3;
 	}
-	if ((a == 6 && b == 3) || (a == 3 && b == 6)) {
-	  level = 3;
-	  levelNumber = Secrets::DUNGEON_4;
+	int seen = 0;
+	for (auto& el : rooms) {
+	  if (el.second != RoomType::GUESS_ROOM && el.second != RoomType::UNEXPLORED && el.second != RoomType::UNSEEN_ROOM) {
+	    seen++;
+	  }
 	}
-	if ((a == 6 && b == 5) || (a == 5 && b == 6)) {
-	  level = 5;
-	  levelNumber = Secrets::DUNGEON_6;
+	if (seen >=2) {
+	  if ((a == 6 && b == 3) || (a == 3 && b == 6)) {
+	    level = 3;
+	    levelNumber = Secrets::DUNGEON_4;
+	  }
+	  if ((a == 6 && b == 5) || (a == 5 && b == 6)) {
+	    level = 5;
+	    levelNumber = Secrets::DUNGEON_6;
+	  }
 	}
       }
       if(level != -1) {
 	for (int a = 0; a < 8; ++a) {
 	  for (int b = 0; b < 8; ++b) {
 	    if (dungeonShapes[level][a][b] && GetRoomType(a,b) == RoomType::UNEXPLORED) {
-	      rooms[std::make_pair(a, b)] = RoomType::UNSEEN_ROOM;
+	      rooms[std::make_pair(a, b)] = RoomType::GUESS_ROOM;
 	    }
 	    if (!dungeonShapes[level][a][b]) {
 	      rooms[std::make_pair(a, b)] = RoomType::UNEXPLORED;

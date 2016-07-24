@@ -165,7 +165,13 @@ class ZeldaImageProcessor {
   double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.80;    
   double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.80;  
   double SECRET_CAVE_BLACK_THRESHOLD = 0.4;
-  double SHOP_OWNER_BLACK_THRESHOLD = 0.5;  
+  double SHOP_OWNER_BLACK_THRESHOLD = 0.5;
+
+  int REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR = 10;
+  int REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR = 161;
+  int REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH = 6;
+  int REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT = 7;
+  double CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD = 0.80;    
 
   int REFERENCE_LEFT_DUNGEON_DOOR_XCOOR = 12;
   int REFERENCE_LEFT_DUNGEON_DOOR_YCOOR = 128;
@@ -280,7 +286,8 @@ class ZeldaImageProcessor {
   ImageHandler dungeondbk;
   ImageHandler dungeondbs;
   ImageHandler dungeondbb;  
-
+  ImageHandler dungeondoorhandle;
+  bool dungeondoortransition = false;
 };
 
 #endif

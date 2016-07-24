@@ -48,6 +48,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   dungeondbk = ImageHandler::LoadPNG("Images/Dungeon/RightKeyDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbs = ImageHandler::LoadPNG("Images/Dungeon/RightShutterDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbb = ImageHandler::LoadPNG("Images/Dungeon/RightBombDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  dungeondoorhandle = ImageHandler::LoadPNG("Images/Dungeon/DoorHandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   book = ImageHandler::LoadPNG("Images/Dungeon/Book.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   ladder = ImageHandler::LoadPNG("Images/Dungeon/Ladder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -148,6 +149,7 @@ void ZeldaImageProcessor::UpdateData() {
 	      //location found
 	      foundLink = true;
 	      ZeldaInformationHandler::SetMapLocation(mapx, mapy);
+	      dungeondoortransition = false;
 	      //check if in secret cave
 	      ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
 	      double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());	      
@@ -211,9 +213,23 @@ void ZeldaImageProcessor::UpdateData() {
 		  }
 		}
 		{
-		  //check for doors				
-		  ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
-		  if (playScreen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() > 0) {
+		  //check for doors
+		  //first make sure you're not moving between doors
+		  ImageHandler handle = screen.Crop(REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT*SCALE_Y);
+		  std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
+		  handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor));
+		  if (handle.Similarity(dungeondoorhandle) > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
+		    if (dungeondoortransition) {
+		      std::pair<int, int> prevloc = ZeldaInformationHandler::GetDungeonLocation();
+		      if (prevloc != std::make_pair(mapx, mapy)) {
+			dungeondoortransition = false;			
+		      }
+		    } 
+		  }
+		  else {
+		    dungeondoortransition = true;
+		  }
+		  if (!dungeondoortransition) {
 		    RecordDoors(screen, mapx, mapy);
 		    RecordDarkDoors(screen, mapx, mapy);
 		  }
@@ -221,7 +237,7 @@ void ZeldaImageProcessor::UpdateData() {
 		ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
 		{
 		  //check for triforce
-		  //first see if at full health
+		  //first see if dead
 		  int numhearts = 0;
 		  //check for hearts
 		  for (int xsep = 0; xsep < 8; ++xsep) {
@@ -235,8 +251,8 @@ void ZeldaImageProcessor::UpdateData() {
 		      }
 		    }
 		  }
-		  bool fullhealth = (numhearts == ZeldaInformationHandler::GetHearts());
-		  if (fullhealth) {
+		  bool health = (numhearts > 0);
+		  if (health) {
 		    //then check for link holding triforce over a black screen
 		    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
 		    //remove edges
@@ -275,6 +291,7 @@ void ZeldaImageProcessor::UpdateData() {
 	      double maxSim = 0;
 	      ZeldaInformationHandler::DungeonItems type;
 	      ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	      item.SaveAsPPM("tmp.ppm");
 	      if (item.Similarity(book) > maxSim) {
 		maxSim = item.Similarity(book);
 		type = ZeldaInformationHandler::DungeonItems::BOOK;
@@ -317,6 +334,10 @@ void ZeldaImageProcessor::UpdateData() {
 		maxSim = 0;
 		type = ZeldaInformationHandler::DungeonItems::NONE;
 	      }
+	      if ((1-bp) > maxSim) {
+		maxSim = 0;
+		type = ZeldaInformationHandler::DungeonItems::NONE;
+	      }	      
 	      if (maxSim > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
 		ZeldaInformationHandler::SetItem(type);
 	      }
