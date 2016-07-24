@@ -16,6 +16,7 @@ std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShap
 std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
 std::map<ZeldaInformationHandler::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
 std::map<ZeldaInformationHandler::DoorType, GLuint> ZeldaInformationHandler::doorTextures;
+std::map<ZeldaInformationHandler::DungeonItems, GLuint> ZeldaInformationHandler::itemTextures;
 
 bool ZeldaInformationHandler::zeldaScreenFound;
 int ZeldaInformationHandler::hearts;
@@ -168,7 +169,21 @@ void ZeldaInformationHandler::InitTextures() {
   doorTextures[DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
   doorTextures[DoorType::SHUTTER] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonShutterDoor.png", GL_RGBA);
   doorTextures[DoorType::KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonKeyDoor.png", GL_RGBA);
-  doorTextures[DoorType::BOMB] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonBombDoor.png", GL_RGBA);  
+  doorTextures[DoorType::BOMB] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonBombDoor.png", GL_RGBA);
+
+  itemTextures[DungeonItems::NONE] = OpenGLUtility::Load2DTexture("Images/Selectors/PreTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::BOOK] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::BOW] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::HEART_CONTAINER] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::LADDER] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::MAGICAL_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::MAGICAL_KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::RECORDER] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::RED_CANDLE] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::RED_RING] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::SILVER_ARROW] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::WAND] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);
+  itemTextures[DungeonItems::WOODEN_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/PostTriforce.png", GL_RGBA);  
 }
 
 std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[]) {
@@ -445,6 +460,56 @@ bool ZeldaInformationHandler::GetZeldaSceenFound() {
   return zeldaScreenFound;
 }
 
+void ZeldaInformationHandler::SetItem(DungeonItems item) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  std::pair<int, int> loc = GetMapLocation();
+  for (auto& el : dungeons) {
+    if (el.GetLocation() == loc) {
+      el.SetItem(item);
+    }
+  }
+}
+
+ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::GetItem(int level, bool first) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    Secrets levelNumber;
+  if (level == 0) {
+    levelNumber = Secrets::DUNGEON_1;
+  }
+  if (level == 1) {
+    levelNumber = Secrets::DUNGEON_2;
+  }
+  if (level == 2) {
+    levelNumber = Secrets::DUNGEON_3;
+  }
+  if (level == 3) {
+    levelNumber = Secrets::DUNGEON_4;
+  }
+  if (level == 4) {
+    levelNumber = Secrets::DUNGEON_5;
+  }
+  if (level == 5) {
+    levelNumber = Secrets::DUNGEON_6;
+  }
+  if (level == 6) {
+    levelNumber = Secrets::DUNGEON_7;
+  }
+  if (level == 7) {
+    levelNumber = Secrets::DUNGEON_8;
+  }
+  for (auto& el : dungeons) {
+    if (el.Number() == levelNumber) {
+      if (first) {
+	return el.GetFirstItem();
+      }
+      else {
+	return el.GetSecondItem();
+      }
+    }
+  }
+  return DungeonItems::NONE;
+}
+
 ZeldaInformationHandler::DoorType ZeldaInformationHandler::GetDungeonDoor(int x1, int y1, int x2, int y2) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   std::pair<int, int> loc = GetMapLocation();
@@ -472,6 +537,8 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
   levelNumber = Secrets::UNKNOWN_DUNGEON;
   triforce = false;
   heart = false;
+  firstItem = DungeonItems::NONE;
+  secondItem = DungeonItems::NONE;  
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
@@ -641,6 +708,23 @@ void ZeldaInformationHandler::Dungeon::SetHeart() {
   heart = true;
 }
 
+ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetFirstItem() {
+  return firstItem;
+}
+
+ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetSecondItem() {
+  return secondItem;
+}
+
+void ZeldaInformationHandler::Dungeon::SetItem(ZeldaInformationHandler::DungeonItems item) {
+  if (firstItem == DungeonItems::NONE) {
+    firstItem = item;
+  }
+  else if (item != firstItem) {
+    secondItem = item;
+  }
+}
+
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
   return overworldTextures[type];
 }
@@ -651,4 +735,8 @@ GLuint ZeldaInformationHandler::GetTexture(RoomType type) {
 
 GLuint ZeldaInformationHandler::GetTexture(DoorType type) {
   return doorTextures[type];
+}
+
+GLuint ZeldaInformationHandler::GetTexture(DungeonItems type) {
+  return itemTextures[type];
 }

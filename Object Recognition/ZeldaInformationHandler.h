@@ -27,6 +27,7 @@ class ZeldaInformationHandler {
       MAGICAL_SWORD, PRE_POTION_SHOP, POTION_SHOP, EXPLORED_CAVE, BONUS_CAVE, ANYROAD};
   enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM};
   enum class DoorType {UNEXPLORED, OPEN, KEY, SHUTTER, BOMB};
+  enum class DungeonItems {BOOK, BOW, HEART_CONTAINER, LADDER, MAGICAL_BOOMERANG, MAGICAL_KEY, NONE, RECORDER, RED_CANDLE, RED_RING, SILVER_ARROW, WAND, WOODEN_BOOMERANG};  
 
   static void Init();
   static void InitTextures();
@@ -47,11 +48,14 @@ class ZeldaInformationHandler {
   static GLuint GetTexture(Secrets type);
   static GLuint GetTexture(RoomType type);
   static GLuint GetTexture(DoorType type);
+  static GLuint GetTexture(DungeonItems type);  
   static bool GetTriforce(int level); //zero indexed
   static void SetTriforce();
   static void SetHearts(int numHearts);
   static bool GetHeart(int level); //zero indexed  
   static int GetHearts();
+  static void SetItem(DungeonItems item);
+  static DungeonItems GetItem(int level, bool first);  
  private:
   static std::recursive_mutex dataMutex;
 
@@ -59,7 +63,8 @@ class ZeldaInformationHandler {
 
   static std::map<Secrets, GLuint> overworldTextures;
   static std::map<RoomType, GLuint> dungeonTextures;
-  static std::map<DoorType, GLuint> doorTextures;  
+  static std::map<DoorType, GLuint> doorTextures;
+  static std::map<DungeonItems, GLuint> itemTextures;    
 
   static int mapx;
   static int mapy;
@@ -79,13 +84,18 @@ class ZeldaInformationHandler {
     void SetTriforce();
     bool GetTriforce();
     void SetHeart();
-    bool GetHeart();    
+    bool GetHeart();
+    void SetItem(DungeonItems item);
+    DungeonItems GetFirstItem();
+    DungeonItems GetSecondItem();        
   private:
     int overworldx;
     int overworldy;
     Secrets levelNumber;
     bool triforce;
     bool heart;
+    DungeonItems firstItem;
+    DungeonItems secondItem;
     std::map<std::pair<int, int>, RoomType> rooms;
     std::map<std::tuple<int, int, int, int>, DoorType> doors;
   };

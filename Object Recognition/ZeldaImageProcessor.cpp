@@ -48,7 +48,16 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   dungeondbk = ImageHandler::LoadPNG("Images/Dungeon/RightKeyDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbs = ImageHandler::LoadPNG("Images/Dungeon/RightShutterDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbb = ImageHandler::LoadPNG("Images/Dungeon/RightBombDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-
+  book = ImageHandler::LoadPNG("Images/Dungeon/Book.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  ladder = ImageHandler::LoadPNG("Images/Dungeon/Ladder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  magicalkey = ImageHandler::LoadPNG("Images/Dungeon/MagicalKey.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  recorder = ImageHandler::LoadPNG("Images/Dungeon/Recorder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  redcandle = ImageHandler::LoadPNG("Images/Dungeon/RedCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  redring = ImageHandler::LoadPNG("Images/Dungeon/RedRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  silverarrow = ImageHandler::LoadPNG("Images/Dungeon/SilverArrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  wand = ImageHandler::LoadPNG("Images/Dungeon/Wand.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  
   ZeldaInformationHandler::SetZeldaSceenFound(true);
 }
 
@@ -192,19 +201,21 @@ void ZeldaImageProcessor::UpdateData() {
 	      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
 		foundLink = true;
-		//check if this is level 9
-		ImageHandler lnumber = screen.Crop(REFERENCE_DUNGEON_NINE_XCOOR*SCALE_X, REFERENCE_DUNGEON_NINE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_NINE_WIDTH*SCALE_X, REFERENCE_DUNGEON_NINE_HEIGHT*SCALE_Y).ConvertToBlackAndWhite();
-		if (lnumber.Similarity(dungeonnine) > CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD) {
-		  std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();
-		  ZeldaInformationHandler::SetSecret(oloc.first, oloc.second, ZeldaInformationHandler::Secrets::DUNGEON_9);
+		{
+		  //check if this is level 9
+		  ImageHandler lnumber = screen.Crop(REFERENCE_DUNGEON_NINE_XCOOR*SCALE_X, REFERENCE_DUNGEON_NINE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_NINE_WIDTH*SCALE_X, REFERENCE_DUNGEON_NINE_HEIGHT*SCALE_Y).ConvertToBlackAndWhite();
+		  if (lnumber.Similarity(dungeonnine) > CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD) {
+		    std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();
+		    ZeldaInformationHandler::SetSecret(oloc.first, oloc.second, ZeldaInformationHandler::Secrets::DUNGEON_9);
+		  }
 		}
-		ZeldaInformationHandler::RoomType type = ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy);
-		ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);		
-		// if (type == ZeldaInformationHandler::RoomType::UNEXPLORED || type == ZeldaInformationHandler::RoomType::UNSEEN_ROOM) {
-		if (playScreen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() > 0) {
-		  //check for doors
-		  RecordDoors(screen, mapx, mapy);
-		  RecordDarkDoors(screen, mapx, mapy);
+		{
+		  //check for doors				
+		  ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y);
+		  if (playScreen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() > 0) {
+		    RecordDoors(screen, mapx, mapy);
+		    RecordDarkDoors(screen, mapx, mapy);
+		  }
 		}
 		ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
 		{
@@ -239,6 +250,38 @@ void ZeldaImageProcessor::UpdateData() {
 		  }
 		}
 	      }
+	    }
+	  }
+	  if (!foundLink) {
+	    //check for items
+	    //The minimap cursor does not show in staircases
+	    ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	    if (item.Similarity(book) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::BOOK);
+	    }
+	    if (item.Similarity(bow) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::BOW);
+	    }
+	    if (item.Similarity(ladder) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::LADDER);
+	    }
+	    if (item.Similarity(magicalkey) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::MAGICAL_KEY);
+	    }
+	    if (item.Similarity(recorder) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RECORDER);
+	    }
+	    if (item.Similarity(redcandle) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RED_CANDLE);
+	    }
+	    if (item.Similarity(redring) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RED_RING);
+	    }
+	    if (item.Similarity(silverarrow) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::SILVER_ARROW);
+	    }
+	    if (item.Similarity(wand) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::WAND);
 	    }
 	  }
 	  if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0) && screen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() == 0) {

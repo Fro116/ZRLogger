@@ -205,7 +205,13 @@ class ZeldaImageProcessor {
 
   double CAPTURED_DUNGEON_ROOM_BLACK_THRESHOLD = 0.4;
   double CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD = 0.85;
-  double CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.95;  
+  double CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.95;
+
+  int REFERENCE_DUNGEON_ITEM_XCOOR = 129;
+  int REFERENCE_DUNGEON_ITEM_YCOOR = 137;
+  int REFERENCE_DUNGEON_ITEM_WIDTH = 14;
+  int REFERENCE_DUNGEON_ITEM_HEIGHT =16;
+  double CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD = 0.80;  
 
   double DUNGEON_TRIFORCE_BLACK_THRESHOLD = 0.90;  
   int DUNGEON_TRIFORCE_WIDTH_THRESHOLD = 20;
@@ -230,6 +236,15 @@ class ZeldaImageProcessor {
   ImageHandler potion;
   ImageHandler anyroad;  
   ImageHandler dungeonnine;
+  ImageHandler book;
+  ImageHandler bow;
+  ImageHandler ladder;
+  ImageHandler magicalkey;
+  ImageHandler recorder;
+  ImageHandler redcandle;
+  ImageHandler redring;
+  ImageHandler silverarrow;
+  ImageHandler wand;    
 
   //doors
   ImageHandler dungeonld;
