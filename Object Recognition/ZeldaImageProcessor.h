@@ -240,6 +240,7 @@ class ZeldaImageProcessor {
   ImageHandler bow;
   ImageHandler ladder;
   ImageHandler magicalkey;
+  ImageHandler raft;      
   ImageHandler recorder;
   ImageHandler redcandle;
   ImageHandler redring;

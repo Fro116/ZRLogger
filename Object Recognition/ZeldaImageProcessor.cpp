@@ -52,6 +52,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   ladder = ImageHandler::LoadPNG("Images/Dungeon/Ladder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   magicalkey = ImageHandler::LoadPNG("Images/Dungeon/MagicalKey.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  raft = ImageHandler::LoadPNG("Images/Dungeon/Raft.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   recorder = ImageHandler::LoadPNG("Images/Dungeon/Recorder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   redcandle = ImageHandler::LoadPNG("Images/Dungeon/RedCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   redring = ImageHandler::LoadPNG("Images/Dungeon/RedRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -255,33 +256,70 @@ void ZeldaImageProcessor::UpdateData() {
 	  if (!foundLink) {
 	    //check for items
 	    //The minimap cursor does not show in staircases
-	    ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-	    if (item.Similarity(book) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::BOOK);
+	    //check if alive	    
+	    int numhearts = 0;
+	    for (int xsep = 0; xsep < 8; ++xsep) {
+	      for (int ysep = 0; ysep < 2; ++ysep) {
+		int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
+		int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
+		ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y);
+		double rp = static_cast<double>(heartloc.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size()) / (heartloc.Width() * heartloc.Height());
+		//half hearts
+		if (rp > CAPTURED_HEART_COLOR_THRESHOLD / 2) {
+		  numhearts++;
+		}
+	      }
 	    }
-	    if (item.Similarity(bow) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::BOW);
-	    }
-	    if (item.Similarity(ladder) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::LADDER);
-	    }
-	    if (item.Similarity(magicalkey) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::MAGICAL_KEY);
-	    }
-	    if (item.Similarity(recorder) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RECORDER);
-	    }
-	    if (item.Similarity(redcandle) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RED_CANDLE);
-	    }
-	    if (item.Similarity(redring) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::RED_RING);
-	    }
-	    if (item.Similarity(silverarrow) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::SILVER_ARROW);
-	    }
-	    if (item.Similarity(wand) > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-	      ZeldaInformationHandler::SetItem(ZeldaInformationHandler::DungeonItems::WAND);
+	    bool alive = (numhearts > 0);
+	    if (alive) {
+	      double maxSim = 0;
+	      ZeldaInformationHandler::DungeonItems type;
+	      ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	      if (item.Similarity(book) > maxSim) {
+		maxSim = item.Similarity(book);
+		type = ZeldaInformationHandler::DungeonItems::BOOK;
+	      }
+	      if (item.Similarity(bow) > maxSim) {
+		maxSim = item.Similarity(bow);
+		type = ZeldaInformationHandler::DungeonItems::BOW;
+	      }
+	      if (item.Similarity(ladder) > maxSim) {
+		maxSim = item.Similarity(ladder);
+		type = ZeldaInformationHandler::DungeonItems::LADDER;
+	      }
+	      if (item.Similarity(magicalkey) > maxSim) {
+		maxSim = item.Similarity(magicalkey);
+		type = ZeldaInformationHandler::DungeonItems::MAGICAL_KEY;
+	      }
+	      if (item.Similarity(raft) > maxSim) {
+		maxSim = item.Similarity(raft);
+		type = ZeldaInformationHandler::DungeonItems::RAFT;
+	      }
+	      if (item.Similarity(recorder) > maxSim) {
+		maxSim = item.Similarity(recorder);
+		type = ZeldaInformationHandler::DungeonItems::RECORDER;
+	      }
+	      if (item.Similarity(redcandle) > maxSim) {
+		maxSim = item.Similarity(redcandle);
+		type = ZeldaInformationHandler::DungeonItems::RED_CANDLE;
+	      }
+	      if (item.Similarity(redring) > maxSim) {
+		maxSim = item.Similarity(redring);
+		type = ZeldaInformationHandler::DungeonItems::RED_RING;
+	      }
+	      if (item.Similarity(silverarrow) > maxSim) {
+		maxSim = item.Similarity(silverarrow);
+		type = ZeldaInformationHandler::DungeonItems::SILVER_ARROW;
+	      }
+	      //prevent false positive
+	      double bp = static_cast<double>(item.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (item.Width() * item.Height());
+	      if (bp > maxSim) {
+		maxSim = 0;
+		type = ZeldaInformationHandler::DungeonItems::NONE;
+	      }
+	      if (maxSim > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+		ZeldaInformationHandler::SetItem(type);
+	      }
 	    }
 	  }
 	  if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0) && screen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() == 0) {

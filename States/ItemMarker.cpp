@@ -1,6 +1,6 @@
 #include "ItemMarker.h"
 
-ItemMarker::ItemMarker(int levelNumber, bool firstItem) : OpenGLRectangle(32, 32, "Images/Selectors/PreTriforce.png") {
+ItemMarker::ItemMarker(int levelNumber, bool firstItem) : OpenGLRectangle(32, 32, "Images/Selectors/PreItem.png") {
   level = levelNumber;
   first = firstItem;
   item = ZeldaInformationHandler::DungeonItems::NONE;
