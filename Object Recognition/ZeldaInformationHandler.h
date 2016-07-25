@@ -25,7 +25,7 @@ class ZeldaInformationHandler {
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9,
       CANDLE_SHOP, BAIT_SHOP, BOMB_SHOP, ARROW_SHOP, BLUE_RING_SHOP, WOOD_SWORD, WHITE_SWORD,
       MAGICAL_SWORD, PRE_POTION_SHOP, POTION_SHOP, EXPLORED_CAVE, BONUS_CAVE, ANYROAD};
-  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM, GUESS_ROOM};
+  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM, GUESS_ROOM, TRIFORCE_ROOM};
   enum class DoorType {UNEXPLORED, OPEN, KEY, SHUTTER, BOMB};
   enum class DungeonItems {BOOK, BOW, HEART_CONTAINER, LADDER, MAGICAL_BOOMERANG, MAGICAL_KEY, NONE, RAFT, RECORDER, RED_CANDLE, RED_RING, POWER_BRACELET, SILVER_ARROW, WAND, WOODEN_BOOMERANG};  
 
@@ -95,7 +95,9 @@ class ZeldaInformationHandler {
     bool triforce;
     bool heart;
     DungeonItems firstItem;
+    std::pair<int, int> firstitemloc;
     DungeonItems secondItem;
+    std::pair<int, int> seconditemloc;    
     std::map<std::pair<int, int>, RoomType> rooms;
     std::map<std::tuple<int, int, int, int>, DoorType> doors;
   };

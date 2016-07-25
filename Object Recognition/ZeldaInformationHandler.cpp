@@ -164,7 +164,8 @@ void ZeldaInformationHandler::InitTextures() {
   dungeonTextures[RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
   dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
-  dungeonTextures[RoomType::GUESS_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);  
+  dungeonTextures[RoomType::GUESS_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
+  dungeonTextures[RoomType::TRIFORCE_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonTriforceRoom.png", GL_RGBA);    
 
   doorTextures[DoorType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   doorTextures[DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
@@ -249,7 +250,7 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
     number = dungeon.Number();
   }
   SetSecret(loc.first, loc.second, number);
-  if (type != RoomType::UNSEEN_ROOM) {
+  if (type != RoomType::UNSEEN_ROOM && type != RoomType::TRIFORCE_ROOM) {
     dungeonx = x;
     dungeony = y;
   }
@@ -545,7 +546,9 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
   triforce = false;
   heart = false;
   firstItem = DungeonItems::NONE;
-  secondItem = DungeonItems::NONE;  
+  secondItem = DungeonItems::NONE;
+  firstitemloc = std::make_pair(-1, -1);
+  seconditemloc = std::make_pair(-1, -1);  
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
@@ -554,8 +557,11 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
   if (prev == type) {
     write = false;
   }
+  //prevent overriding data  
   if (type == RoomType::UNSEEN_ROOM && !(prev == RoomType::UNEXPLORED || prev == RoomType::GUESS_ROOM)) {
-    //prevent overriding data
+    write = false;
+  }
+  if (prev == RoomType::TRIFORCE_ROOM) {
     write = false;
   }
   if (x < 0 || y < 0 || x >= 8 || y >=8) {
@@ -736,9 +742,17 @@ ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetSecon
 void ZeldaInformationHandler::Dungeon::SetItem(ZeldaInformationHandler::DungeonItems item) {
   if (firstItem == DungeonItems::NONE) {
     firstItem = item;
+    firstitemloc = GetDungeonLocation();
   }
-  else if (item != firstItem) {
-    secondItem = item;
+  else {
+    if (firstitemloc == GetDungeonLocation()) {
+      firstItem = item;
+      firstitemloc = GetDungeonLocation();      
+    }
+    else {
+      secondItem = item;
+      seconditemloc = GetDungeonLocation();
+    }
   }
 }
 

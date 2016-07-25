@@ -53,6 +53,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   ladder = ImageHandler::LoadPNG("Images/Dungeon/Ladder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   magicalkey = ImageHandler::LoadPNG("Images/Dungeon/MagicalKey.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  magicalboomerang = ImageHandler::LoadPNG("Images/Dungeon/MagicalBoomerang.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   raft = ImageHandler::LoadPNG("Images/Dungeon/Raft.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   recorder = ImageHandler::LoadPNG("Images/Dungeon/Recorder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   redcandle = ImageHandler::LoadPNG("Images/Dungeon/RedCandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -190,6 +191,8 @@ void ZeldaImageProcessor::UpdateData() {
 	int grayCount = minimap.PixelsWithRGB(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B).size();
 	if (grayCount == 0) {
 	  bool foundLink = false;
+	  int lmapx;
+	  int lmapy;
 	  for (int mapx = 0; mapx < 8; ++mapx) {
 	    for (int mapy = 0; mapy < 8; ++mapy) {
 	      int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
@@ -202,68 +205,93 @@ void ZeldaImageProcessor::UpdateData() {
 	      int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
 	      ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
 	      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
-	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B)) {
+	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B) && ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy) != ZeldaInformationHandler::RoomType::TRIFORCE_ROOM) {
 		foundLink = true;
-		{
-		  //check if this is level 9
-		  ImageHandler lnumber = screen.Crop(REFERENCE_DUNGEON_NINE_XCOOR*SCALE_X, REFERENCE_DUNGEON_NINE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_NINE_WIDTH*SCALE_X, REFERENCE_DUNGEON_NINE_HEIGHT*SCALE_Y).ConvertToBlackAndWhite();
-		  if (lnumber.Similarity(dungeonnine) > CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD) {
-		    std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();
-		    ZeldaInformationHandler::SetSecret(oloc.first, oloc.second, ZeldaInformationHandler::Secrets::DUNGEON_9);
+		lmapx = mapx;
+		lmapy = mapy;
+	      }
+	    }
+	  }
+	  if (foundLink) {
+	    {
+	      //check for triforce room from compass
+	      for (int mapx = 0; mapx < 8; ++mapx) {
+		for (int mapy = 0; mapy < 8; ++mapy) {
+		  int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+		  int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+		  int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+		  int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+		  int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+		  int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+		  int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+		  int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+		  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+		  if (maprgb != std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B) && maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B)) {
+		    ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::TRIFORCE_ROOM);
 		  }
 		}
-		{
-		  //check for doors
-		  //first make sure you're not moving between doors
-		  ImageHandler handle = screen.Crop(REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT*SCALE_Y);
-		  std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
-		  handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor));
-		  if (handle.Similarity(dungeondoorhandle) > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
-		    if (dungeondoortransition) {
-		      std::pair<int, int> prevloc = ZeldaInformationHandler::GetDungeonLocation();
-		      if (prevloc != std::make_pair(mapx, mapy)) {
-			dungeondoortransition = false;			
-		      }
-		    } 
+	      }
+	    }
+	    {
+	      //check if this is level 9
+	      ImageHandler lnumber = screen.Crop(REFERENCE_DUNGEON_NINE_XCOOR*SCALE_X, REFERENCE_DUNGEON_NINE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_NINE_WIDTH*SCALE_X, REFERENCE_DUNGEON_NINE_HEIGHT*SCALE_Y).ConvertToBlackAndWhite();
+	      if (lnumber.Similarity(dungeonnine) > CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD) {
+		std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();
+		ZeldaInformationHandler::SetSecret(oloc.first, oloc.second, ZeldaInformationHandler::Secrets::DUNGEON_9);
+	      }
+	    }
+	    {
+	      //check for doors
+	      //first make sure you're not moving between doors
+	      ImageHandler handle = screen.Crop(REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT*SCALE_Y);
+	      std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
+	      handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor));
+	      double sim =  handle.Similarity(dungeondoorhandle);
+	      if (sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD || 1-sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
+		if (dungeondoortransition) {
+		  std::pair<int, int> prevloc = ZeldaInformationHandler::GetDungeonLocation();
+		  if (prevloc != std::make_pair(lmapx, lmapy)) {
+		    dungeondoortransition = false;			
 		  }
-		  else {
-		    dungeondoortransition = true;
-		  }
-		  if (!dungeondoortransition) {
-		    RecordDoors(screen, mapx, mapy);
-		    RecordDarkDoors(screen, mapx, mapy);
+		} 
+	      }
+	      else {
+		dungeondoortransition = true;
+	      }
+	      if (!dungeondoortransition) {
+		RecordDoors(screen, lmapx, lmapy);
+		RecordDarkDoors(screen, lmapx, lmapy);
+	      }
+	    }
+	    ZeldaInformationHandler::SetDungeonLocation(lmapx, lmapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
+	    {
+	      //check for triforce
+	      //first see if dead
+	      int numhearts = 0;
+	      //check for hearts
+	      for (int xsep = 0; xsep < 8; ++xsep) {
+		for (int ysep = 0; ysep < 2; ++ysep) {
+		  int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
+		  int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
+		  ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y);
+		  double rp = static_cast<double>(heartloc.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size()) / (heartloc.Width() * heartloc.Height());
+		  if (rp > CAPTURED_HEART_COLOR_THRESHOLD) {
+		    numhearts++;
 		  }
 		}
-		ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
-		{
-		  //check for triforce
-		  //first see if dead
-		  int numhearts = 0;
-		  //check for hearts
-		  for (int xsep = 0; xsep < 8; ++xsep) {
-		    for (int ysep = 0; ysep < 2; ++ysep) {
-		      int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
-		      int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
-		      ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y);
-		      double rp = static_cast<double>(heartloc.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size()) / (heartloc.Width() * heartloc.Height());
-		      if (rp > CAPTURED_HEART_COLOR_THRESHOLD) {
-			numhearts++;
-		      }
-		    }
-		  }
-		  bool health = (numhearts > 0);
-		  if (health) {
-		    //then check for link holding triforce over a black screen
-		    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-		    //remove edges
-		    playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
-		    double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
-		    if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
-		      std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
-		      if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
-			ZeldaInformationHandler::SetTriforce();
-		      }
-		    }
+	      }
+	      bool health = (numhearts > 0);
+	      if (health) {
+		//then check for link holding triforce over a black screen
+		ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+		//remove edges
+		playScreen = playScreen.Crop(1*SCALE_X, 1*SCALE_Y, playScreen.Width()-2*SCALE_X, playScreen.Height()-2*SCALE_Y);
+		double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
+		if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
+		  std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));		  
+		  if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_THRESHOLD) {
+		    ZeldaInformationHandler::SetTriforce();
 		  }
 		}
 	      }
@@ -308,6 +336,10 @@ void ZeldaImageProcessor::UpdateData() {
 		maxSim = item.Similarity(magicalkey);
 		type = ZeldaInformationHandler::DungeonItems::MAGICAL_KEY;
 	      }
+	      if (item.Similarity(magicalboomerang) > maxSim) {
+		maxSim = item.Similarity(magicalboomerang);
+		type = ZeldaInformationHandler::DungeonItems::MAGICAL_BOOMERANG;
+	      }	      
 	      if (item.Similarity(raft) > maxSim) {
 		maxSim = item.Similarity(raft);
 		type = ZeldaInformationHandler::DungeonItems::RAFT;
@@ -339,29 +371,32 @@ void ZeldaImageProcessor::UpdateData() {
 		type = ZeldaInformationHandler::DungeonItems::NONE;
 	      }	      
 	      if (maxSim > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
+		item.SaveAsPPM("rec.ppm");				
 		ZeldaInformationHandler::SetItem(type);
 	      }
 	    }
 	  }
-	  if (!foundLink && (minimap.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() == 0) && (minimap.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) && (minimap.PixelsWithRGB(START_BLUE_R, START_BLUE_G, START_BLUE_B).size() == 0) && screen.PixelsWithRGB(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B).size() == 0) {
-	    //check for heart red, start blue,  and white pixels to discount possibility of start screen
+	  if (!foundLink) {
+	    //check for new tunic
 	    int possibles = 0;
 	    std::tuple<int, int, int> color;
 	    for (int mapx = 0; mapx < 8; ++mapx) {
 	      for (int mapy = 0; mapy < 8; ++mapy) {
-		int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
-		int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
-		int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
-		int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
-		int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
-		int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
-		int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
-		int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
-		ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
-		std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
-		if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B)) {
-		  possibles++;
-		  color = maprgb;
+		if (ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy) != ZeldaInformationHandler::RoomType::TRIFORCE_ROOM) {
+		  int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+		  int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+		  int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+		  int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+		  int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+		  int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+		  int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+		  int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+		  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+		  if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B)) {
+		    possibles++;
+		    color = maprgb;
+		  }
 		}
 	      }
 	    }
