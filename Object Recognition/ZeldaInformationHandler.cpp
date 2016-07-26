@@ -386,19 +386,14 @@ bool ZeldaInformationHandler::GetIsRunning() {
 void ZeldaInformationHandler::SetHearts(int numHearts) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   if (numHearts > 0) {
-    if (hearts < numHearts) {
-      hearts = numHearts;
-      std::cout << numHearts << " HEARTS WERE FOUND" << std::endl;
-      //check if heart was found in dungeon
-      //TODO check for heart item found in staircase
-      if (GetIsInDungeon()) {
-	std::cout << "A HEART WAS FOUND IN DUNGEON" << std::endl;	
-	std::pair<int, int> loc = GetMapLocation();
-	for (auto& el : dungeons) {
-	  if (el.GetLocation() == loc) {
-	    std::cout << "A HEART WAS SET" << std::endl;	    
-	    el.SetHeart();
-	  }
+    hearts = numHearts;
+    //check if heart was found in dungeon
+    //TODO check for heart item found in staircase
+    if (GetIsInDungeon()) {
+      std::pair<int, int> loc = GetMapLocation();
+      for (auto& el : dungeons) {
+	if (el.GetLocation() == loc) {
+	  el.SetHeart();
 	}
       }
     }
