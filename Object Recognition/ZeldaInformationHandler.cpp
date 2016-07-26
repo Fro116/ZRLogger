@@ -351,7 +351,10 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   //because swords look alike
   if (prev == Secrets::WHITE_SWORD && secret == Secrets::WOOD_SWORD) {
     set = false;
-  }  
+  }
+  if (prev == Secrets::MAGICAL_SWORD && secret == Secrets::WHITE_SWORD) {
+    set = false;
+  }    
   if (secret == Secrets::UNKNOWN_CAVE) {
     if (prev == Secrets::EXPLORED_CAVE) {
       set = false;
@@ -382,13 +385,16 @@ void ZeldaInformationHandler::SetHearts(int numHearts) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   if (numHearts > 0) {
     if (hearts < numHearts) {
-      hearts = numHearts;      
+      hearts = numHearts;
+      std::cout << numHearts << " HEARTS WERE FOUND" << std::endl;
       //check if heart was found in dungeon
       //TODO check for heart item found in staircase
       if (GetIsInDungeon()) {
+	std::cout << "A HEART WAS FOUND IN DUNGEON" << std::endl;	
 	std::pair<int, int> loc = GetMapLocation();
 	for (auto& el : dungeons) {
 	  if (el.GetLocation() == loc) {
+	    std::cout << "A HEART WAS SET" << std::endl;	    
 	    el.SetHeart();
 	  }
 	}
@@ -435,6 +441,19 @@ bool ZeldaInformationHandler::GetHeart(int level) {
     }
   }  
   return false;
+}
+
+int ZeldaInformationHandler::GetBonusCaves() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  int caves = 0;
+  for (int x = 0; x < 16; ++x) {
+    for (int y = 0; y < 8; ++y) {
+      if (overworldSecrets[std::make_pair(x,y)] == Secrets::BONUS_CAVE) {
+	caves++;
+      }
+    }
+  }
+  return caves;
 }
 
 void ZeldaInformationHandler::SetIsInDungeon(bool inDungeon) {
@@ -683,10 +702,6 @@ ZeldaInformationHandler::RoomType ZeldaInformationHandler::Dungeon::GetRoomType(
 void ZeldaInformationHandler::Dungeon::SetDoorType(int x1, int y1, int x2, int y2, DoorType type) {
   bool set = true;
   DoorType prev = GetDoorType(x1, y1, x2, y2);
-  //Shutter doors can be overwritten when you walk through them
-  if (prev == DoorType::SHUTTER) {
-    set = false;
-  }
   if (set) {
     std::tuple<int, int, int, int> d1 = std::make_tuple(x1,y1,x2,y2);
     std::tuple<int, int, int, int> d2 = std::make_tuple(x2,y2,x1,y1);

@@ -54,6 +54,7 @@ class ZeldaInformationHandler {
   static void SetHearts(int numHearts);
   static bool GetHeart(int level); //zero indexed  
   static int GetHearts();
+  static int GetBonusCaves();  
   static void SetItem(DungeonItems item);
   static DungeonItems GetItem(int level, bool first);  
  private:

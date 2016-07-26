@@ -43,7 +43,19 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
       std::shared_ptr<Bindable> marObject(marker);
       BindObject(marObject);
     }
+  }
+  {
+    OpenGLRectangle* marker =  new ItemMarker(8, false);
+    marker->MoveTo(glm::vec3(50 + 70*(8+1), 400-20-5-40,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
   }  
+  {
+    OpenGLRectangle* marker =  new ItemMarker(8, false);
+    marker->MoveTo(glm::vec3(50 + 70*(8+1), 400-20-5-40-40,0.000));
+    std::shared_ptr<Bindable> marObject(marker);
+    BindObject(marObject);
+  }    
   
   for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 8; ++col) {
