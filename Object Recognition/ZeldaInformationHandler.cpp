@@ -179,6 +179,7 @@ void ZeldaInformationHandler::InitTextures() {
   itemTextures[DungeonItems::HEART_CONTAINER] = OpenGLUtility::Load2DTexture("Images/Selectors/HeartContainer.png", GL_RGBA);
   itemTextures[DungeonItems::LADDER] = OpenGLUtility::Load2DTexture("Images/Selectors/Ladder.png", GL_RGBA);
   itemTextures[DungeonItems::MAGICAL_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalBoomerang.png", GL_RGBA);
+  itemTextures[DungeonItems::WOODEN_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodenBoomerang.png", GL_RGBA);  
   itemTextures[DungeonItems::MAGICAL_KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalKey.png", GL_RGBA);
   itemTextures[DungeonItems::RAFT] = OpenGLUtility::Load2DTexture("Images/Selectors/Raft.png", GL_RGBA);  
   itemTextures[DungeonItems::RECORDER] = OpenGLUtility::Load2DTexture("Images/Selectors/Recorder.png", GL_RGBA);
@@ -187,6 +188,7 @@ void ZeldaInformationHandler::InitTextures() {
   itemTextures[DungeonItems::POWER_BRACELET] = OpenGLUtility::Load2DTexture("Images/Selectors/PowerBracelet.png", GL_RGBA);  
   itemTextures[DungeonItems::SILVER_ARROW] = OpenGLUtility::Load2DTexture("Images/Selectors/SilverArrow.png", GL_RGBA);
   itemTextures[DungeonItems::WAND] = OpenGLUtility::Load2DTexture("Images/Selectors/Wand.png", GL_RGBA);
+  itemTextures[DungeonItems::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSwordItem.png", GL_RGBA);  
   itemTextures[DungeonItems::WOODEN_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodenBoomerang.png", GL_RGBA);  
 }
 

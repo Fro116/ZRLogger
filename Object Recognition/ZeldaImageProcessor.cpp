@@ -51,6 +51,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   dungeondoorhandle = ImageHandler::LoadPNG("Images/Dungeon/DoorHandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   book = ImageHandler::LoadPNG("Images/Dungeon/Book.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  heartcontainer = ImageHandler::LoadPNG("Images/Dungeon/HeartContainer.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   ladder = ImageHandler::LoadPNG("Images/Dungeon/Ladder.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   magicalkey = ImageHandler::LoadPNG("Images/Dungeon/MagicalKey.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   magicalboomerang = ImageHandler::LoadPNG("Images/Dungeon/MagicalBoomerang.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -61,6 +62,8 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   redring = ImageHandler::LoadPNG("Images/Dungeon/RedRing.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   silverarrow = ImageHandler::LoadPNG("Images/Dungeon/SilverArrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   wand = ImageHandler::LoadPNG("Images/Dungeon/Wand.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  whitesworditem = ImageHandler::LoadPNG("Images/Dungeon/WhiteSword.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);    
+  woodenboomerang = ImageHandler::LoadPNG("Images/Dungeon/MagicalBoomerang.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   heart = ImageHandler::LoadPNG("Images/Dungeon/Heart.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   
   ZeldaInformationHandler::SetZeldaSceenFound(true);
@@ -288,7 +291,6 @@ void ZeldaImageProcessor::UpdateData() {
 	    }
 	    bool health = (numhearts >= ZeldaInformationHandler::GetHearts());
 	    if (health) {
-	      std::cout << "AT FULL HEALTH " << std::endl;	      
 	      //then check for link holding triforce over a black screen
 	      ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
 	      //remove edges
@@ -296,11 +298,8 @@ void ZeldaImageProcessor::UpdateData() {
 	      double bp = static_cast<double>(playScreen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (playScreen.Width() * playScreen.Height());
 	      if (bp > DUNGEON_TRIFORCE_BLACK_THRESHOLD && bp < 1) {
 		std::vector<int> box = BoundingBox(playScreen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B));
-		std::cout << "POSSIBLE TRIFORCE " << box[2]/SCALE_X << " " << box[3]/SCALE_Y << std::endl;
-		playScreen.SaveAsPPM("possibleTriforce.ppm");		  		  
 		if (box[2]/SCALE_X < DUNGEON_TRIFORCE_WIDTH_UPPER_THRESHOLD && box[3]/SCALE_Y < DUNGEON_TRIFORCE_HEIGHT_UPPER_THRESHOLD &&
 		    box[2]/SCALE_X > DUNGEON_TRIFORCE_WIDTH_LOWER_THRESHOLD && box[3]/SCALE_Y > DUNGEON_TRIFORCE_HEIGHT_LOWER_THRESHOLD) {
-		  std::cout << "SET TRIFORCE." << std::endl;		  		    		  		    
 		  ZeldaInformationHandler::SetTriforce();
 		}
 	      }
@@ -336,6 +335,10 @@ void ZeldaImageProcessor::UpdateData() {
 		maxSim = item.Similarity(bow);
 		type = ZeldaInformationHandler::DungeonItems::BOW;
 	      }
+	      if (item.Similarity(heartcontainer) > maxSim) {
+		maxSim = item.Similarity(heartcontainer);
+		type = ZeldaInformationHandler::DungeonItems::HEART_CONTAINER;
+	      }	      
 	      if (item.Similarity(ladder) > maxSim) {
 		maxSim = item.Similarity(ladder);
 		type = ZeldaInformationHandler::DungeonItems::LADDER;
@@ -344,10 +347,14 @@ void ZeldaImageProcessor::UpdateData() {
 		maxSim = item.Similarity(magicalkey);
 		type = ZeldaInformationHandler::DungeonItems::MAGICAL_KEY;
 	      }
+	      if (item.Similarity(woodenboomerang) > maxSim) {
+		maxSim = item.Similarity(woodenboomerang);
+		type = ZeldaInformationHandler::DungeonItems::WOODEN_BOOMERANG;
+	      }	      
 	      if (item.Similarity(magicalboomerang) > maxSim) {
 		maxSim = item.Similarity(magicalboomerang);
 		type = ZeldaInformationHandler::DungeonItems::MAGICAL_BOOMERANG;
-	      }
+	      }	      
 	      if (item.Similarity(powerbracelet) > maxSim) {
 		maxSim = item.Similarity(powerbracelet);
 		type = ZeldaInformationHandler::DungeonItems::POWER_BRACELET;
@@ -372,6 +379,14 @@ void ZeldaImageProcessor::UpdateData() {
 		maxSim = item.Similarity(silverarrow);
 		type = ZeldaInformationHandler::DungeonItems::SILVER_ARROW;
 	      }
+	      if (item.Similarity(wand) > maxSim) {
+		maxSim = item.Similarity(wand);
+		type = ZeldaInformationHandler::DungeonItems::WAND;
+	      }	      
+	      if (item.Similarity(whitesworditem) > maxSim) {
+		maxSim = item.Similarity(whitesworditem);
+		type = ZeldaInformationHandler::DungeonItems::WHITE_SWORD;
+	      }	      
 	      //prevent false positive
 	      double bp = static_cast<double>(item.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (item.Width() * item.Height());
 	      if (bp > maxSim) {

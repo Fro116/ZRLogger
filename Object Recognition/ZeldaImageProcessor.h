@@ -233,6 +233,7 @@ class ZeldaImageProcessor {
   ImageHandler dungeonnine;
   ImageHandler book;
   ImageHandler bow;
+  ImageHandler heartcontainer;  
   ImageHandler ladder;
   ImageHandler magicalkey;
   ImageHandler magicalboomerang;
@@ -243,6 +244,8 @@ class ZeldaImageProcessor {
   ImageHandler redring;
   ImageHandler silverarrow;
   ImageHandler wand;
+  ImageHandler whitesworditem;  
+  ImageHandler woodenboomerang;  
 
   //doors
   ImageHandler dungeonld;
