@@ -89,7 +89,8 @@ class ZeldaInformationHandler {
     bool GetHeart();
     void SetItem(DungeonItems item);
     DungeonItems GetFirstItem();
-    DungeonItems GetSecondItem();        
+    DungeonItems GetSecondItem();
+    DungeonItems GetItem(std::pair<int, int> loc);            
   private:
     int overworldx;
     int overworldy;

@@ -326,7 +326,6 @@ void ZeldaImageProcessor::UpdateData() {
 	      double maxSim = 0;
 	      ZeldaInformationHandler::DungeonItems type;
 	      ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
-	      item.SaveAsPPM("tmp.ppm");
 	      if (item.Similarity(book) > maxSim) {
 		maxSim = item.Similarity(book);
 		type = ZeldaInformationHandler::DungeonItems::BOOK;
@@ -398,7 +397,6 @@ void ZeldaImageProcessor::UpdateData() {
 		type = ZeldaInformationHandler::DungeonItems::NONE;
 	      }	      
 	      if (maxSim > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
-		item.SaveAsPPM("rec.ppm");				
 		ZeldaInformationHandler::SetItem(type);
 	      }
 	    }

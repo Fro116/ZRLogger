@@ -72,6 +72,8 @@ ImageHandler& ImageHandler::operator=(ImageHandler&& other) {
   width = other.width;
   pixels = other.pixels;
   other.pixels = nullptr;
+  other.height = 0;
+  other.width = 0;  
   return *this;
 }
 
@@ -80,6 +82,8 @@ ImageHandler::ImageHandler(ImageHandler&& other) {
   width = other.width;
   pixels = other.pixels;
   other.pixels = nullptr;
+  other.height = 0;
+  other.width = 0;  
 }
 
 int ImageHandler::Height() {

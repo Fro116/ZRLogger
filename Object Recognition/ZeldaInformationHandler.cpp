@@ -385,15 +385,16 @@ bool ZeldaInformationHandler::GetIsRunning() {
 
 void ZeldaInformationHandler::SetHearts(int numHearts) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  if (numHearts > 0) {
+  if (numHearts > 0 && numHearts > hearts) {
     hearts = numHearts;
-    //check if heart was found in dungeon
-    //TODO check for heart item found in staircase
     if (GetIsInDungeon()) {
       std::pair<int, int> loc = GetMapLocation();
       for (auto& el : dungeons) {
 	if (el.GetLocation() == loc) {
-	  el.SetHeart();
+	  std::pair<int, int> dloc = GetDungeonLocation();
+	  if (el.GetItem(dloc) != DungeonItems::HEART_CONTAINER) {
+	    el.SetHeart();
+	  }
 	}
       }
     }
@@ -758,14 +759,25 @@ void ZeldaInformationHandler::Dungeon::SetItem(ZeldaInformationHandler::DungeonI
   }
   else {
     if (firstitemloc == GetDungeonLocation()) {
-      firstItem = item;
-      firstitemloc = GetDungeonLocation();      
+      //prevent overwriting
+      // firstItem = item;
+      // firstitemloc = GetDungeonLocation();      
     }
     else {
       secondItem = item;
       seconditemloc = GetDungeonLocation();
     }
   }
+}
+
+ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetItem(std::pair<int, int> loc) {
+  if (firstitemloc == loc) {
+    return firstItem;
+  }
+  if (seconditemloc == loc) {
+    return secondItem;
+  }
+  return DungeonItems::NONE;
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {

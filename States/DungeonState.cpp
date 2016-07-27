@@ -10,6 +10,7 @@
 #include "TriforceMarker.h"
 #include "HeartMarker.h"
 #include "ItemMarker.h"
+#include "BonusCaveMarker.h"
 #include "OpenGLUtility.h"
 #include "ZeldaInformationHandler.h"
 
@@ -18,43 +19,52 @@ DungeonState::DungeonState(std::shared_ptr<GameDriver> gameDriver, std::string v
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
 
+
   for (int level = 0; level < 8; ++level) {
     OpenGLRectangle* marker =  new TriforceMarker(level);
-    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5,0.000));
+    marker->MoveTo(glm::vec3(45 + 65*level, 400-20-5,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
   }
   for (int level = 0; level < 8; ++level) {
     OpenGLRectangle* marker =  new HeartMarker(level);
-    marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5-40,0.000));
+    marker->MoveTo(glm::vec3(45 + 65*level, 400-20-5-40,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
   }
   for (int level = 0; level < 8; ++level) {
     if (level != 1) {
       OpenGLRectangle* marker =  new ItemMarker(level, true);
-      marker->MoveTo(glm::vec3(50 + 70*level, 400-20-5-40-40,0.000));
+      marker->MoveTo(glm::vec3(45 + 65*level, 400-20-5-40-40,0.000));
       std::shared_ptr<Bindable> marObject(marker);
       BindObject(marObject);
     }
     if (level == 7) {
       OpenGLRectangle* marker =  new ItemMarker(level, false);
-      marker->MoveTo(glm::vec3(50 + 70*(level+1), 400-20-5-40-40,0.000));
+      marker->MoveTo(glm::vec3(45 + 65*(level+1), 400-20-5-40-40,0.000));
       std::shared_ptr<Bindable> marObject(marker);
       BindObject(marObject);
     }
   }
   {
     OpenGLRectangle* marker =  new ItemMarker(8, false);
-    marker->MoveTo(glm::vec3(50 + 70*(8+1), 400-20-5-40,0.000));
+    marker->MoveTo(glm::vec3(45 + 65*(8+1), 400-20-5-40,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
   }  
   {
     OpenGLRectangle* marker =  new ItemMarker(8, false);
-    marker->MoveTo(glm::vec3(50 + 70*(8+1), 400-20-5-40-40,0.000));
+    marker->MoveTo(glm::vec3(45 + 65*(8+1), 400-20-5-40-40,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);
+  }
+  for (int x = 0; x < 2; ++x) {
+    for (int y = 0; y < 2; ++y) {    
+      OpenGLRectangle* marker =  new BonusCaveMarker(x+2*y);
+      marker->MoveTo(glm::vec3(45 + 65*(x+10), 400-20-5-40*(y+1),0.000));
+      std::shared_ptr<Bindable> marObject(marker);
+      BindObject(marObject);
+    }
   }    
   
   for (int row = 0; row < 8; ++row) {
