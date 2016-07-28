@@ -1,7 +1,9 @@
 #include "ZeldaImageProcessor.h"
 #include "ZeldaInformationHandler.h"
 
-ZeldaImageProcessor::ZeldaImageProcessor() {  
+#include <unordered_set>
+
+ZeldaImageProcessor::ZeldaImageProcessor() {
   while (!FindZeldaScreen()) {
     //Find zelda screen
   }
@@ -582,48 +584,47 @@ std::vector<int> ZeldaImageProcessor::BoundingBox(std::vector<std::pair<int,int>
   return box;
 }
 
-std::vector<std::vector<std::pair<int,int>>> ZeldaImageProcessor::ConnectedComponents(std::vector<std::pair<int,int>> coordinates) {
+std::vector<std::vector<std::pair<int,int>>> ZeldaImageProcessor::ConnectedComponents(std::vector<std::pair<int,int>> coors) {
   std::vector<std::vector<std::pair<int,int>>> components;
-  std::vector<std::pair<int,int>> openSet;
+  struct pair_hash {
+    inline std::size_t operator()(const std::pair<int,int> & v) const {
+      return v.first*31+v.second;
+    }
+  };
+  std::unordered_set<std::pair<int,int>, pair_hash> openSet;
+  std::unordered_set<std::pair<int,int>, pair_hash> coordinates(coors.begin(), coors.end());
   while (!coordinates.empty()) {
-    std::vector<std::pair<int,int>> newComponent;
-    std::pair<int,int> start = coordinates[0];
-    openSet.push_back(start);
+    std::unordered_set<std::pair<int,int>, pair_hash> newComponent;
+    std::pair<int,int> start = *coordinates.begin();
+    openSet.insert(start);
     coordinates.erase(coordinates.begin());
     while (!openSet.empty()) {
-      std::pair<int,int> pixel = openSet[0];
+      std::pair<int,int> pixel = *openSet.begin();
       openSet.erase(openSet.begin());
-      newComponent.push_back(pixel);
+      newComponent.insert(pixel);
       std::pair<int,int> upixel = std::make_pair(pixel.first, pixel.second-1);
       std::pair<int,int> dpixel = std::make_pair(pixel.first, pixel.second+1);
       std::pair<int,int> lpixel = std::make_pair(pixel.first-1, pixel.second);
       std::pair<int,int> rpixel = std::make_pair(pixel.first+1, pixel.second);
-      if (std::find(coordinates.begin(), coordinates.end(), upixel) != coordinates.end()
-	  && std::find(openSet.begin(), openSet.end(), upixel) == openSet.end()
-	  && std::find(newComponent.begin(), newComponent.end(), upixel) == newComponent.end()) {
-	openSet.push_back(upixel);
-	coordinates.erase(std::find(coordinates.begin(), coordinates.end(), upixel));
+      if (coordinates.find(upixel) != coordinates.end() && newComponent.find(upixel) == newComponent.end()) {
+	openSet.insert(upixel);
+	coordinates.erase(upixel);
       }
-      if (std::find(coordinates.begin(), coordinates.end(), dpixel) != coordinates.end()
-	  && std::find(openSet.begin(), openSet.end(), dpixel) == openSet.end()
-	  && std::find(newComponent.begin(), newComponent.end(), dpixel) == newComponent.end()) {
-	openSet.push_back(dpixel);
-	coordinates.erase(std::find(coordinates.begin(), coordinates.end(), dpixel));	
+      if (coordinates.find(dpixel) != coordinates.end() && newComponent.find(dpixel) == newComponent.end()) {
+	openSet.insert(dpixel);
+	coordinates.erase(dpixel);
       }
-      if (std::find(coordinates.begin(), coordinates.end(), lpixel) != coordinates.end()
-	  && std::find(openSet.begin(), openSet.end(), lpixel) == openSet.end()
-	  && std::find(newComponent.begin(), newComponent.end(), lpixel) == newComponent.end()) {
-	openSet.push_back(lpixel);
-	coordinates.erase(std::find(coordinates.begin(), coordinates.end(), lpixel));	
+      if (coordinates.find(rpixel) != coordinates.end() && newComponent.find(rpixel) == newComponent.end()) {
+	openSet.insert(rpixel);
+	coordinates.erase(rpixel);
       }
-      if (std::find(coordinates.begin(), coordinates.end(), rpixel) != coordinates.end()
-	  && std::find(openSet.begin(), openSet.end(), rpixel) == openSet.end()
-	  && std::find(newComponent.begin(), newComponent.end(), rpixel) == newComponent.end()) {
-	openSet.push_back(rpixel);
-	coordinates.erase(std::find(coordinates.begin(), coordinates.end(), rpixel));	
-      }
+      if (coordinates.find(lpixel) != coordinates.end() && newComponent.find(lpixel) == newComponent.end()) {
+	openSet.insert(lpixel);
+	coordinates.erase(lpixel);
+      }      
     }
-    components.push_back(newComponent);
+    std::vector<std::pair<int,int>> newComponentVector(newComponent.begin(), newComponent.end());
+    components.push_back(newComponentVector);
   }
   return components;
 }
