@@ -25,7 +25,8 @@ class ZeldaInformationHandler {
       DUNGEON_3, DUNGEON_4, DUNGEON_5, DUNGEON_6, DUNGEON_7, DUNGEON_8, DUNGEON_9,
       CANDLE_SHOP, BAIT_SHOP, BOMB_SHOP, ARROW_SHOP, BLUE_RING_SHOP, WOOD_SWORD, WHITE_SWORD,
       MAGICAL_SWORD, PRE_POTION_SHOP, POTION_SHOP, EXPLORED_CAVE, BONUS_CAVE, ANYROAD};
-  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM, GUESS_ROOM, TRIFORCE_ROOM};
+  enum class RoomType {UNEXPLORED, UNKNOWN_ROOM, UNSEEN_ROOM, GUESS_ROOM, TRIFORCE_ROOM,
+      STAIRCASE_1, STAIRCASE_2, STAIRCASE_3, STAIRCASE_4, STAIRCASE_5, STAIRCASE_6, STAIRCASE_7};
   enum class DoorType {UNEXPLORED, OPEN, KEY, SHUTTER, BOMB};
   enum class DungeonItems {BOOK, BOW, HEART_CONTAINER, LADDER, MAGICAL_BOOMERANG, MAGICAL_KEY, NONE, RAFT, RECORDER, RED_CANDLE,
       RED_RING, POWER_BRACELET, SILVER_ARROW, WAND, WHITE_SWORD, WOODEN_BOOMERANG};  
@@ -108,6 +109,7 @@ class ZeldaInformationHandler {
     std::pair<int, int> seconditemloc;    
     std::map<std::pair<int, int>, RoomType> rooms;
     std::map<std::tuple<int, int, int, int>, DoorType> doors;
+    int staircaseNumber;
   };
   static std::vector<Dungeon> dungeons;
   static std::vector<std::vector<std::vector<bool>>> dungeonShapes;

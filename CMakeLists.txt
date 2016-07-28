@@ -19,4 +19,4 @@ target_link_libraries(ZRLogger ${OPENGL})
 find_library(APP_SER ApplicationServices)
 target_link_libraries(ZRLogger ${APP_SER})
 
-SET(CMAKE_CXX_FLAGS "-std=c++11")
+SET(CMAKE_CXX_FLAGS "-std=c++11 -O2")

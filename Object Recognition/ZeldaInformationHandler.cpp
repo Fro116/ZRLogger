@@ -166,7 +166,14 @@ void ZeldaInformationHandler::InitTextures() {
   dungeonTextures[RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
   dungeonTextures[RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
   dungeonTextures[RoomType::GUESS_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
-  dungeonTextures[RoomType::TRIFORCE_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonTriforceRoom.png", GL_RGBA);    
+  dungeonTextures[RoomType::TRIFORCE_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonTriforceRoom.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_1] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase1.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_2] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase2.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_3] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase3.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_4] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase4.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_5] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase5.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_6] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase6.png", GL_RGBA);
+  dungeonTextures[RoomType::STAIRCASE_7] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase7.png", GL_RGBA);    
 
   doorTextures[DoorType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
   doorTextures[DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
@@ -585,7 +592,8 @@ ZeldaInformationHandler::Dungeon::Dungeon(int x, int y) {
   firstItem = DungeonItems::NONE;
   secondItem = DungeonItems::NONE;
   firstitemloc = std::make_pair(-1, -1);
-  seconditemloc = std::make_pair(-1, -1);  
+  seconditemloc = std::make_pair(-1, -1);
+  staircaseNumber = 0;
 }
 
 void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) {
@@ -596,6 +604,11 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
   }
   //prevent overriding data  
   if (type == RoomType::UNSEEN_ROOM && !(prev == RoomType::UNEXPLORED || prev == RoomType::GUESS_ROOM)) {
+    write = false;
+  }
+  if (type != RoomType::TRIFORCE_ROOM && (prev == RoomType::STAIRCASE_1 || prev == RoomType::STAIRCASE_2 || prev == RoomType::STAIRCASE_3
+					  || prev == RoomType::STAIRCASE_4 || prev == RoomType::STAIRCASE_5 || prev == RoomType::STAIRCASE_6
+					  || prev == RoomType::STAIRCASE_7)) {
     write = false;
   }
   if (prev == RoomType::TRIFORCE_ROOM) {
@@ -798,8 +811,6 @@ void ZeldaInformationHandler::Dungeon::SetItem(ZeldaInformationHandler::DungeonI
   else {
     if (firstitemloc == GetDungeonLocation()) {
       //prevent overwriting
-      // firstItem = item;
-      // firstitemloc = GetDungeonLocation();      
     }
     else {
       secondItem = item;
@@ -819,7 +830,35 @@ ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetItem(
 }
 
 void ZeldaInformationHandler::Dungeon::SetStaircase(std::pair<int, int> firstroom, std::pair<int, int> secondroom) {
-  std::cout << firstroom.first << " " << firstroom.second << " " << secondroom.first << " " << secondroom.second << std::endl;
+  RoomType type = GetRoomType(firstroom.first, firstroom.second);
+  if (type != RoomType::STAIRCASE_1 && type != RoomType::STAIRCASE_2 && type != RoomType::STAIRCASE_3 && type != RoomType::STAIRCASE_4
+      && type != RoomType::STAIRCASE_5 && type != RoomType::STAIRCASE_6 && type != RoomType::STAIRCASE_7) {
+    RoomType secret;
+    if (staircaseNumber == 0) {
+      secret = RoomType::STAIRCASE_1;
+    }
+    if (staircaseNumber == 1) {
+      secret = RoomType::STAIRCASE_2;
+    }
+    if (staircaseNumber == 2) {
+      secret = RoomType::STAIRCASE_3;
+    }
+    if (staircaseNumber == 3) {
+      secret = RoomType::STAIRCASE_4;
+    }
+    if (staircaseNumber == 4) {
+      secret = RoomType::STAIRCASE_5;
+    }
+    if (staircaseNumber == 5) {
+      secret = RoomType::STAIRCASE_6;
+    }
+    if (staircaseNumber == 6) {
+      secret = RoomType::STAIRCASE_7;
+    }
+    rooms[firstroom] = secret;
+    rooms[secondroom] = secret;    
+    staircaseNumber++;
+  }
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
