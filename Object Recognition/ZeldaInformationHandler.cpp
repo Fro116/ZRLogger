@@ -10,6 +10,7 @@ int ZeldaInformationHandler::dungeony = -1;
 std::map<std::pair<int,int>, ZeldaInformationHandler::Secrets> ZeldaInformationHandler::overworldSecrets;
 bool ZeldaInformationHandler::isRunning = true;
 bool ZeldaInformationHandler::isInDungeon = false;
+bool ZeldaInformationHandler::isStaircase = false;
 std::vector<ZeldaInformationHandler::Dungeon> ZeldaInformationHandler::dungeons;
 std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShapes;
 
@@ -222,6 +223,7 @@ std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[])
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   SetIsInDungeon(false);
+  isStaircase = false;
   mapx = x;
   mapy = y;
 }
@@ -235,6 +237,7 @@ std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
 void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   SetIsInDungeon(true);
+  std::pair<int, int> prevloc = GetDungeonLocation();
   std::pair<int, int> loc = GetMapLocation();
   bool found = false;
   Secrets number;
@@ -256,6 +259,16 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, RoomType type) {
     dungeonx = x;
     dungeony = y;
   }
+  if (isStaircase) {
+    isStaircase = false;
+    for (auto& el : dungeons) {
+      if (el.GetLocation() == loc) {
+	if (prevloc != el.GetStartLocation() && std::make_pair(x,y) != el.GetStartLocation() && prevloc != std::make_pair(x,y)) {
+	  el.SetStaircase(prevloc, std::make_pair(x,y));
+	}
+      }
+    }    
+  }  
 }
 
 
@@ -297,6 +310,10 @@ bool ZeldaInformationHandler::GetTriforce(int level) {
     }
   }  
   return false;
+}
+
+void ZeldaInformationHandler::SetStaircase() {
+  isStaircase = true;
 }
 
 void ZeldaInformationHandler::SetTriforce() {
@@ -522,6 +539,9 @@ ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::GetItem(int level
   if (level == 7) {
     levelNumber = Secrets::DUNGEON_8;
   }
+  if (level == 8) {
+    levelNumber = Secrets::DUNGEON_9;
+  }  
   for (auto& el : dungeons) {
     if (el.Number() == levelNumber) {
       if (first) {
@@ -585,6 +605,20 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
     write = false;
   }
   if (write) {
+    {
+      //store starting location
+      if (type == RoomType::UNSEEN_ROOM) {
+	bool foundStart = false;
+	for (auto& el : rooms) {
+	  if (el.second == RoomType::UNSEEN_ROOM) {
+	    foundStart = true;
+	  }
+	}
+	if (!foundStart) {
+	  startloc = std::make_pair(x, y);
+	}
+      }
+    }
     rooms[std::make_pair(x, y)] = type;
     if (levelNumber != Secrets::DUNGEON_9) {
       //Check which dungeon you are in
@@ -724,6 +758,10 @@ std::pair<int, int> ZeldaInformationHandler::Dungeon::GetLocation() {
   return std::make_pair(overworldx,overworldy);
 }
 
+std::pair<int, int> ZeldaInformationHandler::Dungeon::GetStartLocation() {
+  return startloc;
+} 
+
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::Dungeon::Number() {
   return levelNumber;
 }
@@ -778,6 +816,10 @@ ZeldaInformationHandler::DungeonItems ZeldaInformationHandler::Dungeon::GetItem(
     return secondItem;
   }
   return DungeonItems::NONE;
+}
+
+void ZeldaInformationHandler::Dungeon::SetStaircase(std::pair<int, int> firstroom, std::pair<int, int> secondroom) {
+  std::cout << firstroom.first << " " << firstroom.second << " " << secondroom.first << " " << secondroom.second << std::endl;
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {

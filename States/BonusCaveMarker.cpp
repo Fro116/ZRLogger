@@ -6,10 +6,12 @@ BonusCaveMarker::BonusCaveMarker(int levelNumber) : OpenGLRectangle(32, 32, "Ima
 }
 
 void BonusCaveMarker::Update() {
-  int numcaves = ZeldaInformationHandler::GetBonusCaves();
-  if (numcaves > number) {
-    hasBonusCave = true;
-    SetTexture("Images/Selectors/PostBonusCave.png");
+  if (!hasBonusCave) {
+    int numcaves = ZeldaInformationHandler::GetBonusCaves();
+    if (numcaves > number) {
+      hasBonusCave = true;
+      SetTexture("Images/Selectors/PostBonusCave.png");
+    }
   }
 }
 

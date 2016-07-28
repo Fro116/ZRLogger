@@ -202,7 +202,8 @@ class ZeldaImageProcessor {
   int REFERENCE_DUNGEON_ITEM_YCOOR = 137;
   int REFERENCE_DUNGEON_ITEM_WIDTH = 14;
   int REFERENCE_DUNGEON_ITEM_HEIGHT =16;
-  double CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD = 0.80;  
+  double CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD = 0.80;
+  double CAPTURED_DUNGEON_STAIRCASE_THRESHOLD = 0.85;  
 
   double DUNGEON_TRIFORCE_BLACK_THRESHOLD = 0.90;  
   int DUNGEON_TRIFORCE_WIDTH_UPPER_THRESHOLD = 16;
@@ -282,6 +283,8 @@ class ZeldaImageProcessor {
   ImageHandler dungeondbb;  
   ImageHandler dungeondoorhandle;
   bool dungeondoortransition = false;
+
+  ImageHandler stairway;
 };
 
 #endif

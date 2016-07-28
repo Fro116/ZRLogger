@@ -68,7 +68,7 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
     BindObject(marObject);
   }  
   {
-    OpenGLRectangle* marker =  new ItemMarker(8, false);
+    OpenGLRectangle* marker =  new ItemMarker(8, true);
     marker->MoveTo(glm::vec3(45 + 65*(8+1), 400-20-5-40-40,0.000));
     std::shared_ptr<Bindable> marObject(marker);
     BindObject(marObject);

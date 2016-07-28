@@ -49,6 +49,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   dungeondbs = ImageHandler::LoadPNG("Images/Dungeon/BottomShutterDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbb = ImageHandler::LoadPNG("Images/Dungeon/BottomBombDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondoorhandle = ImageHandler::LoadPNG("Images/Dungeon/DoorHandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+  stairway = ImageHandler::LoadPNG("Images/Dungeon/Stairway.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   book = ImageHandler::LoadPNG("Images/Dungeon/Book.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   heartcontainer = ImageHandler::LoadPNG("Images/Dungeon/HeartContainer.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
@@ -304,7 +305,14 @@ void ZeldaImageProcessor::UpdateData() {
 		}
 	      }
 	    }
-	  }	  
+	  }
+	  if (!foundLink) {
+	    //check for staircases
+	    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	    if (playScreen.Similarity(stairway) > CAPTURED_DUNGEON_STAIRCASE_THRESHOLD) {
+	      ZeldaInformationHandler::SetStaircase();
+	    }
+	  }
 	  if (!foundLink) {
 	    //check for items
 	    //The minimap cursor does not show in staircases

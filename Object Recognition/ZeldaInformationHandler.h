@@ -57,7 +57,8 @@ class ZeldaInformationHandler {
   static int GetHearts();
   static int GetBonusCaves();  
   static void SetItem(DungeonItems item);
-  static DungeonItems GetItem(int level, bool first);  
+  static DungeonItems GetItem(int level, bool first);
+  static void SetStaircase();  
  private:
   static std::recursive_mutex dataMutex;
 
@@ -67,7 +68,8 @@ class ZeldaInformationHandler {
   static std::map<RoomType, GLuint> dungeonTextures;
   static std::map<DoorType, GLuint> doorTextures;
   static std::map<DungeonItems, GLuint> itemTextures;    
-
+  static std::map<std::pair<int,int>, Secrets> overworldSecrets;
+  
   static int mapx;
   static int mapy;
   static int dungeonx;
@@ -82,6 +84,7 @@ class ZeldaInformationHandler {
     DoorType GetDoorType(int x1, int y1, int x2, int y2);    
     RoomType GetRoomType(int x, int y);
     std::pair<int, int> GetLocation();
+    std::pair<int, int> GetStartLocation();    
     Secrets Number();
     void SetTriforce();
     bool GetTriforce();
@@ -90,13 +93,15 @@ class ZeldaInformationHandler {
     void SetItem(DungeonItems item);
     DungeonItems GetFirstItem();
     DungeonItems GetSecondItem();
-    DungeonItems GetItem(std::pair<int, int> loc);            
+    DungeonItems GetItem(std::pair<int, int> loc);
+    void SetStaircase(std::pair<int, int> firstroom, std::pair<int, int> secondroom);    
   private:
     int overworldx;
     int overworldy;
     Secrets levelNumber;
     bool triforce;
     bool heart;
+    std::pair<int, int> startloc;    
     DungeonItems firstItem;
     std::pair<int, int> firstitemloc;
     DungeonItems secondItem;
@@ -110,7 +115,8 @@ class ZeldaInformationHandler {
   
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
-  static std::map<std::pair<int,int>, Secrets> overworldSecrets;
+  static bool isStaircase;
+  
   static int hearts;
   
   static bool isRunning;
