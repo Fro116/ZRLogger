@@ -554,6 +554,13 @@ bool ZeldaImageProcessor::FindZeldaScreen() {
       }
     }
   }
+  {
+    ImageHandler screen = GetScreen();
+    std::tuple<int, int, int> whitergb = screen.Crop(REFERENCE_CAPTURED_WHITE_XCOOR*SCALE_X, REFERENCE_CAPTURED_WHITE_YCOOR*SCALE_Y, REFERENCE_CAPTURED_WHITE_WIDTH*SCALE_X, REFERENCE_CAPTURED_WHITE_HEIGHT*SCALE_Y).MostCommonRGB();
+    CAPTURED_WHITE_R = std::get<0>(whitergb);
+    CAPTURED_WHITE_G = std::get<1>(whitergb);
+    CAPTURED_WHITE_B = std::get<2>(whitergb);
+  }
   return true;
 }
 
@@ -1083,7 +1090,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     //If letter has not been shown, then potion shop will have no text
     ZeldaInformationHandler::Secrets prev = ZeldaInformationHandler::GetSecret(mapx, mapy);
     if ((prev == ZeldaInformationHandler::Secrets::UNKNOWN_CAVE) || (prev == ZeldaInformationHandler::Secrets::UNEXPLORED) || (prev == ZeldaInformationHandler::Secrets::PRE_POTION_SHOP)) {
-      if (item.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B).size() == 0) {
+      if (item.PixelsWithRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B).size() == 0) {
 	ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::PRE_POTION_SHOP);
 	foundSecret = true;
       }
@@ -1095,7 +1102,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   }
   //check if in anyroad
   {
-    ImageHandler road = screen.Crop(REFERENCE_ANYROAD_XCOOR*SCALE_X, REFERENCE_ANYROAD_YCOOR*SCALE_Y, REFERENCE_ANYROAD_WIDTH*SCALE_X, REFERENCE_ANYROAD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+    ImageHandler road = screen.Crop(REFERENCE_ANYROAD_XCOOR*SCALE_X, REFERENCE_ANYROAD_YCOOR*SCALE_Y, REFERENCE_ANYROAD_WIDTH*SCALE_X, REFERENCE_ANYROAD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
     if (road.Similarity(anyroad) > CAPTURED_ANYROAD_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ANYROAD);
       foundSecret = true;
@@ -1105,7 +1112,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   {
     bool foundWhiteSword = false;
     {
-      ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+      ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
       if (sword.Similarity(whitesword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
 	ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WHITE_SWORD);
 	foundSecret = true;
@@ -1114,7 +1121,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     }
     {
       if (!foundWhiteSword) {
-	ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(WHITE_R, WHITE_G, WHITE_B);
+	ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
 	if (sword.Similarity(magicalsword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
 	  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::MAGICAL_SWORD);
 	  foundSecret = true;
