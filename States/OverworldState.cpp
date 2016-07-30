@@ -164,6 +164,10 @@ void OverworldState::Draw(double time) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shaders);
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
+
     float x = 800;
     float y = 400;
     float z = y/2;
