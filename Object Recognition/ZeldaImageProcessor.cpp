@@ -4,7 +4,7 @@
 #include <unordered_set>
 
 ZeldaImageProcessor::ZeldaImageProcessor() {
-  while (!FindZeldaScreen()) {
+  while (!FindZeldaScreen() && ZeldaInformationHandler::GetIsRunning()) {
     //Find zelda screen
   }
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
