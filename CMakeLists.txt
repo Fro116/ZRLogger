@@ -5,12 +5,6 @@ set(COMMON_INCLUDES "Abstract Graphics" "Abstract States" "States" "Utility" "Ob
 set(COMMON_SOURCES "Abstract Graphics/OpenGLUtility.cpp" "Abstract States/Drawable.cpp" "Abstract Graphics/SOIL.c" "Abstract Graphics/image_DXT.c" "Abstract States/GameEngine.cpp" "Abstract States/GameDriver.cpp" "Abstract Graphics/image_helper.c" "Abstract States/Movable.cpp" "Abstract Graphics/stb_image_aug.c" "States/OverworldState.cpp" "States/DungeonState.cpp" "States/DungeonMarker.cpp" "States/TriforceMarker.cpp" "States/ItemMarker.cpp" "States/BonusCaveMarker.cpp" "States/HeartMarker.cpp" "States/DungeonDoor.cpp" "States/ZeldaFindingScreen.cpp" "States/OverworldMarker.cpp" "States/DungeonSelector.cpp" "States/OverworldSelector.cpp" "States/ZRDriver.cpp" "Abstract Graphics/OpenGLRectangle.cpp" "Object Recognition/ZeldaImageProcessor.cpp" "Object Recognition/ZeldaInformationHandler.cpp" "Object Recognition/lodepng.cpp")
 set(CMAKE_CXX_FLAGS "-std=c++11 -O2")
 
-if (MSVC)
-  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
-  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR})
-  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
-endif (MSVC)
-
 if (APPLE)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
   set(APPLE_SOURCES "Apple/main.cpp" "Object Recognition/Apple/ImageHandler.cpp")
@@ -41,3 +35,9 @@ if (WIN32)
   add_definitions(-DTW_STATIC -DTW_NO_LIB_PRAGMA -DTW_NO_DIRECT3D -DGLEW_STATIC -D_CRT_SECURE_NO_WARNINGS -DWIN32)
   target_link_libraries(ZRLogger ${ALL_LIBS})
 endif (WIN32)
+
+if (MSVC)
+  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR})
+  set_target_properties(ZRLogger PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
+endif (MSVC)
