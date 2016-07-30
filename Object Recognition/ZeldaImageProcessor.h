@@ -35,6 +35,10 @@ class ZeldaImageProcessor {
   int toplefty;
   int screenWidth;
   int screenHeight;
+    
+  int CAPTURED_WHITE_R = 240;
+  int CAPTURED_WHITE_G = 240;
+  int CAPTURED_WHITE_B = 240;
 
   int WHITE_R = 255;
   int WHITE_G = 255;
