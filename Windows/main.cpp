@@ -42,8 +42,7 @@ void ProcessingThread() {
   }
 }
 
-//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow) {
-int main(int argc, char* argv) {
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow) {
   ZeldaInformationHandler::Init();
   std::thread processing(ProcessingThread);
   GraphicsThread();
