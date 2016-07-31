@@ -4,7 +4,7 @@ ZRLogger is an automated tracking tool designed for Zelda Randomizer. As you pla
 
 # Usage
 
-A detailed guide to using ZRLogger is given in Tutorial/ZRLogger Tutorial.mp4.
+A detailed guide to using ZRLogger is given at https://youtu.be/kkKu7nYFQ-Y .
 The short story is to open your emulator and wait on the file select screen
 
 ![alt text](Images/Registration/RegistrationScreen.png "")
