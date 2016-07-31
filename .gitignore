@@ -4,7 +4,6 @@ CMake*
 Makefile
 compile_commands.json
 ZRLogger
-ZRLogger.exe
 *.DS_Store
 .clang_complete
 build/*
