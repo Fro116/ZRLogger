@@ -11,7 +11,7 @@ The short story is to open your emulator and wait on the file select screen
 
 Then run ZRLogger.exe and wait for the screen to change from 
 
-![alt text](Images/ZeldaFindingScreen.png "")
+![alt text](Images/Readme/ZeldaFindingScreen.png "")
 
 to
 
