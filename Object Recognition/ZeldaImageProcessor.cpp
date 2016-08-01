@@ -215,6 +215,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  bool foundLink = false;
 	  int lmapx;
 	  int lmapy;
+    int possibilities = 0;
 	  for (int mapx = 0; mapx < 8; ++mapx) {
 	    for (int mapy = 0; mapy < 8; ++mapy) {
 	      int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
@@ -230,12 +231,15 @@ void ZeldaImageProcessor::UpdateData() {
 	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B) &&
 		  !(ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy) == ZeldaInformationHandler::RoomType::TRIFORCE_ROOM &&
 		    std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_B, CURRENT_TUNIC_G) == std::make_tuple(HEART_RED_R, HEART_RED_B, HEART_RED_G))) {
-		foundLink = true;
+    possibilities++;
 		lmapx = mapx;
 		lmapy = mapy;
 	      }
 	    }
 	  }
+    if (possibilities == 1) {
+      foundLink = true;
+    }
 	  if (foundLink) {
 	    {
 	      //check for triforce room from compass
