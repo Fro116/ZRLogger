@@ -409,7 +409,7 @@ bool ZeldaInformationHandler::GetIsRunning() {
 
 void ZeldaInformationHandler::SetHearts(int numHearts) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  if (numHearts > 0 && numHearts > hearts && numHearts <= hearts+1) {
+  if (numHearts > 0 && numHearts > hearts && (numHearts <= hearts+1 || hearts == 0)) {
     hearts = numHearts;
     if (GetIsInDungeon()) {
       std::pair<int, int> loc = GetMapLocation();
