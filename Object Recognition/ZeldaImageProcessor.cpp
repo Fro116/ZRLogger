@@ -255,7 +255,7 @@ void ZeldaImageProcessor::UpdateData() {
 		  int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
 		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
 		  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
-		  if (maprgb == std::make_tuple(HEART_RED_R, HEART_RED_G, HEART_RED_B) && !(mapx == lmapx && mapy == lmapy)) {
+		  if (maprgb != std::make_tuple(START_BLUE_R, START_BLUE_G, START_BLUE_B) && maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && !(mapx == lmapx && mapy == lmapy)) {
 		    ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::TRIFORCE_ROOM);
 		  }
 		}
