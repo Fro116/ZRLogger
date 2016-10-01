@@ -5,6 +5,7 @@
 
 ZeldaImageProcessor::ZeldaImageProcessor() {
   while (!FindZeldaScreen() && ZeldaInformationHandler::GetIsRunning()) {
+	  std::cout << "FINDING " << std::endl;
     //Find zelda screen
   }
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -521,8 +522,8 @@ bool ZeldaImageProcessor::FindZeldaScreen() {
     ImageHandler screen = ImageHandler::Screenshot();
     std::vector<std::pair<int,int>> blackcoordinates = screen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B);
     std::vector<int> blackbox = BoundingBox(blackcoordinates);
-    screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
-    std::vector<std::pair<int,int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
+    screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite();
+		std::vector<std::pair<int, int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
     if (coordinates.empty()) {
       return false;
     }
