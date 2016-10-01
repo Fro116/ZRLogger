@@ -275,7 +275,7 @@ void ZeldaImageProcessor::UpdateData() {
 	      //first make sure you're not moving between doors
 	      ImageHandler handle = screen.Crop(REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT*SCALE_Y);
 	      std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
-	      handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor));
+	      handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
 	      double sim =  handle.Similarity(dungeondoorhandle);
 	      if (sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD || 1-sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
 		if (dungeondoortransition) {
@@ -354,7 +354,7 @@ void ZeldaImageProcessor::UpdateData() {
 	    if (alive) {
 	      double maxSim = 0;
 	      ZeldaInformationHandler::DungeonItems type;
-	      ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+				ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_ITEM_COLOR_TOLERANCE);
 	      if (item.Similarity(book) > maxSim) {
 		maxSim = item.Similarity(book);
 		type = ZeldaInformationHandler::DungeonItems::BOOK;
@@ -661,7 +661,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonld;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -671,7 +671,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();            
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonlk.MostCommonRGB();                  
       ImageHandler zeldaDLD = dungeonlk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -682,7 +682,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonls.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonls.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -692,7 +692,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonlb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -718,7 +718,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonrd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -728,7 +728,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonrk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonrk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -739,7 +739,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonrs.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonrs.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -749,7 +749,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonrb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -775,7 +775,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeontd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -785,18 +785,18 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeontk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeontk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
-      if (simDLD > bestSim) {
+			if (simDLD > bestSim) {
 	bestSim = simDLD;
 	bestFit = ZeldaInformationHandler::DoorType::KEY;
       }
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonts.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonts.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -806,7 +806,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeontb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -832,7 +832,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonbd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -842,7 +842,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonbk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonbk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -853,7 +853,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonbs.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonbs.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -863,7 +863,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonbb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
