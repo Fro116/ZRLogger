@@ -219,33 +219,37 @@ ImageHandler ImageHandler::ConvertToBlackAndWhite(int whiter, int whiteg, int wh
 }
 
 ImageHandler ImageHandler::FilterRGB(int red, int green, int blue) {
-  void* block = malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * 4);
-  uint8_t* newPixels = static_cast<uint8_t*>(block);
-  uint8_t* writer = newPixels;
-  uint8_t* reader = pixels;
-  for (long row = 0; row < height; ++row) {
-    for (long col = 0; col < width; ++col) {
-      int a = *reader++; //copy alpha
-      int r = *reader++; //copy red
-      int g = *reader++; //copy green
-      int b = *reader++; //copy blue
-      if (red == r && blue == b && green == g) {
-	//Black pixel
-	*writer++ = 255;
-	*writer++ = 0;
-	*writer++ = 0;
-	*writer++ = 0;
-      }
-      else {
-	//White pixel
-	*writer++ = 255;
-	*writer++ = 255;
-	*writer++ = 255;
-	*writer++ = 255;
-      }
-    }
-  }
-  return ImageHandler(newPixels, width, height);
+	return FilterRGB(red, green, blue, 0);
+}
+
+ImageHandler ImageHandler::FilterRGB(int red, int green, int blue, int threshold) {
+	void* block = malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * 4);
+	uint8_t* newPixels = static_cast<uint8_t*>(block);
+	uint8_t* writer = newPixels;
+	uint8_t* reader = pixels;
+	for (long row = 0; row < height; ++row) {
+		for (long col = 0; col < width; ++col) {
+			int a = *reader++; //copy alpha
+			int r = *reader++; //copy red
+			int g = *reader++; //copy green
+			int b = *reader++; //copy blue
+			if (std::abs(red - r) <= threshold && std::abs(blue-b) <= threshold && std::abs(green -g) <= threshold) {
+				//Black pixel
+				*writer++ = 255;
+				*writer++ = 0;
+				*writer++ = 0;
+				*writer++ = 0;
+			}
+			else {
+				//White pixel
+				*writer++ = 255;
+				*writer++ = 255;
+				*writer++ = 255;
+				*writer++ = 255;
+			}
+		}
+	}
+	return ImageHandler(newPixels, width, height);
 }
 
 double ImageHandler::Similarity(ImageHandler& other) {
