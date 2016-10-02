@@ -29,6 +29,7 @@ class ZeldaImageProcessor {
   ImageHandler GetScreen(); //returns a cropped screenshot that captures the zelda playing screen
   void RecordDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordDarkDoors(ImageHandler& screen, int mapx, int mapy);
+	void RecordBlackDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordSecretCave(ImageHandler& screen, int mapx, int mapy);
   
   int topleftx;
@@ -61,7 +62,7 @@ class ZeldaImageProcessor {
   int CAPTURED_REGISTRATION_SCREEN_XCOOR;
   int CAPTURED_REGISTRATION_SCREEN_YCOOR;
   double CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD = 0.80;
-	int CAPTURED_REGISTRATION_WHITE_THRESHOLD = 220;
+	int CAPTURED_REGISTRATION_WHITE_THRESHOLD = 200;
 
   double SCALE_X;
   double SCALE_Y;
@@ -210,6 +211,8 @@ class ZeldaImageProcessor {
   double CAPTURED_DUNGEON_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.90;  
   double CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD = 0.90;
   double CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.98;
+	double CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD = 0.90;
+	double CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.98;
 	int CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE = 50;
 
   int REFERENCE_DUNGEON_ITEM_XCOOR = 129;
@@ -298,7 +301,24 @@ class ZeldaImageProcessor {
   ImageHandler dungeondbk;
   ImageHandler dungeondbs;
   ImageHandler dungeondbb;  
+	ImageHandler dungeonbld;
+	ImageHandler dungeonblk;
+	ImageHandler dungeonbls;
+	ImageHandler dungeonblb;
+	ImageHandler dungeonbrd;
+	ImageHandler dungeonbrk;
+	ImageHandler dungeonbrs;
+	ImageHandler dungeonbrb;
+	ImageHandler dungeonbtd;
+	ImageHandler dungeonbtk;
+	ImageHandler dungeonbts;
+	ImageHandler dungeonbtb;
+	ImageHandler dungeonbbd;
+	ImageHandler dungeonbbk;
+	ImageHandler dungeonbbs;
+	ImageHandler dungeonbbb;
   ImageHandler dungeondoorhandle;
+	ImageHandler dungeondoorhandleblack;
   bool dungeondoortransition = false;
 
   ImageHandler stairway;
