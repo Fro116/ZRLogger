@@ -37,6 +37,7 @@ class ImageHandler {
   ImageHandler ConvertToBlackAndWhite();
   ImageHandler ConvertToBlackAndWhite(int whiter, int whiteg, int whiteb); //any pixels with an r,g,b >= whiter,whiteg,whiteb will be turned to white
   ImageHandler FilterRGB(int red, int green, int blue); //selected color is turned to black, all other colors will be turned to white
+	ImageHandler FilterRGB(int red, int green, int blue, int threshold); //pixel is turned to black if each |channel - input| <= threshold, all other colors will be turned to white
   void SaveAsPPM(std::string outfile);
   std::tuple<int, int, int> RGBAtPixel(int pixelx, int pixely); //Zero indexed
   std::vector<std::pair<int, int>> PixelsWithRGB(int red, int green, int blue); //returns all pixel coordinates (x,y) matching color

@@ -29,6 +29,7 @@ class ZeldaImageProcessor {
   ImageHandler GetScreen(); //returns a cropped screenshot that captures the zelda playing screen
   void RecordDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordDarkDoors(ImageHandler& screen, int mapx, int mapy);
+	void RecordBlackDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordSecretCave(ImageHandler& screen, int mapx, int mapy);
   
   int topleftx;
@@ -61,6 +62,7 @@ class ZeldaImageProcessor {
   int CAPTURED_REGISTRATION_SCREEN_XCOOR;
   int CAPTURED_REGISTRATION_SCREEN_YCOOR;
   double CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD = 0.80;
+	int CAPTURED_REGISTRATION_WHITE_THRESHOLD = 200;
 
   double SCALE_X;
   double SCALE_Y;
@@ -170,17 +172,20 @@ class ZeldaImageProcessor {
   int REFERENCE_DUNGEON_NINE_HEIGHT = 7;
   double CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD = 0.80;  
 
-  double CAPTURED_ANYROAD_SIMILARITY_THRESHOLD = 0.80;    
-  double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.80;    
-  double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.80;  
+  double CAPTURED_ANYROAD_SIMILARITY_THRESHOLD = 0.90;    
+  double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.90;    
+  double CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD = 0.90;  
   double SECRET_CAVE_BLACK_THRESHOLD = 0.4;
   double SHOP_OWNER_BLACK_THRESHOLD = 0.5;
+	int CAPTURED_ITEM_COLOR_TOLERANCE = 50;
+	int CAPTURED_ANYROAD_COLOR_TOLERANCE = 50;
 
   int REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR = 10;
   int REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR = 161;
   int REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH = 6;
   int REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT = 7;
-  double CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD = 0.80;    
+  double CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD = 0.90;   
+	int CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE = 50;
 
   int REFERENCE_LEFT_DUNGEON_DOOR_XCOOR = 12;
   int REFERENCE_LEFT_DUNGEON_DOOR_YCOOR = 128;
@@ -202,17 +207,22 @@ class ZeldaImageProcessor {
   int REFERENCE_BOTTOM_DUNGEON_DOOR_WIDTH = 32;
   int REFERENCE_BOTTOM_DUNGEON_DOOR_HEIGHT = 20;
 
-  double CAPTURED_DUNGEON_ROOM_SIMILARITY_THRESHOLD = 0.70; 
-  double CAPTURED_DUNGEON_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.80;  
-  double CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD = 0.85;
-  double CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.95;
+  double CAPTURED_DUNGEON_ROOM_SIMILARITY_THRESHOLD = 0.90; 
+  double CAPTURED_DUNGEON_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.90;  
+  double CAPTURED_DUNGEON_DARK_ROOM_SIMILARITY_THRESHOLD = 0.90;
+  double CAPTURED_DUNGEON_DARK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.98;
+	double CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD = 0.90;
+	double CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD = 0.98;
+	int CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE = 50;
 
   int REFERENCE_DUNGEON_ITEM_XCOOR = 129;
   int REFERENCE_DUNGEON_ITEM_YCOOR = 137;
   int REFERENCE_DUNGEON_ITEM_WIDTH = 14;
   int REFERENCE_DUNGEON_ITEM_HEIGHT =16;
-  double CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD = 0.80;
-  double CAPTURED_DUNGEON_STAIRCASE_THRESHOLD = 0.85;  
+  double CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD = 0.90;
+	double CAPTURED_DUNGEON_ITEM_COLOR_TOLERANCE = 50;
+  double CAPTURED_DUNGEON_STAIRCASE_THRESHOLD = 0.90;  
+	int CAPTURED_DUNGEON_STAIRCASE_COLOR_TOLERANCE = 50;
 
   double DUNGEON_TRIFORCE_BLACK_THRESHOLD = 0.90;  
   int DUNGEON_TRIFORCE_WIDTH_UPPER_THRESHOLD = 16;
@@ -227,7 +237,8 @@ class ZeldaImageProcessor {
   int REFERENCE_HEART_X_SEPERATION = 8;
   int REFERENCE_HEART_Y_SEPERATION = 8;
   double CAPTURED_FULL_HEART_COLOR_THRESHOLD = 0.5;
-  double CAPTURED_HEART_SIMILARITY_THRESHOLD = 0.8;  
+  double CAPTURED_HEART_SIMILARITY_THRESHOLD = 0.9; 
+	int CAPTURED_HEART_COLOR_TOLERANCE = 50;
   
   ImageHandler heart;        
   ImageHandler arrow;
@@ -290,7 +301,24 @@ class ZeldaImageProcessor {
   ImageHandler dungeondbk;
   ImageHandler dungeondbs;
   ImageHandler dungeondbb;  
+	ImageHandler dungeonbld;
+	ImageHandler dungeonblk;
+	ImageHandler dungeonbls;
+	ImageHandler dungeonblb;
+	ImageHandler dungeonbrd;
+	ImageHandler dungeonbrk;
+	ImageHandler dungeonbrs;
+	ImageHandler dungeonbrb;
+	ImageHandler dungeonbtd;
+	ImageHandler dungeonbtk;
+	ImageHandler dungeonbts;
+	ImageHandler dungeonbtb;
+	ImageHandler dungeonbbd;
+	ImageHandler dungeonbbk;
+	ImageHandler dungeonbbs;
+	ImageHandler dungeonbbb;
   ImageHandler dungeondoorhandle;
+	ImageHandler dungeondoorhandleblack;
   bool dungeondoortransition = false;
 
   ImageHandler stairway;

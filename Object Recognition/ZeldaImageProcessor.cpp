@@ -50,7 +50,24 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   dungeondbk = ImageHandler::LoadPNG("Images/Dungeon/BottomKeyDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbs = ImageHandler::LoadPNG("Images/Dungeon/BottomShutterDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondbb = ImageHandler::LoadPNG("Images/Dungeon/BottomBombDoorDark.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbld = ImageHandler::LoadPNG("Images/Dungeon/DungeonLeftDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonblk = ImageHandler::LoadPNG("Images/Dungeon/LeftKeyDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbls = ImageHandler::LoadPNG("Images/Dungeon/LeftShutterDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonblb = ImageHandler::LoadPNG("Images/Dungeon/LeftBombDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbrd = ImageHandler::LoadPNG("Images/Dungeon/DungeonRightDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbrk = ImageHandler::LoadPNG("Images/Dungeon/RightKeyDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbrs = ImageHandler::LoadPNG("Images/Dungeon/RightShutterDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbrb = ImageHandler::LoadPNG("Images/Dungeon/RightBombDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbtd = ImageHandler::LoadPNG("Images/Dungeon/DungeonTopDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbtk = ImageHandler::LoadPNG("Images/Dungeon/TopKeyDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbts = ImageHandler::LoadPNG("Images/Dungeon/TopShutterDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbtb = ImageHandler::LoadPNG("Images/Dungeon/TopBombDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbbd = ImageHandler::LoadPNG("Images/Dungeon/DungeonBottomDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbbk = ImageHandler::LoadPNG("Images/Dungeon/BottomKeyDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbbs = ImageHandler::LoadPNG("Images/Dungeon/BottomShutterDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeonbbb = ImageHandler::LoadPNG("Images/Dungeon/BottomBombDoorBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   dungeondoorhandle = ImageHandler::LoadPNG("Images/Dungeon/DoorHandle.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	dungeondoorhandleblack = ImageHandler::LoadPNG("Images/Dungeon/DoorHandleBlack.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   stairway = ImageHandler::LoadPNG("Images/Dungeon/Stairway.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
   book = ImageHandler::LoadPNG("Images/Dungeon/Book.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bow = ImageHandler::LoadPNG("Images/Dungeon/Bow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
@@ -81,7 +98,7 @@ void ZeldaImageProcessor::UpdateData() {
       for (int ysep = 0; ysep < 2; ++ysep) {
         int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
         int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
-        ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+        ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_HEART_COLOR_TOLERANCE);
         if (heartloc.Similarity(heart) > CAPTURED_HEART_SIMILARITY_THRESHOLD) {
           numhearts++;
         }
@@ -274,8 +291,9 @@ void ZeldaImageProcessor::UpdateData() {
 	      //first make sure you're not moving between doors
 	      ImageHandler handle = screen.Crop(REFERENCE_DUNGEON_DOOR_HANDLE_XCOOR*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_YCOOR*SCALE_Y, REFERENCE_DUNGEON_DOOR_HANDLE_WIDTH*SCALE_X, REFERENCE_DUNGEON_DOOR_HANDLE_HEIGHT*SCALE_Y);
 	      std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
-	      handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor));
-	      double sim =  handle.Similarity(dungeondoorhandle);
+				handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
+	      double sim =  std::max(handle.Similarity(dungeondoorhandle), handle.Similarity(dungeondoorhandleblack));
+
 	      if (sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD || 1-sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
 		if (dungeondoortransition) {
 		  std::pair<int, int> prevloc = ZeldaInformationHandler::GetDungeonLocation();
@@ -290,6 +308,7 @@ void ZeldaImageProcessor::UpdateData() {
 	      if (!dungeondoortransition) {
 		RecordDoors(screen, lmapx, lmapy);
 		RecordDarkDoors(screen, lmapx, lmapy);
+		RecordBlackDoors(screen, lmapx, lmapy);
 	      }
 	    }
 	    ZeldaInformationHandler::SetDungeonLocation(lmapx, lmapy, ZeldaInformationHandler::RoomType::UNKNOWN_ROOM);
@@ -328,7 +347,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  }
 	  if (!foundLink) {
 	    //check for staircases
-	    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	    ImageHandler playScreen = screen.Crop(REFERENCE_PLAYING_SCREEN_XCOOR*SCALE_X, REFERENCE_PLAYING_SCREEN_YCOOR*SCALE_Y, REFERENCE_PLAYING_SCREEN_WIDTH*SCALE_X, REFERENCE_PLAYING_SCREEN_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_STAIRCASE_COLOR_TOLERANCE);
 	    if (playScreen.Similarity(stairway) > CAPTURED_DUNGEON_STAIRCASE_THRESHOLD) {
 	      ZeldaInformationHandler::SetStaircase();
 	    }
@@ -353,7 +372,7 @@ void ZeldaImageProcessor::UpdateData() {
 	    if (alive) {
 	      double maxSim = 0;
 	      ZeldaInformationHandler::DungeonItems type;
-	      ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+				ImageHandler item = screen.Crop(REFERENCE_DUNGEON_ITEM_XCOOR*SCALE_X, REFERENCE_DUNGEON_ITEM_YCOOR*SCALE_Y, REFERENCE_DUNGEON_ITEM_WIDTH*SCALE_X, REFERENCE_DUNGEON_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_ITEM_COLOR_TOLERANCE);
 	      if (item.Similarity(book) > maxSim) {
 		maxSim = item.Similarity(book);
 		type = ZeldaInformationHandler::DungeonItems::BOOK;
@@ -469,7 +488,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  for (int ysep = 0; ysep < 2; ++ysep) {
 	    int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
 	    int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
-	    ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+	    ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_HEART_COLOR_TOLERANCE);
 	    if (heartloc.Similarity(heart) > CAPTURED_HEART_SIMILARITY_THRESHOLD) {
 	      numhearts++;
 	    }
@@ -521,8 +540,8 @@ bool ZeldaImageProcessor::FindZeldaScreen() {
     ImageHandler screen = ImageHandler::Screenshot();
     std::vector<std::pair<int,int>> blackcoordinates = screen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B);
     std::vector<int> blackbox = BoundingBox(blackcoordinates);
-    screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
-    std::vector<std::pair<int,int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
+		screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite(CAPTURED_REGISTRATION_WHITE_THRESHOLD, CAPTURED_REGISTRATION_WHITE_THRESHOLD, CAPTURED_REGISTRATION_WHITE_THRESHOLD);
+		std::vector<std::pair<int, int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
     if (coordinates.empty()) {
       return false;
     }
@@ -660,7 +679,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonld;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -670,7 +689,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();            
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonlk.MostCommonRGB();                  
       ImageHandler zeldaDLD = dungeonlk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -681,7 +700,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonls.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonls.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -691,7 +710,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonlb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -717,7 +736,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonrd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -727,7 +746,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonrk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonrk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -738,7 +757,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonrs.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonrs.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -748,7 +767,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonrb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -774,7 +793,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeontd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -784,18 +803,18 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeontk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeontk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
-      if (simDLD > bestSim) {
+			if (simDLD > bestSim) {
 	bestSim = simDLD;
 	bestFit = ZeldaInformationHandler::DoorType::KEY;
       }
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonts.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonts.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -805,7 +824,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeontb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -831,7 +850,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonbd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -841,7 +860,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonbk.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonbk.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -852,7 +871,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
     }
     {
       std::tuple<int, int, int> ccolor = dl.MostCommonRGB();
-      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor));
+      ImageHandler dld = dl.FilterRGB(std::get<0>(ccolor), std::get<1>(ccolor), std::get<2>(ccolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       std::tuple<int, int, int> rcolor = dungeonbs.MostCommonRGB();
       ImageHandler zeldaDLD = dungeonbs.FilterRGB(std::get<0>(rcolor), std::get<1>(rcolor), std::get<2>(rcolor));
       double simDLD = dld.Similarity(zeldaDLD);
@@ -862,7 +881,7 @@ void ZeldaImageProcessor::RecordDoors(ImageHandler& screen, int mapx, int mapy) 
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeonbb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -891,7 +910,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondld;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -900,7 +919,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondlk;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -909,7 +928,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondls;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -918,7 +937,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondlb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -944,7 +963,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondrd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -953,7 +972,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondrk;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -962,7 +981,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondrs;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -971,7 +990,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondrb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -997,7 +1016,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondtd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1006,7 +1025,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondtk;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1015,7 +1034,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondts;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1024,7 +1043,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondtb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1050,7 +1069,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
     ZeldaInformationHandler::DoorType bestFit;
     double bestSim = 0;
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondbd;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1059,7 +1078,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondbk;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1068,7 +1087,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondbs;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1077,7 +1096,7 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       }
     }
     {
-      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+      ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
       ImageHandler zeldaDLD = dungeondbb;
       double simDLD = dld.Similarity(zeldaDLD);
       if (simDLD > bestSim) {
@@ -1100,6 +1119,221 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
   }
 }
 
+void ZeldaImageProcessor::RecordBlackDoors(ImageHandler& screen, int mapx, int mapy) {
+	{
+		ImageHandler dl = screen.Crop(REFERENCE_LEFT_DUNGEON_DOOR_XCOOR*SCALE_X, REFERENCE_LEFT_DUNGEON_DOOR_YCOOR*SCALE_Y, REFERENCE_LEFT_DUNGEON_DOOR_WIDTH*SCALE_X, REFERENCE_LEFT_DUNGEON_DOOR_HEIGHT*SCALE_Y);
+		ZeldaInformationHandler::DoorType bestFit;
+		double bestSim = 0;
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbld;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::OPEN;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonblk;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::KEY;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbls;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::SHUTTER;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonblb;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::BOMB;
+			}
+		}
+		{
+			//prevent false positives
+			double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+			if (bp > bestSim || 1 - bp > bestSim) {
+				bestSim = 0;
+			}
+		}
+		if (bestSim > CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD &&
+			!((bestSim < CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
+			ZeldaInformationHandler::SetDungeonLocation(mapx - 1, mapy, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);
+			ZeldaInformationHandler::SetDungeonDoor(mapx, mapy, mapx - 1, mapy, bestFit);
+		}
+	}
+	{
+		ImageHandler dl = screen.Crop(REFERENCE_RIGHT_DUNGEON_DOOR_XCOOR*SCALE_X, REFERENCE_RIGHT_DUNGEON_DOOR_YCOOR*SCALE_Y, REFERENCE_RIGHT_DUNGEON_DOOR_WIDTH*SCALE_X, REFERENCE_RIGHT_DUNGEON_DOOR_HEIGHT*SCALE_Y);
+		ZeldaInformationHandler::DoorType bestFit;
+		double bestSim = 0;
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbrd;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::OPEN;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbrk;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::KEY;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbrs;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::SHUTTER;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbrb;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::BOMB;
+			}
+		}
+		{
+			//prevent false positives
+			double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+			if (bp > bestSim || 1 - bp > bestSim) {
+				bestSim = 0;
+			}
+		}
+		if (bestSim > CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD &&
+			!((bestSim < CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
+			ZeldaInformationHandler::SetDungeonLocation(mapx + 1, mapy, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);
+			ZeldaInformationHandler::SetDungeonDoor(mapx, mapy, mapx + 1, mapy, bestFit);
+		}
+	}
+	{
+		ImageHandler dl = screen.Crop(REFERENCE_TOP_DUNGEON_DOOR_XCOOR*SCALE_X, REFERENCE_TOP_DUNGEON_DOOR_YCOOR*SCALE_Y, REFERENCE_TOP_DUNGEON_DOOR_WIDTH*SCALE_X, REFERENCE_TOP_DUNGEON_DOOR_HEIGHT*SCALE_Y);
+		ZeldaInformationHandler::DoorType bestFit;
+		double bestSim = 0;
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbtd;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::OPEN;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbtk;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::KEY;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbts;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::SHUTTER;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbtb;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::BOMB;
+			}
+		}
+		{
+			//prevent false positives
+			double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+			if (bp > bestSim || 1 - bp > bestSim) {
+				bestSim = 0;
+			}
+		}
+		if (bestSim > CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD &&
+			!((bestSim < CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
+			ZeldaInformationHandler::SetDungeonLocation(mapx, mapy - 1, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);
+			ZeldaInformationHandler::SetDungeonDoor(mapx, mapy, mapx, mapy - 1, bestFit);
+		}
+	}
+	{
+		ImageHandler dl = screen.Crop(REFERENCE_BOTTOM_DUNGEON_DOOR_XCOOR*SCALE_X, REFERENCE_BOTTOM_DUNGEON_DOOR_YCOOR*SCALE_Y, REFERENCE_BOTTOM_DUNGEON_DOOR_WIDTH*SCALE_X, REFERENCE_BOTTOM_DUNGEON_DOOR_HEIGHT*SCALE_Y);
+		ZeldaInformationHandler::DoorType bestFit;
+		double bestSim = 0;
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbbd;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::OPEN;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbbk;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::KEY;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbbs;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::SHUTTER;
+			}
+		}
+		{
+			ImageHandler dld = dl.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+			ImageHandler zeldaDLD = dungeonbbb;
+			double simDLD = dld.Similarity(zeldaDLD);
+			if (simDLD > bestSim) {
+				bestSim = simDLD;
+				bestFit = ZeldaInformationHandler::DoorType::BOMB;
+			}
+		}
+		{
+			//prevent false positives
+			double bp = static_cast<double>(dl.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (dl.Width() * dl.Height());
+			if (bp > bestSim || 1 - bp > bestSim) {
+				bestSim = 0;
+			}
+		}
+		if (bestSim > CAPTURED_DUNGEON_BLACK_ROOM_SIMILARITY_THRESHOLD &&
+			!((bestSim < CAPTURED_DUNGEON_BLACK_BOMB_ROOM_SIMILARITY_THRESHOLD) && (bestFit == ZeldaInformationHandler::DoorType::BOMB))) {
+			ZeldaInformationHandler::SetDungeonLocation(mapx, mapy + 1, ZeldaInformationHandler::RoomType::UNSEEN_ROOM);
+			ZeldaInformationHandler::SetDungeonDoor(mapx, mapy, mapx, mapy + 1, bestFit);
+		}
+	}
+}
+
 void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int mapy) {
   bool foundSecret = false;
   //check if in a potion shop before showing letter. Check this case first because it is the easiest to mislabel
@@ -1120,7 +1354,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   }
   //check if in anyroad
   {
-    ImageHandler road = screen.Crop(REFERENCE_ANYROAD_XCOOR*SCALE_X, REFERENCE_ANYROAD_YCOOR*SCALE_Y, REFERENCE_ANYROAD_WIDTH*SCALE_X, REFERENCE_ANYROAD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
+    ImageHandler road = screen.Crop(REFERENCE_ANYROAD_XCOOR*SCALE_X, REFERENCE_ANYROAD_YCOOR*SCALE_Y, REFERENCE_ANYROAD_WIDTH*SCALE_X, REFERENCE_ANYROAD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_ANYROAD_COLOR_TOLERANCE);
     if (road.Similarity(anyroad) > CAPTURED_ANYROAD_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::ANYROAD);
       foundSecret = true;
@@ -1130,7 +1364,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   {
     bool foundWhiteSword = false;
     {
-      ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
+      ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_ITEM_COLOR_TOLERANCE);
       if (sword.Similarity(whitesword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
 	ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WHITE_SWORD);
 	foundSecret = true;
@@ -1139,7 +1373,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     }
     {
       if (!foundWhiteSword) {
-	ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B);
+	ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
 	if (sword.Similarity(magicalsword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
 	  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::MAGICAL_SWORD);
 	  foundSecret = true;
@@ -1151,7 +1385,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   bool lpotionshop = false;
   bool rpotionshop = false;
   {
-    ImageHandler item = screen.Crop(REFERENCE_SHOP_LEFT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_LEFT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+    ImageHandler item = screen.Crop(REFERENCE_SHOP_LEFT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_LEFT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_LEFT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_ITEM_COLOR_TOLERANCE);
     if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
       foundSecret = true;
@@ -1181,7 +1415,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     }		  
   }
   {
-    ImageHandler item = screen.Crop(REFERENCE_SHOP_MIDDLE_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_MIDDLE_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_MIDDLE_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_MIDDLE_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+    ImageHandler item = screen.Crop(REFERENCE_SHOP_MIDDLE_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_MIDDLE_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_MIDDLE_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_MIDDLE_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_ITEM_COLOR_TOLERANCE);
     if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
       foundSecret = true;
@@ -1208,7 +1442,7 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
     }
   }
   {
-    ImageHandler item = screen.Crop(REFERENCE_SHOP_RIGHT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_RIGHT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B);
+    ImageHandler item = screen.Crop(REFERENCE_SHOP_RIGHT_ITEM_XCOOR*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_YCOOR*SCALE_Y, REFERENCE_SHOP_RIGHT_ITEM_WIDTH*SCALE_X, REFERENCE_SHOP_RIGHT_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_ITEM_COLOR_TOLERANCE);
     if (item.Similarity(bluecandle) > CAPTURED_SHOP_ITEM_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::CANDLE_SHOP);
       foundSecret = true;
