@@ -522,7 +522,7 @@ bool ZeldaImageProcessor::FindZeldaScreen() {
     ImageHandler screen = ImageHandler::Screenshot();
     std::vector<std::pair<int,int>> blackcoordinates = screen.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B);
     std::vector<int> blackbox = BoundingBox(blackcoordinates);
-    screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite();
+		screen = screen.Crop(blackbox[0], blackbox[1], blackbox[2], blackbox[3]).ConvertToBlackAndWhite(CAPTURED_REGISTRATION_WHITE_THRESHOLD, CAPTURED_REGISTRATION_WHITE_THRESHOLD, CAPTURED_REGISTRATION_WHITE_THRESHOLD);
 		std::vector<std::pair<int, int>> coordinates = screen.PixelsWithRGB(WHITE_R, WHITE_G, WHITE_B);
     if (coordinates.empty()) {
       return false;
@@ -925,6 +925,9 @@ void ZeldaImageProcessor::RecordDarkDoors(ImageHandler& screen, int mapx, int ma
       if (simDLD > bestSim) {
 	bestSim = simDLD;
 	bestFit = ZeldaInformationHandler::DoorType::BOMB;
+	dld.SaveAsPPM("oldd.ppm");
+	zeldaDLD.SaveAsPPM("oldr.ppm");
+	std::cout << simDLD << std::endl;
       }
     }
     {
