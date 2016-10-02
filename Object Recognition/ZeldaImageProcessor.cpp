@@ -294,7 +294,6 @@ void ZeldaImageProcessor::UpdateData() {
 	      std::tuple<int, int, int> hcolor = handle.MostCommonRGB();
 	      handle = handle.FilterRGB(std::get<0>(hcolor), std::get<1>(hcolor), std::get<2>(hcolor), CAPTURED_DUNGEON_DOOR_HANDLE_COLOR_TOLERANCE);
 	      double sim =  std::max(handle.Similarity(dungeondoorhandle), handle.Similarity(dungeondoorhandleblack));
-
 	      if (sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD || 1-sim > CAPTURED_DUNGEON_DOOR_HANDLE_SIMILARITY_THRESHOLD) {
 		if (dungeondoortransition) {
 		  std::pair<int, int> prevloc = ZeldaInformationHandler::GetDungeonLocation();
