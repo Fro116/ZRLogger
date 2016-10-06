@@ -244,19 +244,61 @@ void ZeldaImageProcessor::UpdateData() {
 	      int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
 	      int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
 	      int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
-	      ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+	      ImageHandler mapbox = minimap.Crop(tx, ty, tw, th);
+	      ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);	      
 	      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 	      if (maprgb == std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_G, CURRENT_TUNIC_B) &&
 		  !(ZeldaInformationHandler::GetDungeonRoomType(mapx, mapy) == ZeldaInformationHandler::RoomType::TRIFORCE_ROOM &&
 		    std::make_tuple(CURRENT_TUNIC_R, CURRENT_TUNIC_B, CURRENT_TUNIC_G) == std::make_tuple(HEART_RED_R, HEART_RED_B, HEART_RED_G))) {
-		possibilities++;
-		lmapx = mapx;
-		lmapy = mapy;
+		mapspot = mapspot.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		double b = static_cast<double>(mapspot.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		mapbox = mapbox.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		double mb = static_cast<double>(mapbox.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		double bp = b / (mapspot.Width() * mapspot.Height());
+		double mbp = (mb-b) / (mapbox.Width() * mapbox.Height());		    
+		if (bp > CAPTURED_DUNGEON_MINIMAP_CURSOR_UPPER_BLACK_THRESHOLD && mbp < CAPTURED_DUNGEON_MINIMAP_CURSOR_LOWER_BLACK_THRESHOLD) {
+		  possibilities++;
+		  lmapx = mapx;
+		  lmapy = mapy;
+		}		
 	      }
 	    }
 	  }
 	  if (possibilities == 1) {
 	    foundLink = true;
+	  }
+	  if (possibilities == 2) {
+	    //case where link has redring and finds shadowless compass
+	    for (int mapx = 0; mapx < 8; ++mapx) {
+	      for (int mapy = 0; mapy < 8; ++mapy) {
+		int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+		int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+		int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+		int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+		int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+		int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+		int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+		int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+		ImageHandler mapbox = minimap.Crop(tx, ty, tw, th);
+		ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);	      
+		std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+		if (maprgb == std::make_tuple(HEART_RED_R, HEART_RED_G, HEART_RED_B)) {
+		  mapspot = mapspot.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		  double b = static_cast<double>(mapspot.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		  mapbox = mapbox.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		  double mb = static_cast<double>(mapbox.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		  double bp = b / (mapspot.Width() * mapspot.Height());
+		  double mbp = (mb-b) / (mapbox.Width() * mapbox.Height());		    
+		  if (bp > CAPTURED_DUNGEON_MINIMAP_CURSOR_UPPER_BLACK_THRESHOLD && mbp < CAPTURED_DUNGEON_MINIMAP_CURSOR_LOWER_BLACK_THRESHOLD) {
+		    if (ZeldaInformationHandler::GetDungeonLocation() == std::make_pair(mapx, mapy)) {
+		      lmapx = mapx;
+		      lmapy = mapy;
+		      foundLink = true;
+		    }
+		  }		
+		}
+	      }
+	    }
 	  }
 	  if (foundLink) {
 	    {
@@ -473,16 +515,25 @@ void ZeldaImageProcessor::UpdateData() {
 		  int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
 		  int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
 		  int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
-		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th);
+		  ImageHandler mapbox = mapspot.Crop(sx, sy, sw, sh);
 		  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 		  if (maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B)) {
-		    possibles++;
-		    color = maprgb;
+		    mapspot = mapspot.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		    double b = static_cast<double>(mapspot.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		    mapbox = mapbox.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		    double mb = static_cast<double>(mapbox.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		    double bp = b / (mapspot.Width() * mapspot.Height());
+		    double mbp = (mb-b) / (mapbox.Width() * mapbox.Height());		    
+		    if (bp > CAPTURED_DUNGEON_MINIMAP_CURSOR_UPPER_BLACK_THRESHOLD && mbp < CAPTURED_DUNGEON_MINIMAP_CURSOR_LOWER_BLACK_THRESHOLD) {
+		      possibles++;
+		      color = maprgb;
+		    }		  		    
 		  }
 		}
 	      }
 	    }
-	    if (possibles == 1) {
+	    if (possibles == 1 && color == std::make_tuple(HEART_RED_R, HEART_RED_G, HEART_RED_B)) {
 	      CURRENT_TUNIC_R = std::get<0>(color);
 	      CURRENT_TUNIC_G = std::get<1>(color);
 	      CURRENT_TUNIC_B = std::get<2>(color);
