@@ -614,6 +614,15 @@ void ZeldaInformationHandler::Dungeon::SetLocation(int x, int y, RoomType type) 
   if (prev == RoomType::TRIFORCE_ROOM) {
     write = false;
   }
+  if (type == RoomType::TRIFORCE_ROOM) {
+    for (int x = 0; x < 8; ++x) {
+      for (int y = 0; y < 8; ++y) {
+	if (GetRoomType(x,y) == RoomType::TRIFORCE_ROOM) {
+	  write = false;
+	}
+      }
+    }
+  }
   if (x < 0 || y < 0 || x >= 8 || y >=8) {
     write = false;
   }

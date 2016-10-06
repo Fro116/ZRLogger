@@ -271,10 +271,19 @@ void ZeldaImageProcessor::UpdateData() {
 		  int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
 		  int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
 		  int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+		  ImageHandler mapbox = minimap.Crop(tx, ty, tw, th);
 		  ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
 		  std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
 		  if (maprgb != std::make_tuple(START_BLUE_R, START_BLUE_G, START_BLUE_B) && maprgb != std::make_tuple(BLACK_R, BLACK_G, BLACK_B) && !(mapx == lmapx && mapy == lmapy)) {
-		    ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::TRIFORCE_ROOM);
+		    mapspot = mapspot.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		    double b = static_cast<double>(mapspot.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		    mapbox = mapbox.FilterRGB(std::get<0>(maprgb), std::get<1>(maprgb), std::get<2>(maprgb), CAPTURED_DUNGEON_MINIMAP_CURSOR_COLOR_TOLERANCE);
+		    double mb = static_cast<double>(mapbox.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size());
+		    double bp = b / (mapspot.Width() * mapspot.Height());
+		    double mbp = (mb-b) / (mapbox.Width() * mapbox.Height());		    
+		    if (bp > CAPTURED_DUNGEON_MINIMAP_CURSOR_UPPER_BLACK_THRESHOLD && mbp < CAPTURED_DUNGEON_MINIMAP_CURSOR_LOWER_BLACK_THRESHOLD) {
+		      ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, ZeldaInformationHandler::RoomType::TRIFORCE_ROOM);
+		    }
 		  }
 		}
 	      }
