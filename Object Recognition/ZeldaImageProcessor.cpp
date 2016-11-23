@@ -5,9 +5,11 @@
 #include <stack>
 
 ZeldaImageProcessor::ZeldaImageProcessor() {
+  zeldaScreen = ImageHandler::LoadPNG("Images/Registration/RegistrationScreen.png").ConvertToBlackAndWhite();  
   while (!FindZeldaScreen() && ZeldaInformationHandler::GetIsRunning()) {
     //Find zelda screen
   }
+  exit(1);
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bait = ImageHandler::LoadPNG("Images/Shops/Bait.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bomb = ImageHandler::LoadPNG("Images/Shops/Bomb.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
@@ -645,6 +647,11 @@ bool ZeldaImageProcessor::FindZeldaScreen() {
 	CAPTURED_REGISTRATION_SCREEN_HEIGHT = SCALE_Y * REFERENCE_SCREEN_HEIGHT;
 	CAPTURED_REGISTRATION_SCREEN_XCOOR = gx - SCALE_X * REFERENCE_REGISTRATION_SCREEN_G_XCOOR;
 	CAPTURED_REGISTRATION_SCREEN_YCOOR = gy - SCALE_Y * REFERENCE_REGISTRATION_SCREEN_G_YCOOR;
+	ImageHandler screen = GetScreen().ConvertToBlackAndWhite();
+	double sim = zeldaScreen.Similarity(screen);
+	if (sim < CAPTURED_REGISTRATION_SCREEN_SIMILARITY_THRESHOLD) {
+	  return false;
+	}
       }
       else{
 	return false;
