@@ -29,7 +29,7 @@ class DungeonMarker : public OpenGLRectangle {
  private:
   int mapx;
   int mapy;
-  ZeldaInformationHandler::RoomType type;
+  Dungeon::RoomType type;
 };
 
 #endif

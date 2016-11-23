@@ -28,7 +28,7 @@ class DungeonDoor : public OpenGLRectangle {
   void Draw(double time) override;
  private:
   std::tuple<int, int, int, int> doorLoc;
-  ZeldaInformationHandler::DoorType type;
+  Dungeon::DoorType type;
 };
 
 #endif

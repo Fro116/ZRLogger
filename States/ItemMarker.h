@@ -29,7 +29,7 @@ class ItemMarker : public OpenGLRectangle {
  private:
   int level;
   bool first;
-  ZeldaInformationHandler::DungeonItems item;
+  Dungeon::DungeonItems item;
 };
 
 #endif
