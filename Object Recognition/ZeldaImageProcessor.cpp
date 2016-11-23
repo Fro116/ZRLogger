@@ -9,7 +9,6 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
   while (!FindZeldaScreen() && ZeldaInformationHandler::GetIsRunning()) {
     //Find zelda screen
   }
-  exit(1);
   arrow = ImageHandler::LoadPNG("Images/Shops/Arrow.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bait = ImageHandler::LoadPNG("Images/Shops/Bait.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);
   bomb = ImageHandler::LoadPNG("Images/Shops/Bomb.png").FilterRGB(BLACK_R, BLACK_G, BLACK_B);  
