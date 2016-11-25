@@ -27,7 +27,6 @@ void GraphicsThread() {
   long nanosPerFrame = static_cast<long>(npf);
 
   std::shared_ptr<GameDriver> driver = std::make_shared<ZRDriver>("ZRLogger", 600, 300, nanosPerFrame,5);
-  ZeldaInformationHandler::InitTextures();
   auto dstate = std::make_shared<DungeonState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
   auto ostate = std::make_shared<OverworldState>(driver, "Abstract Graphics/Shaders/TextureShader.vertexshader", "Abstract Graphics/Shaders/TextureShader.fragmentshader");
   driver->Engine().PushState(dstate);
@@ -43,7 +42,6 @@ void ProcessingThread() {
 }
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow) {
-  ZeldaInformationHandler::Init();
   std::thread processing(ProcessingThread);
   GraphicsThread();
   processing.join();

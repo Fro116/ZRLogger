@@ -1,5 +1,9 @@
 #include "ZeldaInformationHandler.h"
 
+#include "RandomDungeonShapeHandler.h"
+#include "FirstQuestDungeonHandler.h"
+#include "SecondQuestDungeonHandler.h"
+
 std::recursive_mutex ZeldaInformationHandler::dataMutex;
 
 int ZeldaInformationHandler::mapx = -1;
@@ -7,225 +11,35 @@ int ZeldaInformationHandler::mapy = -1;
 int ZeldaInformationHandler::dungeonx = -1;
 int ZeldaInformationHandler::dungeony = -1;
 
-std::map<std::pair<int,int>, ZeldaInformationHandler::Secrets> ZeldaInformationHandler::overworldSecrets;
 bool ZeldaInformationHandler::isRunning = true;
 bool ZeldaInformationHandler::isInDungeon = false;
 bool ZeldaInformationHandler::isStaircase = false;
 std::vector<Dungeon> ZeldaInformationHandler::dungeons;
-std::vector<std::vector<std::vector<bool>>> ZeldaInformationHandler::dungeonShapes;
+std::shared_ptr<DungeonHandler> ZeldaInformationHandler::dungeonHandler;
 
-std::map<ZeldaInformationHandler::Secrets, GLuint> ZeldaInformationHandler::overworldTextures;
-std::map<Dungeon::RoomType, GLuint> ZeldaInformationHandler::dungeonTextures;
-std::map<Dungeon::DoorType, GLuint> ZeldaInformationHandler::doorTextures;
-std::map<Dungeon::DungeonItems, GLuint> ZeldaInformationHandler::itemTextures;
+struct ZeldaInformationHandler::EnumHasher {
+  template <typename T>
+  std::size_t operator()(T t) const {
+    return static_cast<std::size_t>(t);
+  }
+};
+struct ZeldaInformationHandler::PairHasher {
+  std::size_t operator()(std::pair<int,int> t) const {
+    std::size_t hash = 1;
+    hash += 31 * t.first;
+    hash += 31 * t.second;
+    return hash;
+  }
+};
+std::unordered_map<ZeldaInformationHandler::Secrets, GLuint, ZeldaInformationHandler::EnumHasher> ZeldaInformationHandler::overworldTextures;
+std::unordered_map<Dungeon::RoomType, GLuint, ZeldaInformationHandler::EnumHasher> ZeldaInformationHandler::dungeonTextures;
+std::unordered_map<Dungeon::DoorType, GLuint, ZeldaInformationHandler::EnumHasher> ZeldaInformationHandler::doorTextures;
+std::unordered_map<Dungeon::DungeonItems, GLuint, ZeldaInformationHandler::EnumHasher> ZeldaInformationHandler::itemTextures;
+std::unordered_map<std::pair<int,int>, ZeldaInformationHandler::Secrets, ZeldaInformationHandler::PairHasher> ZeldaInformationHandler::overworldSecrets;
 
 bool ZeldaInformationHandler::zeldaScreenFound;
-int ZeldaInformationHandler::hearts;
-
-void ZeldaInformationHandler::Init() {
-  std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  for (int a = 0; a < 8; ++a) {
-    for (int b = 0; b < 16; ++b) {
-      overworldSecrets[std::make_pair(a,b)] = Secrets::UNEXPLORED;
-    }
-  }
-
-  int d1data[] = {0,0,1,1,1,0,0,0,
-		  0,0,0,1,0,0,0,0,
-		  0,0,1,1,1,0,0,0,
-		  0,1,1,1,1,1,0,0,
-		  0,0,0,1,0,1,1,0,
-		  0,0,1,1,0,0,0,0,
-		  0,0,0,0,0,0,0,0,
-		  0,0,0,0,0,0,0,0};
-  int d2data[] = {0,0,0,1,1,0,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,0,1,1,0,0,0};
-  int d3data[] = {0,0,0,1,1,0,0,0,
-		  0,1,0,1,0,0,0,0,
-		  0,1,1,1,1,1,0,0,
-		  0,1,1,1,1,1,0,0,
-		  0,0,0,1,0,1,0,0,
-		  0,0,1,1,0,0,0,0,
-		  0,0,0,0,0,0,0,0,
-		  0,0,0,0,0,0,0,0};
-  int d4data[] = {0,0,1,1,0,0,0,0,
-		  0,0,0,1,1,0,0,0,
-		  0,0,1,1,0,0,0,0,
-		  0,0,1,0,0,0,0,0,
-		  0,0,1,1,1,0,0,0,
-		  0,0,1,1,0,0,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,0,1,1,1,1,0,0};
-  int d5data[] = {0,0,0,0,1,1,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,0,0,1,1,1,0,0,
-		  0,0,0,0,1,1,0,0,
-		  0,0,1,0,0,1,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,0,0,1,1,0,0,0};
-  int d6data[] = {0,1,1,1,0,0,0,0,
-		  0,1,0,1,0,0,0,0,
-		  0,1,0,0,0,0,0,0,
-		  0,1,0,0,0,0,0,0,
-		  0,1,1,1,0,1,0,0,
-		  0,1,1,0,0,1,1,0,
-		  0,1,1,1,1,1,1,0,
-		  0,0,1,1,1,1,0,0};
-  int d7data[] = {0,1,1,1,0,0,0,0,
-		  0,1,1,1,1,1,1,0,
-		  0,1,1,1,1,0,0,0,
-		  0,1,1,0,0,0,0,0,
-		  0,1,1,1,0,0,0,0,
-		  0,1,1,1,1,0,0,0,
-		  0,1,1,1,1,1,0,0,
-		  0,1,1,1,1,1,1,0};
-  int d8data[] = {0,0,1,1,1,1,0,0,
-		  0,0,0,0,1,0,0,0,
-		  0,0,1,1,1,1,0,0,
-		  0,1,1,1,1,0,0,0,
-		  0,1,1,1,1,1,0,0,
-		  0,0,1,1,1,0,0,0,
-		  0,0,0,1,1,1,0,0,
-		  0,0,0,0,1,0,0,0};
-  int d9data[] = {0,1,0,1,1,0,1,0,
-		  0,1,1,1,1,1,1,0,
-		  1,1,1,1,1,1,1,1,
-		  1,1,1,1,1,1,1,1,
-		  1,1,1,1,1,1,1,1,
-		  1,1,1,1,1,1,1,1,
-		  1,1,1,1,1,1,1,1,
-		  0,1,1,1,1,1,1,1};
-		  
-  dungeonShapes.push_back(FormatShape(d1data));
-  dungeonShapes.push_back(FormatShape(d2data));
-  dungeonShapes.push_back(FormatShape(d3data));
-  dungeonShapes.push_back(FormatShape(d4data));
-  dungeonShapes.push_back(FormatShape(d5data));
-  dungeonShapes.push_back(FormatShape(d6data));
-  dungeonShapes.push_back(FormatShape(d7data));
-  dungeonShapes.push_back(FormatShape(d8data));
-  dungeonShapes.push_back(FormatShape(d9data));
-
-  int overworldDeadData[] = {0,0,1,1,0,0,0,0,0,0,1,0,0,0,1,1,
-			     1,1,0,0,0,1,0,0,0,1,0,0,1,0,1,0,
-			     1,0,1,1,1,1,0,1,1,1,1,0,1,1,0,1,
-			     1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-			     1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,
-			     1,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,
-			     0,1,0,0,0,1,0,1,1,1,0,1,0,0,0,0,
-			     1,0,1,0,0,0,1,0,1,1,0,0,0,0,0,0};
-  for (int x = 0; x < 16; ++x) {
-    for (int y = 0; y < 8; ++y) {
-      if (overworldDeadData[x + 16*(7-y)]) {
-	overworldSecrets[std::make_pair(x,y)] = Secrets::UNKNOWN_CAVE;
-      }
-      else {
-	overworldSecrets[std::make_pair(x,y)] = Secrets::UNEXPLORED;
-      }
-    }
-  }
-
-  hearts = 0;
-}
-
-void ZeldaInformationHandler::InitTextures() {
-  OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
-  overworldTextures[Secrets::UNKNOWN_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
-  overworldTextures[Secrets::EXPLORED_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);  
-  overworldTextures[Secrets::UNKNOWN_DUNGEON] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldUnknownDungeon.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_1] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon1.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_2] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon2.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_3] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_4] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon4.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_5] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon5.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_6] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon6.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_7] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon7.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_8] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon8.png", GL_RGBA);
-  overworldTextures[Secrets::DUNGEON_9] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon9.png", GL_RGBA);
-  overworldTextures[Secrets::ARROW_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/ArrowShop.png", GL_RGBA);
-  overworldTextures[Secrets::BAIT_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BaitShop.png", GL_RGBA);
-  overworldTextures[Secrets::BOMB_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BombShop.png", GL_RGBA);  
-  overworldTextures[Secrets::CANDLE_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
-  overworldTextures[Secrets::BLUE_RING_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);
-  overworldTextures[Secrets::ANYROAD] = OpenGLUtility::Load2DTexture("Images/Selectors/Anyroad.png", GL_RGBA);          
-  overworldTextures[Secrets::PRE_POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
-  overworldTextures[Secrets::POTION_SHOP] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA); 
-  overworldTextures[Secrets::WOOD_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodSword.png", GL_RGBA); 
-  overworldTextures[Secrets::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
-  overworldTextures[Secrets::MAGICAL_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
-  overworldTextures[Secrets::BONUS_CAVE] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);  
-      
-  dungeonTextures[Dungeon::RoomType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::UNKNOWN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::UNSEEN_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::GUESS_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::TRIFORCE_ROOM] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonTriforceRoom.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_1] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase1.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_2] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase2.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_3] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase3.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_4] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase4.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_5] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase5.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_6] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase6.png", GL_RGBA);
-  dungeonTextures[Dungeon::RoomType::STAIRCASE_7] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase7.png", GL_RGBA);    
-
-  doorTextures[Dungeon::DoorType::UNEXPLORED] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
-  doorTextures[Dungeon::DoorType::OPEN] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
-  doorTextures[Dungeon::DoorType::SHUTTER] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonShutterDoor.png", GL_RGBA);
-  doorTextures[Dungeon::DoorType::KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonKeyDoor.png", GL_RGBA);
-  doorTextures[Dungeon::DoorType::BOMB] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonBombDoor.png", GL_RGBA);
-
-  itemTextures[Dungeon::DungeonItems::NONE] = OpenGLUtility::Load2DTexture("Images/Selectors/PreItem.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::BOOK] = OpenGLUtility::Load2DTexture("Images/Selectors/Book.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::BOW] = OpenGLUtility::Load2DTexture("Images/Selectors/Bow.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::HEART_CONTAINER] = OpenGLUtility::Load2DTexture("Images/Selectors/HeartContainer.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::LADDER] = OpenGLUtility::Load2DTexture("Images/Selectors/Ladder.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::MAGICAL_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalBoomerang.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::WOODEN_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodenBoomerang.png", GL_RGBA);  
-  itemTextures[Dungeon::DungeonItems::MAGICAL_KEY] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalKey.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::RAFT] = OpenGLUtility::Load2DTexture("Images/Selectors/Raft.png", GL_RGBA);  
-  itemTextures[Dungeon::DungeonItems::RECORDER] = OpenGLUtility::Load2DTexture("Images/Selectors/Recorder.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::RED_CANDLE] = OpenGLUtility::Load2DTexture("Images/Selectors/RedCandle.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::RED_RING] = OpenGLUtility::Load2DTexture("Images/Selectors/RedRing.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::POWER_BRACELET] = OpenGLUtility::Load2DTexture("Images/Selectors/PowerBracelet.png", GL_RGBA);  
-  itemTextures[Dungeon::DungeonItems::SILVER_ARROW] = OpenGLUtility::Load2DTexture("Images/Selectors/SilverArrow.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::WAND] = OpenGLUtility::Load2DTexture("Images/Selectors/Wand.png", GL_RGBA);
-  itemTextures[Dungeon::DungeonItems::WHITE_SWORD] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSwordItem.png", GL_RGBA);  
-  itemTextures[Dungeon::DungeonItems::WOODEN_BOOMERANG] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodenBoomerang.png", GL_RGBA);  
-}
-
-std::vector<std::vector<bool>> ZeldaInformationHandler::FormatShape(int shape[]) {
-  std::vector<std::vector<bool>> format;
-  for (int y = 0; y < 8; ++y) {
-    std::vector<bool> row;
-    for (int x = 0; x < 8; ++x) {
-      int bit = *shape++;
-      if (bit == 0) {
-	row.push_back(false);
-      }
-      else {
-	row.push_back(true);
-      }
-    }
-    format.push_back(row);
-  }
-  std::reverse(std::begin(format), std::end(format));
-  std::vector<std::vector<bool>> reformat;
-  for (int x = 0; x < 8; ++x) {
-    std::vector<bool> col;
-    for (int y = 0; y < 8; ++y) {
-      col.push_back(format[y][x]);
-    }
-    reformat.push_back(col);
-  }
-  return reformat;
-}
+int ZeldaInformationHandler::hearts = 0;
+bool ZeldaInformationHandler::firstQuest;
 
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -275,6 +89,11 @@ void ZeldaInformationHandler::SetDungeonLocation(int x, int y, Dungeon::RoomType
 	}
       }
     }    
+  }
+  for (auto& el : dungeons) {
+    if (el.GetLocation() == loc) {
+      dungeonHandler->PredictLevel(el);
+    }
   }  
 }
 
@@ -362,10 +181,13 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
       set = false;
     }
   }
-  //if seeing level nine for the first time
-  if (secret == Secrets::DUNGEON_9 && prev != Secrets::DUNGEON_9) {
+  //if seeing a level for the first time
+  if ((secret == Secrets::DUNGEON_1 || secret == Secrets::DUNGEON_2 || secret == Secrets::DUNGEON_3 ||
+       secret == Secrets::DUNGEON_4 || secret == Secrets::DUNGEON_5 || secret == Secrets::DUNGEON_6 ||
+       secret == Secrets::DUNGEON_7 || secret == Secrets::DUNGEON_8 || secret == Secrets::DUNGEON_9)
+       && prev != secret) {
     Dungeon dungeon(x, y);
-    dungeon.SetLevelNine();
+    dungeon.SetDungeonType(Dungeon::DungeonType::DUNGEON_9);
     dungeons.push_back(dungeon);
   }
   if (set) {
@@ -459,6 +281,57 @@ void ZeldaInformationHandler::SetZeldaSceenFound(bool found) {
 bool ZeldaInformationHandler::GetZeldaSceenFound() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   return zeldaScreenFound;
+}
+
+void ZeldaInformationHandler::SetOptions(bool quest, bool randomDungeonShapes) {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  if (randomDungeonShapes) {
+    dungeonHandler = std::make_shared<RandomDungeonShapeHandler>();
+  }
+  else if (quest) {
+    dungeonHandler = std::make_shared<FirstQuestDungeonHandler>();
+  }
+  else {
+    dungeonHandler = std::make_shared<SecondQuestDungeonHandler>();
+  }
+  std::vector<int> overworldData;
+  if (quest) {
+    std::vector<int> fqData = {0,0,1,1,0,0,0,0,0,0,1,0,0,0,1,1,
+			       1,1,0,0,0,1,0,0,0,1,0,0,1,0,1,0,
+			       1,0,1,1,1,1,0,1,1,1,1,0,1,1,0,1,
+			       1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
+			       1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,
+			       1,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,
+			       0,1,0,0,0,1,0,1,1,1,0,1,0,0,0,0,
+			       1,0,1,0,0,0,1,0,1,1,0,0,0,0,0,0};
+    overworldData = fqData;
+  }
+  if (firstQuest) {
+    std::vector<int> sqData = {0,1,0,1,0,0,0,0,0,0,1,1,0,0,1,1,
+			       0,1,1,0,0,1,0,1,0,1,0,1,0,1,0,0,
+			       1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,
+			       1,1,1,1,0,0,0,1,0,0,0,0,1,0,0,1,
+			       0,1,1,0,0,1,1,0,1,1,0,1,0,0,1,1,
+			       0,1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,
+			       0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+			       0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0};
+    overworldData = sqData;
+  }  
+  for (int x = 0; x < 16; ++x) {
+    for (int y = 0; y < 8; ++y) {
+      if (overworldData[x + 16*(7-y)]) {
+	overworldSecrets[std::make_pair(x,y)] = Secrets::EXPLORED_CAVE;
+      }
+      else {
+	overworldSecrets[std::make_pair(x,y)] = Secrets::UNEXPLORED;
+      }
+    }
+  }
+}
+
+bool ZeldaInformationHandler::GetQuest() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  return firstQuest;
 }
 
 void ZeldaInformationHandler::SetItem(Dungeon::DungeonItems item) {
@@ -559,17 +432,207 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(int dungeonNu
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
+  if (overworldTextures.find(type) == overworldTextures.end()) {
+    switch (type) {
+    case Secrets::UNEXPLORED:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
+      break;      
+    case Secrets::UNKNOWN_CAVE:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
+      break;      
+    case Secrets::EXPLORED_CAVE:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
+      break;      
+    case Secrets::UNKNOWN_DUNGEON:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldUnknownDungeon.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_1:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon1.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_2:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon2.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_3:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon3.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_4:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon4.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_5:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon5.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_6:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon6.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_7:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon7.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_8:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon8.png", GL_RGBA);
+      break;      
+    case Secrets::DUNGEON_9:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldDungeon9.png", GL_RGBA);
+      break;      
+    case Secrets::ARROW_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/ArrowShop.png", GL_RGBA);
+      break;      
+    case Secrets::BAIT_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/BaitShop.png", GL_RGBA);
+      break;      
+    case Secrets::BOMB_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/BombShop.png", GL_RGBA);
+      break;      
+    case Secrets::CANDLE_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/CandleShop.png", GL_RGBA);
+      break;      
+    case Secrets::BLUE_RING_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/BlueRingShop.png", GL_RGBA);
+      break;      
+    case Secrets::ANYROAD:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Anyroad.png", GL_RGBA);
+      break;      
+    case Secrets::PRE_POTION_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
+      break;      
+    case Secrets::POTION_SHOP:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/PotionShop.png", GL_RGBA);
+      break;      
+    case Secrets::WOOD_SWORD:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodSword.png", GL_RGBA);
+      break;      
+    case Secrets::WHITE_SWORD:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSword.png", GL_RGBA);
+      break;      
+    case Secrets::MAGICAL_SWORD:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalSword.png", GL_RGBA);
+      break;      
+    case Secrets::BONUS_CAVE:
+      overworldTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/OverworldExplored.png", GL_RGBA);
+      break;      
+    }
+  }
   return overworldTextures[type];
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Dungeon::RoomType type) {
+  if (dungeonTextures.find(type) == dungeonTextures.end()) {
+    switch (type) {
+      case Dungeon::RoomType::UNEXPLORED:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::UNKNOWN_ROOM:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonRoom.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::UNSEEN_ROOM:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::GUESS_ROOM:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonUnseenRoom.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::TRIFORCE_ROOM:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonTriforceRoom.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_1:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase1.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_2:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase2.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_3:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase3.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_4:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase4.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_5:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase5.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_6:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase6.png", GL_RGBA);
+	break;      
+      case Dungeon::RoomType::STAIRCASE_7:
+	dungeonTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Staircase7.png", GL_RGBA);
+	break;      
+    }
+  }
   return dungeonTextures[type];
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Dungeon::DoorType type) {
+  if (doorTextures.find(type) == doorTextures.end()) {
+    switch (type) {
+      case Dungeon::DoorType::UNEXPLORED:
+	doorTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Transparent.png", GL_RGBA);
+	break;      
+      case Dungeon::DoorType::OPEN:
+	doorTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonOpenDoor.png", GL_RGBA);
+	break;      
+      case Dungeon::DoorType::SHUTTER:
+	doorTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonShutterDoor.png", GL_RGBA);
+	break;      
+      case Dungeon::DoorType::KEY:
+	doorTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonKeyDoor.png", GL_RGBA);
+	break;      
+      case Dungeon::DoorType::BOMB:
+	doorTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/DungeonBombDoor.png", GL_RGBA);
+	break;      
+    }
+  }
   return doorTextures[type];
 }
 
 GLuint ZeldaInformationHandler::GetTexture(Dungeon::DungeonItems type) {
+  if (itemTextures.find(type) == itemTextures.end()) {
+    switch (type) {
+      case Dungeon::DungeonItems::NONE:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/PreItem.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::BOOK:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Book.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::BOW:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Bow.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::HEART_CONTAINER:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/HeartContainer.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::LADDER:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Ladder.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::MAGICAL_BOOMERANG:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalBoomerang.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::WOODEN_BOOMERANG:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/WoodenBoomerang.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::MAGICAL_KEY:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/MagicalKey.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::RAFT:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Raft.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::RECORDER:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Recorder.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::RED_CANDLE:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/RedCandle.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::RED_RING:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/RedRing.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::POWER_BRACELET:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/PowerBracelet.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::SILVER_ARROW:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/SilverArrow.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::WAND:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/Wand.png", GL_RGBA);
+	break;      
+      case Dungeon::DungeonItems::WHITE_SWORD:
+	itemTextures[type] = OpenGLUtility::Load2DTexture("Images/Selectors/WhiteSwordItem.png", GL_RGBA);
+	break;      
+    }
+  }
   return itemTextures[type];
 }

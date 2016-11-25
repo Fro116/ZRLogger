@@ -15,10 +15,12 @@
 #include <cstdlib>
 #include <tuple>
 #include <map>
+#include <unordered_map>
 #include <mutex>
 
 #include "OpenGLUtility.h"
 #include "Dungeon.h"
+#include "DungeonHandler.h"
 
 class ZeldaInformationHandler {
  public:
@@ -27,14 +29,14 @@ class ZeldaInformationHandler {
       CANDLE_SHOP, BAIT_SHOP, BOMB_SHOP, ARROW_SHOP, BLUE_RING_SHOP, WOOD_SWORD, WHITE_SWORD,
       MAGICAL_SWORD, PRE_POTION_SHOP, POTION_SHOP, EXPLORED_CAVE, BONUS_CAVE, ANYROAD};
 
-  static void Init();
-  static void InitTextures();
-
   static void SetZeldaSceenFound(bool found);
   static bool GetZeldaSceenFound();  
 
   static void SetIsRunning(bool running);
   static bool GetIsRunning();
+
+  static void SetOptions(bool firstQuest, bool randomDungeonShape);
+  static bool GetQuest();  
 
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
@@ -69,30 +71,28 @@ class ZeldaInformationHandler {
   static std::recursive_mutex dataMutex;
 
   static bool zeldaScreenFound;
-
-  static std::map<Secrets, GLuint> overworldTextures;
-  static std::map<Dungeon::RoomType, GLuint> dungeonTextures;
-  static std::map<Dungeon::DoorType, GLuint> doorTextures;
-  static std::map<Dungeon::DungeonItems, GLuint> itemTextures;    
-  static std::map<std::pair<int,int>, Secrets> overworldSecrets;
+  struct EnumHasher;
+  struct PairHasher;  
+  static std::unordered_map<Secrets, GLuint, EnumHasher> overworldTextures;
+  static std::unordered_map<Dungeon::RoomType, GLuint, EnumHasher> dungeonTextures;
+  static std::unordered_map<Dungeon::DoorType, GLuint, EnumHasher> doorTextures;
+  static std::unordered_map<Dungeon::DungeonItems, GLuint, EnumHasher> itemTextures;    
+  static std::unordered_map<std::pair<int,int>, Secrets, PairHasher> overworldSecrets;
   
   static int mapx;
   static int mapy;
   static int dungeonx;
   static int dungeony;
 
+  static std::shared_ptr<DungeonHandler> dungeonHandler;  
   static std::vector<Dungeon> dungeons;
-  static std::vector<std::vector<std::vector<bool>>> dungeonShapes;
-  static std::vector<std::vector<bool>> FormatShape(int shape[]);
-  
   static void SetIsInDungeon(bool isInDungeon);
   static bool isInDungeon;
   static bool isStaircase;
   
   static int hearts;
-  
+  static bool firstQuest;
   static bool isRunning;
 };
 
 #endif
-

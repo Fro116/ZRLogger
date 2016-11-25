@@ -95,31 +95,7 @@ ZeldaImageProcessor::ZeldaImageProcessor() {
 void ZeldaImageProcessor::UpdateData() {
   ImageHandler screen = GetScreen();
   if (!INITIALIZED_MINIMAP_GRAY) {
-    int numhearts = 0;
-    //check for hearts
-    for (int xsep = 0; xsep < 8; ++xsep) {
-      for (int ysep = 0; ysep < 2; ++ysep) {
-        int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
-        int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
-        ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_HEART_COLOR_TOLERANCE);
-        if (heartloc.Similarity(heart) > CAPTURED_HEART_SIMILARITY_THRESHOLD) {
-          numhearts++;
-        }
-      }
-    }
-    if (numhearts >= 3) {
-      ImageHandler minimap = screen.Crop(REFERENCE_OVERWORLD_MINIMAP_XCOOR*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_YCOOR*SCALE_Y, REFERENCE_OVERWORLD_MINIMAP_WIDTH*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_HEIGHT*SCALE_Y);
-      std::tuple<int, int, int> rgb = minimap.MostCommonRGB();
-      int r = std::get<0>(rgb);
-      int g = std::get<1>(rgb);
-      int b = std::get<2>(rgb);
-      if (!(r == BLACK_R && g == BLACK_G && b == BLACK_B)) {
-        MINIMAP_GRAY_R = r;
-        MINIMAP_GRAY_G = g;
-        MINIMAP_GRAY_B = b;
-        INITIALIZED_MINIMAP_GRAY = true;
-      }
-    }
+    RecordMinimap();
   }
   if (INITIALIZED_MINIMAP_GRAY && !INITIALIZED_TUNIC_GREEN) {
     ImageHandler minimap = screen.Crop(REFERENCE_OVERWORLD_MINIMAP_XCOOR*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_YCOOR*SCALE_Y, REFERENCE_OVERWORLD_MINIMAP_WIDTH*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_HEIGHT*SCALE_Y);
@@ -1623,5 +1599,33 @@ void ZeldaImageProcessor::RecordSecretCave(ImageHandler& screen, int mapx, int m
   }
   if (!foundSecret) {
     ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::UNKNOWN_CAVE);
+  }
+}
+
+void ZeldaImageProcessor::RecordMinimap() {
+  int numhearts = 0;
+  //check for hearts
+  for (int xsep = 0; xsep < 8; ++xsep) {
+    for (int ysep = 0; ysep < 2; ++ysep) {
+      int xcoor = REFERENCE_HEART_XCOOR + xsep * REFERENCE_HEART_X_SEPERATION;
+      int ycoor = REFERENCE_HEART_YCOOR + ysep * REFERENCE_HEART_Y_SEPERATION;
+      ImageHandler heartloc = screen.Crop(xcoor*SCALE_X, ycoor*SCALE_Y, REFERENCE_HEART_WIDTH*SCALE_X, REFERENCE_HEART_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_HEART_COLOR_TOLERANCE);
+      if (heartloc.Similarity(heart) > CAPTURED_HEART_SIMILARITY_THRESHOLD) {
+	numhearts++;
+      }
+    }
+  }
+  if (numhearts >= 3) {
+    ImageHandler minimap = screen.Crop(REFERENCE_OVERWORLD_MINIMAP_XCOOR*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_YCOOR*SCALE_Y, REFERENCE_OVERWORLD_MINIMAP_WIDTH*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_HEIGHT*SCALE_Y);
+    std::tuple<int, int, int> rgb = minimap.MostCommonRGB();
+    int r = std::get<0>(rgb);
+    int g = std::get<1>(rgb);
+    int b = std::get<2>(rgb);
+    if (!(r == BLACK_R && g == BLACK_G && b == BLACK_B)) {
+      MINIMAP_GRAY_R = r;
+      MINIMAP_GRAY_G = g;
+      MINIMAP_GRAY_B = b;
+      INITIALIZED_MINIMAP_GRAY = true;
+    }
   }
 }

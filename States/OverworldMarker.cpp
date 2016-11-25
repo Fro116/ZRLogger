@@ -1,9 +1,9 @@
 #include "OverworldMarker.h"
 
-OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(50, 50.0*336.0/512.0, ZeldaInformationHandler::GetTexture(ZeldaInformationHandler::Secrets::UNKNOWN_CAVE)) {
+OverworldMarker::OverworldMarker(int tilex, int tiley) : OpenGLRectangle(50, 50.0*336.0/512.0, ZeldaInformationHandler::GetTexture(ZeldaInformationHandler::Secrets::UNEXPLORED)) {
   mapx = tilex;
   mapy = tiley;
-  secret = ZeldaInformationHandler::Secrets::UNEXPLORED;
+  secret = ZeldaInformationHandler::Secrets::UNKNOWN_CAVE;
 }
 
 void OverworldMarker::Update() {

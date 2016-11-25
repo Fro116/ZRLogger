@@ -31,6 +31,7 @@ class ZeldaImageProcessor {
   void RecordDarkDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordBlackDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordSecretCave(ImageHandler& screen, int mapx, int mapy);
+  void RecordMinimap();
   
   int topleftx;
   int toplefty;

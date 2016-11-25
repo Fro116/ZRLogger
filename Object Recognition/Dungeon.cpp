@@ -44,111 +44,24 @@ void Dungeon::SetLocation(int x, int y, RoomType type) {
     write = false;
   }
   if (write) {
-    {
-      //store starting location
-      if (type == RoomType::UNSEEN_ROOM) {
-	bool foundStart = false;
-	for (auto& el : rooms) {
-	  if (el.second == RoomType::UNSEEN_ROOM) {
-	    foundStart = true;
-	  }
+    //store starting location
+    if (type == RoomType::UNSEEN_ROOM) {
+      bool foundStart = false;
+      for (auto& el : rooms) {
+	if (el.second == RoomType::UNSEEN_ROOM) {
+	  foundStart = true;
 	}
-	if (!foundStart) {
-	  startloc = std::make_pair(x, y);
-	}
+      }
+      if (!foundStart) {
+	startloc = std::make_pair(x, y);
       }
     }
     rooms[std::make_pair(x, y)] = type;
-    // if (levelNumber != DungeonType::DUNGEON_9) {
-    //   //Check which dungeon you are in
-    //   std::vector<int> possible;
-    //   for (int level = 0; level < 8; ++level) {
-    // 	int right = 0;
-    // 	int wrong = 0;
-    // 	for (auto& el : rooms) {
-    // 	  if (el.second != RoomType::GUESS_ROOM && el.second != RoomType::UNEXPLORED) {
-    // 	    if (dungeonShapes[level][el.first.first][el.first.second]) {
-    // 	      right++;
-    // 	    }
-    // 	    else {
-    // 	      wrong++;
-    // 	    }
-    // 	  }
-    // 	}
-    // 	if (wrong == 0) {
-    // 	  possible.push_back(level);
-    // 	}
-    //   }
-    //   int level = -1;
-    //   if (possible.size() == 1) {
-    // 	level = possible[0];
-    // 	if (level == 0) {
-    // 	  levelNumber = DungeonType::DUNGEON_1;
-    // 	}
-    // 	if (level == 1) {
-    // 	  levelNumber = DungeonType::DUNGEON_2;
-    // 	}
-    // 	if (level == 2) {
-    // 	  levelNumber = DungeonType::DUNGEON_3;
-    // 	}
-    // 	if (level == 3) {
-    // 	  levelNumber = DungeonType::DUNGEON_4;
-    // 	}
-    // 	if (level == 4) {
-    // 	  levelNumber = DungeonType::DUNGEON_5;
-    // 	}
-    // 	if (level == 5) {
-    // 	  levelNumber = DungeonType::DUNGEON_6;
-    // 	}
-    // 	if (level == 6) {
-    // 	  levelNumber = DungeonType::DUNGEON_7;
-    // 	}
-    // 	if (level == 7) {
-    // 	  levelNumber = DungeonType::DUNGEON_8;
-    // 	}
-    //   }
-    //   //Because some dungeons look alike, make an educated guess
-    //   if (possible.size() == 2) {
-    // 	int a = possible[0];
-    // 	int b = possible[1];
-    // 	if ((a == 0 && b == 2) || (a == 2 && b == 0)) {
-    // 	  level = 2;
-    // 	  levelNumber = DungeonType::DUNGEON_3;
-    // 	}
-    // 	int seen = 0;
-    // 	for (auto& el : rooms) {
-    // 	  if (el.second != RoomType::GUESS_ROOM && el.second != RoomType::UNEXPLORED && el.second != RoomType::UNSEEN_ROOM) {
-    // 	    seen++;
-    // 	  }
-    // 	}
-    // 	if (seen >=2) {
-    // 	  if ((a == 6 && b == 3) || (a == 3 && b == 6)) {
-    // 	    level = 3;
-    // 	    levelNumber = DungeonType::DUNGEON_4;
-    // 	  }
-    // 	  if ((a == 6 && b == 5) || (a == 5 && b == 6)) {
-    // 	    level = 5;
-    // 	    levelNumber = DungeonType::DUNGEON_6;
-    // 	  }
-    // 	}
-    //   }
-    //   if(level != -1) {
-    // 	for (int a = 0; a < 8; ++a) {
-    // 	  for (int b = 0; b < 8; ++b) {
-    // 	    if (dungeonShapes[level][a][b] && GetRoomType(a,b) == RoomType::UNEXPLORED) {
-    // 	      rooms[std::make_pair(a, b)] = RoomType::GUESS_ROOM;
-    // 	    }
-    // 	    if (!dungeonShapes[level][a][b]) {
-    // 	      rooms[std::make_pair(a, b)] = RoomType::UNEXPLORED;
-    // 	    }
-    // 	  }
-    // 	}
-    //   }
-    // }
   }
 }
 
-void Dungeon::SetLevelNine() {
+void Dungeon::SetDungeonType(DungeonType level) {
+  levelNumber = level;
   // levelNumber = DungeonType::DUNGEON_9;
   // int level = 8;
   // for (int a = 0; a < 8; ++a) {
@@ -168,6 +81,10 @@ Dungeon::RoomType Dungeon::GetRoomType(int x, int y) {
   else {
     return it->second;
   }
+}
+
+std::map<std::pair<int, int>, Dungeon::RoomType> Dungeon::GetRooms() {
+  return rooms;
 }
 
 void Dungeon::SetDoorType(int x1, int y1, int x2, int y2, DoorType type) {

@@ -31,11 +31,12 @@ class Dungeon {
   enum class DungeonItems {BOOK, BOW, HEART_CONTAINER, LADDER, MAGICAL_BOOMERANG, MAGICAL_KEY, NONE, RAFT, RECORDER, RED_CANDLE,
       RED_RING, POWER_BRACELET, SILVER_ARROW, WAND, WHITE_SWORD, WOODEN_BOOMERANG};    
 
-  void SetLevelNine();
+  void SetDungeonType(DungeonType level);
   void SetLocation(int x, int y, RoomType type);
   void SetDoorType(int x1, int y1, int x2, int y2, DoorType type);
   DoorType GetDoorType(int x1, int y1, int x2, int y2);    
   RoomType GetRoomType(int x, int y);
+  std::map<std::pair<int, int>, RoomType> GetRooms();
   std::pair<int, int> GetLocation();
   std::pair<int, int> GetStartLocation();    
   DungeonType Number();

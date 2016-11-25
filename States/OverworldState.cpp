@@ -17,6 +17,7 @@
 #include "OpenGLRectangle.h"
 #include "OverworldSelector.h"
 #include "OverworldMarker.h"
+#include "OverworldMap.h"
 #include "OpenGLUtility.h"
 #include "ZeldaFindingScreen.h"
 #include "ZeldaInformationHandler.h"
@@ -80,19 +81,19 @@ OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::stri
       std::shared_ptr<Bindable> marObject(marker);
       BindObject(marObject);
     }
-  }  
+  }
 
-  std::string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"};
+  {
+    OpenGLRectangle* tile =  new OverworldMap();
+    tile->MoveTo(glm::vec3(400, 262.5/2,0));
+    std::shared_ptr<Bindable> cardObject(tile);    
+    BindObject(cardObject);
+  }
+  
   for (int row = 0; row < 8; ++row) {
     for (int col = 0; col < 16; ++col) {
       double px = 50;
       double py = 50.0*336.0/512.0;
-      std::string num = std::to_string(8-row);
-      std::string let = alphabet[col];
-      OpenGLRectangle* tile =  new OpenGLRectangle(px, py, "Images/Overworld/" + num + let + ".png");
-      tile->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0));
-      std::shared_ptr<Bindable> cardObject(tile);                            
-      BindObject(cardObject);
       OpenGLRectangle* marker =  new OverworldMarker(col, 7-row);
       marker->MoveTo(glm::vec3(px*col + px/2, py*row+py/2,0.001));                 
       std::shared_ptr<Bindable> markerObject(marker);
