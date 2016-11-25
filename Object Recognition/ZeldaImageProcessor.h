@@ -27,11 +27,29 @@ class ZeldaImageProcessor {
   std::vector<std::vector<int>> DetectBlobs(std::vector<std::pair<int,int>> coordinates, int width, int height); //returns boxes surrounding each component; coordinates must be contained in the box [0, 0, width, height]
 
   ImageHandler GetScreen(); //returns a cropped screenshot that captures the zelda playing screen
+
+  void InitMinimap(ImageHandler& screen);
+  void InitTunic(ImageHandler& screen);  
+  
   void RecordDoors(ImageHandler& screen, int mapx, int mapy);
+  void RecordNormalDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordDarkDoors(ImageHandler& screen, int mapx, int mapy);
   void RecordBlackDoors(ImageHandler& screen, int mapx, int mapy);
-  void RecordSecretCave(ImageHandler& screen, int mapx, int mapy);
-  void RecordMinimap();
+  void RecordDungeonItems(ImageHandler& screen);
+  void RecordStaircase(ImageHandler& screen);
+  void RecordDungeonNumber(ImageHandler& screen);
+  
+  void CheckDungeonRing(ImageHandler& minimap);
+  void CheckOverworldRing(ImageHandler& minimap);  
+  void CheckTriforce(ImageHandler& screen);
+  void CheckCompass(ImageHandler& minimap, int lmapx, int lmapy);
+  void CheckSecretCave(ImageHandler& screen, int mapx, int mapy);
+  
+  std::tuple<bool, int, int> FindLinkDungeon(ImageHandler& minimap);
+  std::tuple<bool, int, int> FindLinkOverworld(ImageHandler& minimap);  
+
+  int Hearts(ImageHandler& screen, bool empty);  
+  void LoadTextures();
   
   int topleftx;
   int toplefty;
@@ -170,11 +188,11 @@ class ZeldaImageProcessor {
   int REFERENCE_START_BLUE_WIDTH = 2;
   int REFERENCE_START_BLUE_HEIGHT = 24;
 
-  int REFERENCE_DUNGEON_NINE_XCOOR = 64;
-  int REFERENCE_DUNGEON_NINE_YCOOR = 8;
-  int REFERENCE_DUNGEON_NINE_WIDTH = 7;
-  int REFERENCE_DUNGEON_NINE_HEIGHT = 7;
-  double CAPTURED_DUNGEON_NINE_SIMILARITY_THRESHOLD = 0.80;  
+  int REFERENCE_DUNGEON_NUMBER_XCOOR = 64;
+  int REFERENCE_DUNGEON_NUMBER_YCOOR = 8;
+  int REFERENCE_DUNGEON_NUMBER_WIDTH = 7;
+  int REFERENCE_DUNGEON_NUMBER_HEIGHT = 7;
+  double CAPTURED_DUNGEON_NUMBER_SIMILARITY_THRESHOLD = 0.80;  
 
   double CAPTURED_ANYROAD_SIMILARITY_THRESHOLD = 0.90;    
   double CAPTURED_SWORD_SIMILARITY_THRESHOLD = 0.90;    
@@ -258,6 +276,14 @@ class ZeldaImageProcessor {
   ImageHandler potion;
   ImageHandler anyroad;  
   ImageHandler dungeonnine;
+  ImageHandler dungeoneight;
+  ImageHandler dungeonseven;
+  ImageHandler dungeonsix;
+  ImageHandler dungeonfive;
+  ImageHandler dungeonfour;
+  ImageHandler dungeonthree;
+  ImageHandler dungeontwo;
+  ImageHandler dungeonone;  
   ImageHandler book;
   ImageHandler bow;
   ImageHandler heartcontainer;  
