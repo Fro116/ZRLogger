@@ -39,7 +39,6 @@ std::unordered_map<std::pair<int,int>, ZeldaInformationHandler::Secrets, ZeldaIn
 
 bool ZeldaInformationHandler::zeldaScreenFound;
 int ZeldaInformationHandler::hearts = 0;
-bool ZeldaInformationHandler::firstQuest;
 bool ZeldaInformationHandler::optionsInitialized = false;
 
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
@@ -322,7 +321,7 @@ void ZeldaInformationHandler::SetOptions(bool quest, bool randomDungeonShapes) {
 			       1,0,1,0,0,0,1,0,1,1,0,0,0,0,0,0};
     overworldData = fqData;
   }
-  if (firstQuest) {
+  else {
     std::vector<int> sqData = {0,1,0,1,0,0,0,0,0,0,1,1,0,0,1,1,
 			       0,1,1,0,0,1,0,1,0,1,0,1,0,1,0,0,
 			       1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,
@@ -343,11 +342,6 @@ void ZeldaInformationHandler::SetOptions(bool quest, bool randomDungeonShapes) {
       }
     }
   }
-}
-
-bool ZeldaInformationHandler::GetQuest() {
-  std::lock_guard<std::recursive_mutex> guard(dataMutex);
-  return firstQuest;
 }
 
 void ZeldaInformationHandler::SetItem(Dungeon::DungeonItems item) {

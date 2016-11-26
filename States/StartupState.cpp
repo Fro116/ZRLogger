@@ -13,11 +13,36 @@ StartupState::StartupState(std::shared_ptr<GameDriver> gameDriver, std::string v
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
   {
-    OptionButton* tile =  new OptionButton(100, 100, "Images/Selectors/Staircase1.png", "Images/Selectors/Staircase2.png", true, false);
-    tile->MoveTo(glm::vec3(200, 300 , 0.006));
+    OpenGLRectangle* tile =  new OpenGLRectangle(800, 90, "Images/StartupScreen/Title.png");
+    tile->MoveTo(glm::vec3(400, 340 , 0));
     std::shared_ptr<Bindable> cardObject(tile);
     BindObject(cardObject);
-  }  
+  }      
+  {
+    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/FirstNormalNormal.png", "Images/StartupScreen/FirstNormalMouse.png", true, false);
+    tile->MoveTo(glm::vec3(200, 215 , 0));
+    std::shared_ptr<Bindable> cardObject(tile);
+    BindObject(cardObject);
+  }
+  {
+    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/FirstRandomNormal.png", "Images/StartupScreen/FirstRandomMouse.png", true, false);
+    tile->MoveTo(glm::vec3(200, 90 , 0));
+    std::shared_ptr<Bindable> cardObject(tile);
+    BindObject(cardObject);
+  }
+  {
+    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/SecondNormalNormal.png", "Images/StartupScreen/SecondNormalMouse.png", false, false);
+    tile->MoveTo(glm::vec3(600, 215 , 0));
+    std::shared_ptr<Bindable> cardObject(tile);
+    BindObject(cardObject);
+  }
+  {
+    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/SecondRandomNormal.png", "Images/StartupScreen/SecondRandomMouse.png", false, true);
+    tile->MoveTo(glm::vec3(600, 90 , 0));
+    std::shared_ptr<Bindable> cardObject(tile);
+    BindObject(cardObject);
+  }    
+
 }
 
 void StartupState::BindObject(std::shared_ptr<Bindable> object) {

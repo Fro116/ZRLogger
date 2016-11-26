@@ -1,6 +1,6 @@
 #include "ZeldaFindingScreen.h"
 
-ZeldaFindingScreen::ZeldaFindingScreen() : OpenGLRectangle(800, 400, "Images/ZeldaFindingScreen.png") {
+ZeldaFindingScreen::ZeldaFindingScreen() : OpenGLRectangle(800, 400, "Images/StartupScreen/ZeldaFindingScreen.png") {
   found = false;
 }
 

@@ -1563,6 +1563,11 @@ void ZeldaImageProcessor::RecordDungeonNumber(ImageHandler& screen) {
   if(lnumber.Similarity(dungeonone) > similarity) {
     similarity = lnumber.Similarity(dungeonone);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_1;
+  }
+  double bp = static_cast<double>(lnumber.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (lnumber.Width() * lnumber.Height());
+  if(bp > similarity) {
+    similarity = 0;
+    dungeon = ZeldaInformationHandler::Secrets::UNKNOWN_DUNGEON;
   }  
   if (similarity > CAPTURED_DUNGEON_NUMBER_SIMILARITY_THRESHOLD) {
     std::pair<int, int> oloc = ZeldaInformationHandler::GetMapLocation();

@@ -3,7 +3,7 @@
 #include "ZeldaInformationHandler.h"
 
 OptionButton::OptionButton(float width, float height, std::string normalTexture, std::string mouseTexture, bool quest, bool random) :
-  OpenGLButton(width, height, normalTexture, mouseTexture),
+  OpenGLButton(width, height, mouseTexture, normalTexture),
   width(width),
   height(height),
   quest(quest),
