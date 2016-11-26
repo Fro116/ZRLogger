@@ -28,7 +28,7 @@ void ZeldaImageProcessor::UpdateData() {
       ImageHandler minimap = screen.Crop(REFERENCE_OVERWORLD_MINIMAP_XCOOR*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_YCOOR*SCALE_Y, REFERENCE_OVERWORLD_MINIMAP_WIDTH*SCALE_X, REFERENCE_OVERWORLD_MINIMAP_HEIGHT*SCALE_Y);
       if (minimap.MostCommonRGB() == std::make_tuple(MINIMAP_GRAY_R, MINIMAP_GRAY_G, MINIMAP_GRAY_B)) {
 	//check for overworld location
-	std::tuple<bool, int, int> position = FindLinkDungeon(minimap);	
+	std::tuple<bool, int, int> position = FindLinkOverworld(minimap);
 	if (std::get<0>(position)) {
 	  int mapx = std::get<1>(position);
 	  int mapy = std::get<2>(position);
@@ -51,9 +51,9 @@ void ZeldaImageProcessor::UpdateData() {
 	    RecordDungeonNumber(screen);
 	    RecordDoors(screen, lmapx, lmapy);
 	    ZeldaInformationHandler::SetDungeonLocation(lmapx, lmapy, Dungeon::RoomType::UNKNOWN_ROOM);
-	    
 	  }
 	  else {
+	    //check for map item
 	    RecordStaircase(screen);
 	    RecordDungeonItems(screen);
 	    CheckDungeonRing(minimap);	    
@@ -1532,35 +1532,35 @@ void ZeldaImageProcessor::RecordDungeonNumber(ImageHandler& screen) {
     similarity = lnumber.Similarity(dungeonnine);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_9;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeoneight) > similarity) {
     similarity = lnumber.Similarity(dungeoneight);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_8;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonseven) > similarity) {
     similarity = lnumber.Similarity(dungeonseven);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_7;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonsix) > similarity) {
     similarity = lnumber.Similarity(dungeonsix);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_6;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonfive) > similarity) {
     similarity = lnumber.Similarity(dungeonfive);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_5;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonfour) > similarity) {
     similarity = lnumber.Similarity(dungeonfour);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_4;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonthree) > similarity) {
     similarity = lnumber.Similarity(dungeonthree);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_3;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeontwo) > similarity) {
     similarity = lnumber.Similarity(dungeontwo);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_2;
   }
-  if(lnumber.Similarity(dungeonnine) > similarity) {
+  if(lnumber.Similarity(dungeonone) > similarity) {
     similarity = lnumber.Similarity(dungeonone);
     dungeon = ZeldaInformationHandler::Secrets::DUNGEON_1;
   }  

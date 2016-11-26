@@ -8,8 +8,6 @@
 
 #include "OpenGLRectangle.h"
 
-#include <iostream>
-
 OpenGLRectangle::OpenGLRectangle(float width, float height, std::string texturePath) {
     GLfloat vertexBufferData[] = {
         -width/2, -height/2,
@@ -48,11 +46,11 @@ OpenGLRectangle::OpenGLRectangle(float width, float height, GLuint texturePath) 
     texture = texturePath;
 }
 
-void OpenGLRectangle::Bind(const GameState *state) {
+void OpenGLRectangle::Bind(GameState *state, GLFWwindow* window) {
     
 }
 
-void OpenGLRectangle::Unbind(const GameState *state) {
+void OpenGLRectangle::Unbind() {
     
 }
 

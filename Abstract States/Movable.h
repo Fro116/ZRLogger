@@ -18,6 +18,9 @@ public:
     Movable();
     
     glm::mat4 ModelTranform();
+    glm::vec3 GetPosition();
+    glm::vec3 GetScale();
+    glm::quat GetRotation();    
     void MoveTo(glm::vec3 position);
     void ScaleTo(glm::vec3 scale);
     void RotateTo(glm::quat rotation);

@@ -28,6 +28,7 @@ class FirstQuestDungeonHandler : public DungeonHandler {
   void PredictLevel(Dungeon& dungeon);
  private:
   std::vector<std::vector<std::vector<bool>>> dungeonShapes;
+  std::map<std::pair<int, int>, Dungeon::DungeonType> pastGuess;
 };
 
 #endif

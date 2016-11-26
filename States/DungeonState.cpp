@@ -113,7 +113,7 @@ void DungeonState::BindObject(std::shared_ptr<Bindable> object) {
         drawables.push_back(drawable);
     }
     
-    object->Bind(this);
+    object->Bind(this, window);
 }
 
 void DungeonState::UnbindObject(std::shared_ptr<Bindable> object) {    
@@ -133,7 +133,7 @@ void DungeonState::UnbindObject(std::shared_ptr<Bindable> object) {
         }
     }
     
-    object->Unbind(this);
+    object->Unbind();
 }
 
 void DungeonState::EnterFocus() {

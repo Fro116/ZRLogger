@@ -42,3 +42,15 @@ void Movable::ScaleBy(glm::vec3 scale) {
 void Movable::RotateBy(glm::quat rotation) {
     this->rotation = rotation * this->rotation;
 }
+
+glm::vec3 Movable::GetPosition() {
+  return position;
+}
+
+glm::vec3 Movable::GetScale() {
+  return scale;
+}
+
+glm::quat Movable::GetRotation() {
+  return rotation;
+}

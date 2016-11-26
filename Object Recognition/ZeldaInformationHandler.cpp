@@ -40,6 +40,7 @@ std::unordered_map<std::pair<int,int>, ZeldaInformationHandler::Secrets, ZeldaIn
 bool ZeldaInformationHandler::zeldaScreenFound;
 int ZeldaInformationHandler::hearts = 0;
 bool ZeldaInformationHandler::firstQuest;
+bool ZeldaInformationHandler::optionsInitialized = false;
 
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -186,9 +187,18 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
        secret == Secrets::DUNGEON_4 || secret == Secrets::DUNGEON_5 || secret == Secrets::DUNGEON_6 ||
        secret == Secrets::DUNGEON_7 || secret == Secrets::DUNGEON_8 || secret == Secrets::DUNGEON_9)
        && prev != secret) {
-    Dungeon dungeon(x, y);
-    dungeon.SetDungeonType(Dungeon::DungeonType::DUNGEON_9);
-    dungeons.push_back(dungeon);
+    bool found = false;
+    for (auto& el : dungeons) {
+      if (el.GetLocation() == std::make_pair(x,y)) {
+	el.SetDungeonType(AsDungeonType(secret));
+	found = true;
+      }
+    }
+    if (!found) {
+      Dungeon dungeon(x, y);
+      dungeon.SetDungeonType(AsDungeonType(secret));
+      dungeons.push_back(dungeon);
+    }
   }
   if (set) {
     overworldSecrets[std::make_pair(x,y)] = secret;
@@ -283,8 +293,14 @@ bool ZeldaInformationHandler::GetZeldaSceenFound() {
   return zeldaScreenFound;
 }
 
+bool ZeldaInformationHandler::GetIsOptionsInitialized() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  return optionsInitialized;
+}
+
 void ZeldaInformationHandler::SetOptions(bool quest, bool randomDungeonShapes) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  optionsInitialized = true;
   if (randomDungeonShapes) {
     dungeonHandler = std::make_shared<RandomDungeonShapeHandler>();
   }
@@ -406,6 +422,31 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(Dungeon::Dung
   }
 }
 
+Dungeon::DungeonType ZeldaInformationHandler::AsDungeonType(Secrets type) {
+  switch(type) {
+  case Secrets::DUNGEON_1:
+    return Dungeon::DungeonType::DUNGEON_1;
+  case Secrets::DUNGEON_2:
+    return Dungeon::DungeonType::DUNGEON_2;
+  case Secrets::DUNGEON_3:
+    return Dungeon::DungeonType::DUNGEON_3;
+  case Secrets::DUNGEON_4:
+    return Dungeon::DungeonType::DUNGEON_4;
+  case Secrets::DUNGEON_5:
+    return Dungeon::DungeonType::DUNGEON_5;
+  case Secrets::DUNGEON_6:
+    return Dungeon::DungeonType::DUNGEON_6;
+  case Secrets::DUNGEON_7:
+    return Dungeon::DungeonType::DUNGEON_7;
+  case Secrets::DUNGEON_8:
+    return Dungeon::DungeonType::DUNGEON_8;
+  case Secrets::DUNGEON_9:
+    return Dungeon::DungeonType::DUNGEON_9;
+  default:
+    return Dungeon::DungeonType::UNKNOWN_DUNGEON;    
+  }
+}
+
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(int dungeonNumber) {
   switch(dungeonNumber) {
   case 0:
@@ -430,6 +471,8 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(int dungeonNu
     return Secrets::UNKNOWN_DUNGEON;
   }
 }
+
+
 
 GLuint ZeldaInformationHandler::GetTexture(Secrets type) {
   if (overworldTextures.find(type) == overworldTextures.end()) {

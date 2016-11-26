@@ -14,63 +14,52 @@ Dungeon::Dungeon(int x, int y) {
 }
 
 void Dungeon::SetLocation(int x, int y, RoomType type) {
-  bool write = true;
   RoomType prev = GetRoomType(x,y);
   if (prev == type) {
-    write = false;
+    return;
   }
   //prevent overriding data  
   if (type == RoomType::UNSEEN_ROOM && !(prev == RoomType::UNEXPLORED || prev == RoomType::GUESS_ROOM)) {
-    write = false;
+    return;
   }
   if (type != RoomType::TRIFORCE_ROOM && (prev == RoomType::STAIRCASE_1 || prev == RoomType::STAIRCASE_2 || prev == RoomType::STAIRCASE_3
 					  || prev == RoomType::STAIRCASE_4 || prev == RoomType::STAIRCASE_5 || prev == RoomType::STAIRCASE_6
 					  || prev == RoomType::STAIRCASE_7)) {
-    write = false;
+    return;
   }
   if (prev == RoomType::TRIFORCE_ROOM) {
-    write = false;
+    return;
   }
   if (type == RoomType::TRIFORCE_ROOM) {
     for (int x = 0; x < 8; ++x) {
       for (int y = 0; y < 8; ++y) {
 	if (GetRoomType(x,y) == RoomType::TRIFORCE_ROOM) {
-	  write = false;
+	  return;
 	}
       }
     }
   }
   if (x < 0 || y < 0 || x >= 8 || y >=8) {
-    write = false;
+    return;
   }
-  if (write) {
-    //store starting location
-    if (type == RoomType::UNSEEN_ROOM) {
-      bool foundStart = false;
-      for (auto& el : rooms) {
-	if (el.second == RoomType::UNSEEN_ROOM) {
-	  foundStart = true;
-	}
-      }
-      if (!foundStart) {
-	startloc = std::make_pair(x, y);
+
+  //store starting location
+  if (type == RoomType::UNSEEN_ROOM) {
+    bool foundStart = false;
+    for (auto& el : rooms) {
+      if (el.second == RoomType::UNSEEN_ROOM) {
+	foundStart = true;
       }
     }
-    rooms[std::make_pair(x, y)] = type;
+    if (!foundStart) {
+      startloc = std::make_pair(x, y);
+    }
   }
+  rooms[std::make_pair(x, y)] = type;
 }
 
 void Dungeon::SetDungeonType(DungeonType level) {
   levelNumber = level;
-  // levelNumber = DungeonType::DUNGEON_9;
-  // int level = 8;
-  // for (int a = 0; a < 8; ++a) {
-  //   for (int b = 0; b < 8; ++b) {
-  //     if (dungeonShapes[level][a][b] && GetRoomType(a,b) == RoomType::UNEXPLORED) {
-  // 	rooms[std::make_pair(a, b)] = RoomType::UNSEEN_ROOM;
-  //     }
-  //   }
-  // }  
 }
 
 Dungeon::RoomType Dungeon::GetRoomType(int x, int y) {

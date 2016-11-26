@@ -36,6 +36,7 @@ class ZeldaInformationHandler {
   static bool GetIsRunning();
 
   static void SetOptions(bool firstQuest, bool randomDungeonShape);
+  static bool GetIsOptionsInitialized();  
   static bool GetQuest();  
 
   static void SetMapLocation(int x, int y);
@@ -67,6 +68,7 @@ class ZeldaInformationHandler {
   static GLuint GetTexture(Dungeon::DungeonItems type);  
  private:
   static Secrets AsSecret(Dungeon::DungeonType type);
+  static Dungeon::DungeonType AsDungeonType(Secrets type);  
   static Secrets AsSecret(int dungeonLevel);  
   static std::recursive_mutex dataMutex;
 
@@ -91,6 +93,7 @@ class ZeldaInformationHandler {
   static bool isStaircase;
   
   static int hearts;
+  static bool optionsInitialized;
   static bool firstQuest;
   static bool isRunning;
 };

@@ -12,11 +12,13 @@
 #include <vector>
 
 #include "GameState.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 class Bindable {
 public:
-    virtual void Bind(const GameState* state) = 0;
-    virtual void Unbind(const GameState* state) = 0;
+  virtual void Bind(GameState* state, GLFWwindow* window) = 0;
+  virtual void Unbind() = 0;
 };
 
 #endif /* defined(__Hearts__Bindable__) */

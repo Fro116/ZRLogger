@@ -19,22 +19,23 @@
 #include "OverworldMarker.h"
 #include "OverworldMap.h"
 #include "OpenGLUtility.h"
-#include "ZeldaFindingScreen.h"
 #include "ZeldaInformationHandler.h"
 #include "TriforceMarker.h"
 #include "HeartMarker.h"
 #include "ItemMarker.h"
 #include "BonusCaveMarker.h"
+#include "ZeldaFindingScreen.h"
 
 OverworldState::OverworldState(std::shared_ptr<GameDriver> gameDriver, std::string vertexShaderPath, std::string fragmentShaderPath) : window(gameDriver->Engine().Window()), drawables(), updatables() {
   driver = gameDriver;
   shaders = OpenGLUtility::LoadShaders(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
   transformID = glGetUniformLocation(shaders, "transform");
-
-  OpenGLRectangle* tile =  new ZeldaFindingScreen();
-  tile->MoveTo(glm::vec3(400, 200 , 0.005));
-  std::shared_ptr<Bindable> cardObject(tile);
-  BindObject(cardObject);
+  {
+    OpenGLRectangle* tile = new ZeldaFindingScreen();
+    tile->MoveTo(glm::vec3(400, 200 , 0.005));
+    std::shared_ptr<Bindable> cardObject(tile);
+    BindObject(cardObject);
+  }  
 
   for (int level = 0; level < 8; ++level) {
     OpenGLRectangle* marker =  new TriforceMarker(level);
@@ -118,7 +119,7 @@ void OverworldState::BindObject(std::shared_ptr<Bindable> object) {
         drawables.push_back(drawable);
     }
     
-    object->Bind(this);
+    object->Bind(this, window);
 }
 
 void OverworldState::UnbindObject(std::shared_ptr<Bindable> object) {    
@@ -138,7 +139,7 @@ void OverworldState::UnbindObject(std::shared_ptr<Bindable> object) {
         }
     }
     
-    object->Unbind(this);
+    object->Unbind();
 }
 
 void OverworldState::EnterFocus() {
