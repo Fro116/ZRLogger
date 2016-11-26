@@ -40,6 +40,7 @@ std::unordered_map<std::pair<int,int>, ZeldaInformationHandler::Secrets, ZeldaIn
 bool ZeldaInformationHandler::zeldaScreenFound;
 int ZeldaInformationHandler::hearts = 0;
 bool ZeldaInformationHandler::optionsInitialized = false;
+bool ZeldaInformationHandler::firstQuest = true;
 
 void ZeldaInformationHandler::SetMapLocation(int x, int y) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -53,6 +54,11 @@ void ZeldaInformationHandler::SetMapLocation(int x, int y) {
 std::pair<int, int> ZeldaInformationHandler::GetMapLocation() {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   return std::make_pair(mapx, mapy);
+}
+
+bool ZeldaInformationHandler::GetQuest() {
+  std::lock_guard<std::recursive_mutex> guard(dataMutex);
+  return firstQuest;
 }
 
 void ZeldaInformationHandler::SetDungeonLocation(int x, int y, Dungeon::RoomType type) {
@@ -300,6 +306,7 @@ bool ZeldaInformationHandler::GetIsOptionsInitialized() {
 void ZeldaInformationHandler::SetOptions(bool quest, bool randomDungeonShapes) {
   std::lock_guard<std::recursive_mutex> guard(dataMutex);
   optionsInitialized = true;
+  firstQuest = quest;
   if (randomDungeonShapes) {
     dungeonHandler = std::make_shared<RandomDungeonShapeHandler>();
   }
@@ -393,8 +400,6 @@ void ZeldaInformationHandler::SetDungeonDoor(int x1, int y1, int x2, int y2, Dun
 
 ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(Dungeon::DungeonType type) {
   switch(type) {
-  case Dungeon::DungeonType::UNKNOWN_DUNGEON:
-    return Secrets::UNKNOWN_DUNGEON;
   case Dungeon::DungeonType::DUNGEON_1:
     return Secrets::DUNGEON_1;
   case Dungeon::DungeonType::DUNGEON_2:
@@ -413,6 +418,8 @@ ZeldaInformationHandler::Secrets ZeldaInformationHandler::AsSecret(Dungeon::Dung
     return Secrets::DUNGEON_8;
   case Dungeon::DungeonType::DUNGEON_9:
     return Secrets::DUNGEON_9;
+  default:
+    return Secrets::UNKNOWN_DUNGEON;
   }
 }
 

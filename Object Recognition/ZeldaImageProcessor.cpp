@@ -35,6 +35,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  ZeldaInformationHandler::SetMapLocation(mapx, mapy);
 	  dungeondoortransition = false;
 	  CheckSecretCave(screen, mapx, mapy);	  
+    CheckWhiteSwordCaveItem(screen, mapx, mapy);
 	}
 	else {
 	  CheckOverworldRing(minimap);
@@ -1312,6 +1313,88 @@ void ZeldaImageProcessor::RecordDungeonItems(ImageHandler& screen) {
     }	      
     if (maxSim > CAPTURED_DUNGEON_ITEM_SIMILARITY_THRESHOLD) {
       ZeldaInformationHandler::SetItem(type);
+    }
+  }
+}
+
+void ZeldaImageProcessor::CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx, int mapy) {
+  //check if alive  
+  if (Hearts(screen, false) > 0) {
+    double maxSim = 0;
+    Dungeon::DungeonItems type;
+    ImageHandler item = screen.Crop(REFERENCE_WHITE_SWORD_CAVE_ITEM_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_CAVE_ITEM_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_WHITE_SWORD_CAVE_ITEM_COLOR_TOLERANCE);
+    if (item.Similarity(book) > maxSim) {
+      maxSim = item.Similarity(book);
+      type = Dungeon::DungeonItems::BOOK;
+    }
+    if (item.Similarity(bow) > maxSim) {
+      maxSim = item.Similarity(bow);
+      type = Dungeon::DungeonItems::BOW;
+    }
+    if (item.Similarity(heartcontainer) > maxSim) {
+      maxSim = item.Similarity(heartcontainer);
+      type = Dungeon::DungeonItems::HEART_CONTAINER;
+    }
+    if (item.Similarity(ladder) > maxSim) {
+      maxSim = item.Similarity(ladder);
+      type = Dungeon::DungeonItems::LADDER;
+    }
+    if (item.Similarity(magicalkey) > maxSim) {
+      maxSim = item.Similarity(magicalkey);
+      type = Dungeon::DungeonItems::MAGICAL_KEY;
+    }
+    if (item.Similarity(woodenboomerang) > maxSim) {
+      maxSim = item.Similarity(woodenboomerang);
+      type = Dungeon::DungeonItems::WOODEN_BOOMERANG;
+    }
+    if (item.Similarity(magicalboomerang) > maxSim) {
+      maxSim = item.Similarity(magicalboomerang);
+      type = Dungeon::DungeonItems::MAGICAL_BOOMERANG;
+    }
+    if (item.Similarity(powerbracelet) > maxSim) {
+      maxSim = item.Similarity(powerbracelet);
+      type = Dungeon::DungeonItems::POWER_BRACELET;
+    }
+    if (item.Similarity(raft) > maxSim) {
+      maxSim = item.Similarity(raft);
+      type = Dungeon::DungeonItems::RAFT;
+    }
+    if (item.Similarity(recorder) > maxSim) {
+      maxSim = item.Similarity(recorder);
+      type = Dungeon::DungeonItems::RECORDER;
+    }
+    if (item.Similarity(redcandle) > maxSim) {
+      maxSim = item.Similarity(redcandle);
+      type = Dungeon::DungeonItems::RED_CANDLE;
+    }
+    if (item.Similarity(redring) > maxSim) {
+      maxSim = item.Similarity(redring);
+      type = Dungeon::DungeonItems::RED_RING;
+    }
+    if (item.Similarity(silverarrow) > maxSim) {
+      maxSim = item.Similarity(silverarrow);
+      type = Dungeon::DungeonItems::SILVER_ARROW;
+    }
+    if (item.Similarity(wand) > maxSim) {
+      maxSim = item.Similarity(wand);
+      type = Dungeon::DungeonItems::WAND;
+    }
+    if (item.Similarity(whitesworditem) > maxSim) {
+      maxSim = item.Similarity(whitesworditem);
+      type = Dungeon::DungeonItems::WHITE_SWORD;
+    }
+    //prevent false positive
+    double bp = static_cast<double>(item.PixelsWithRGB(BLACK_R, BLACK_G, BLACK_B).size()) / (item.Width() * item.Height());
+    if (bp > maxSim) {
+      maxSim = 0;
+      type = Dungeon::DungeonItems::NONE;
+    }
+    if ((1 - bp) > maxSim) {
+      maxSim = 0;
+      type = Dungeon::DungeonItems::NONE;
+    }
+    if (maxSim > CAPTURED_WHITE_SWORD_CAVE_ITEM_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WHITE_SWORD);
     }
   }
 }

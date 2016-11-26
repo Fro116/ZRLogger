@@ -37,6 +37,7 @@ class ZeldaInformationHandler {
 
   static void SetOptions(bool firstQuest, bool randomDungeonShape);
   static bool GetIsOptionsInitialized();  
+  static bool GetQuest();
 
   static void SetMapLocation(int x, int y);
   static std::pair<int, int> GetMapLocation();
@@ -93,6 +94,7 @@ class ZeldaInformationHandler {
   
   static int hearts;
   static bool optionsInitialized;
+  static bool firstQuest;
   static bool isRunning;
 };
 

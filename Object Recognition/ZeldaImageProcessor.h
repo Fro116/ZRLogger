@@ -45,6 +45,7 @@ class ZeldaImageProcessor {
   void CheckTriforce(ImageHandler& screen);
   void CheckCompass(ImageHandler& minimap, int lmapx, int lmapy);
   void CheckSecretCave(ImageHandler& screen, int mapx, int mapy);
+  void CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx, int mapy);
   
   std::tuple<bool, int, int> FindLinkDungeon(ImageHandler& minimap);
   std::tuple<bool, int, int> FindLinkOverworld(ImageHandler& minimap);  
@@ -148,6 +149,13 @@ class ZeldaImageProcessor {
   int REFERENCE_WHITE_SWORD_YCOOR = 145;
   int REFERENCE_WHITE_SWORD_WIDTH = 7;
   int REFERENCE_WHITE_SWORD_HEIGHT =16;
+
+  int REFERENCE_WHITE_SWORD_CAVE_ITEM_XCOOR = 121;
+  int REFERENCE_WHITE_SWORD_CAVE_ITEM_YCOOR = 145;
+  int REFERENCE_WHITE_SWORD_CAVE_ITEM_WIDTH = 14;
+  int REFERENCE_WHITE_SWORD_CAVE_ITEM_HEIGHT = 16;
+  double CAPTURED_WHITE_SWORD_CAVE_ITEM_SIMILARITY_THRESHOLD = 0.90;
+  double CAPTURED_WHITE_SWORD_CAVE_ITEM_COLOR_TOLERANCE = 50;
 
   int REFERENCE_MAGICAL_SWORD_XCOOR = 124;
   int REFERENCE_MAGICAL_SWORD_YCOOR = 145;
