@@ -25,7 +25,7 @@ StartupState::StartupState(std::shared_ptr<GameDriver> gameDriver, std::string v
     BindObject(cardObject);
   }
   {
-    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/FirstRandomNormal.png", "Images/StartupScreen/FirstRandomMouse.png", true, false);
+    OptionButton* tile =  new OptionButton(370, 115, "Images/StartupScreen/FirstRandomNormal.png", "Images/StartupScreen/FirstRandomMouse.png", true, true);
     tile->MoveTo(glm::vec3(200, 90 , 0));
     std::shared_ptr<Bindable> cardObject(tile);
     BindObject(cardObject);

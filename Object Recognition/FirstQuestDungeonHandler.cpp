@@ -138,8 +138,6 @@ void FirstQuestDungeonHandler::PredictLevel(Dungeon& dungeon) {
   if(level != -1 && pastnum != dungeon.Number()) {
     for (int a = 0; a < 8; ++a) {
       for (int b = 0; b < 8; ++b) {
-	if (dungeonShapes[level][a][b]) {
-	}
 	if (dungeonShapes[level][a][b] && dungeon.GetRoomType(a,b) == Dungeon::RoomType::UNEXPLORED) {
 	  dungeon.SetLocation(a, b, Dungeon::RoomType::GUESS_ROOM);
 	}

@@ -51,9 +51,9 @@ void ZeldaImageProcessor::UpdateData() {
 	    RecordDungeonNumber(screen);
 	    RecordDoors(screen, lmapx, lmapy);
 	    ZeldaInformationHandler::SetDungeonLocation(lmapx, lmapy, Dungeon::RoomType::UNKNOWN_ROOM);
+	    RecordDungeonMinimap(minimap);	    
 	  }
 	  else {
-	    //check for map item
 	    RecordStaircase(screen);
 	    RecordDungeonItems(screen);
 	    CheckDungeonRing(minimap);	    
@@ -1429,6 +1429,26 @@ void ZeldaImageProcessor::CheckCompass(ImageHandler& minimap, int lmapx, int lma
 	if (bp > CAPTURED_DUNGEON_MINIMAP_CURSOR_UPPER_BLACK_THRESHOLD && mbp < CAPTURED_DUNGEON_MINIMAP_CURSOR_LOWER_BLACK_THRESHOLD) {
 	  ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, Dungeon::RoomType::TRIFORCE_ROOM);
 	}
+      }
+    }
+  }
+}
+
+void ZeldaImageProcessor::RecordDungeonMinimap(ImageHandler& minimap) {
+  for (int mapx = 0; mapx < 8; ++mapx) {
+    for (int mapy = 0; mapy < 8; ++mapy) {
+      int tx = (static_cast<double>(mapx) / 8) * REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X;
+      int ty = (static_cast<double>(mapy) / 8) * REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y;
+      int tw = REFERENCE_OVERWORLD_MINIMAP_WIDTH * SCALE_X / 8;
+      int th = REFERENCE_OVERWORLD_MINIMAP_HEIGHT * SCALE_Y / 8;
+      int sx = REFERENCE_DUNGEON_MINIMAP_CURSOR_XCOOR * SCALE_X;
+      int sy = REFERENCE_DUNGEON_MINIMAP_CURSOR_YCOOR * SCALE_Y;
+      int sw = REFERENCE_DUNGEON_MINIMAP_CURSOR_WIDTH * SCALE_X;
+      int sh = REFERENCE_DUNGEON_MINIMAP_CURSOR_HEIGHT * SCALE_Y;
+      ImageHandler mapspot = minimap.Crop(tx, ty, tw, th).Crop(sx, sy, sw, sh);
+      std::tuple<int, int, int> maprgb = mapspot.MostCommonRGB();
+      if (maprgb == std::make_tuple(START_BLUE_R, START_BLUE_G, START_BLUE_B)) {
+	ZeldaInformationHandler::SetDungeonLocation(mapx, mapy, Dungeon::RoomType::UNSEEN_ROOM);
       }
     }
   }

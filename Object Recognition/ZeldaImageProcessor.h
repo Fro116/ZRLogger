@@ -38,6 +38,7 @@ class ZeldaImageProcessor {
   void RecordDungeonItems(ImageHandler& screen);
   void RecordStaircase(ImageHandler& screen);
   void RecordDungeonNumber(ImageHandler& screen);
+  void RecordDungeonMinimap(ImageHandler& minimap);  
   
   void CheckDungeonRing(ImageHandler& minimap);
   void CheckOverworldRing(ImageHandler& minimap);  
