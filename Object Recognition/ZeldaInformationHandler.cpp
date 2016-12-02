@@ -163,7 +163,7 @@ void ZeldaInformationHandler::SetSecret(int x, int y, Secrets secret) {
   }
   //because the blue ring shop can be hidden by other shops
   if (prev == Secrets::BLUE_RING_SHOP) {
-    if (secret == Secrets::ARROW_SHOP || secret == Secrets::BAIT_SHOP || secret == Secrets::CANDLE_SHOP || secret == Secrets::BOMB_SHOP) {
+    if (secret == Secrets::ARROW_SHOP || secret == Secrets::BAIT_SHOP || secret == Secrets::CANDLE_SHOP || secret == Secrets::BOMB_SHOP || secret == Secrets::WHITE_SWORD) {
       set = false;
     }
   }

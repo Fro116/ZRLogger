@@ -35,7 +35,7 @@ void ZeldaImageProcessor::UpdateData() {
 	  ZeldaInformationHandler::SetMapLocation(mapx, mapy);
 	  dungeondoortransition = false;
 	  CheckSecretCave(screen, mapx, mapy);	  
-    CheckWhiteSwordCaveItem(screen, mapx, mapy);
+	  CheckWhiteSwordCaveItem(screen, mapx, mapy);
 	}
 	else {
 	  CheckOverworldRing(minimap);
@@ -1322,7 +1322,8 @@ void ZeldaImageProcessor::CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx
   if (Hearts(screen, false) > 0) {
     double maxSim = 0;
     Dungeon::DungeonItems type;
-    ImageHandler item = screen.Crop(REFERENCE_WHITE_SWORD_CAVE_ITEM_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_CAVE_ITEM_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_HEIGHT*SCALE_Y).FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_WHITE_SWORD_CAVE_ITEM_COLOR_TOLERANCE);
+    ImageHandler itemColored = screen.Crop(REFERENCE_WHITE_SWORD_CAVE_ITEM_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_CAVE_ITEM_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_CAVE_ITEM_HEIGHT*SCALE_Y);
+    ImageHandler item = itemColored.FilterRGB(BLACK_R, BLACK_G, BLACK_B, CAPTURED_WHITE_SWORD_CAVE_ITEM_COLOR_TOLERANCE);
     if (item.Similarity(book) > maxSim) {
       maxSim = item.Similarity(book);
       type = Dungeon::DungeonItems::BOOK;
@@ -1367,7 +1368,7 @@ void ZeldaImageProcessor::CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx
       maxSim = item.Similarity(redcandle);
       type = Dungeon::DungeonItems::RED_CANDLE;
     }
-    if (item.Similarity(redring) > maxSim) {
+    if (item.Similarity(redring) > maxSim && itemColored.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() > 0) {
       maxSim = item.Similarity(redring);
       type = Dungeon::DungeonItems::RED_RING;
     }
