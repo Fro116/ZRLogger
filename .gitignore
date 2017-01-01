@@ -8,3 +8,5 @@ ZRLogger
 .clang_complete
 build/*
 .*
+*.cmake
+*.pc

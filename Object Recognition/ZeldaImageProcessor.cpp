@@ -1015,24 +1015,11 @@ void ZeldaImageProcessor::CheckSecretCave(ImageHandler& screen, int mapx, int ma
   }
   //check if in sword cave
   {
-    bool foundWhiteSword = false;
-    {
-      ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_ITEM_COLOR_TOLERANCE);
-      if (sword.Similarity(whitesword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
-	ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::WHITE_SWORD);
-	foundSecret = true;
-	foundWhiteSword = true;
-      }
-    }
-    {
-      if (!foundWhiteSword) {
-	ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
-	if (sword.Similarity(magicalsword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
-	  ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::MAGICAL_SWORD);
-	  foundSecret = true;
-	}
-      }
-    }
+    ImageHandler sword = screen.Crop(REFERENCE_MAGICAL_SWORD_XCOOR*SCALE_X, REFERENCE_MAGICAL_SWORD_YCOOR*SCALE_Y, REFERENCE_MAGICAL_SWORD_WIDTH*SCALE_X, REFERENCE_MAGICAL_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+	  if (sword.Similarity(magicalsword) > CAPTURED_SWORD_SIMILARITY_THRESHOLD) {
+      ZeldaInformationHandler::SetSecret(mapx, mapy, ZeldaInformationHandler::Secrets::MAGICAL_SWORD);
+	    foundSecret = true;
+	  }
   }
   //check if in a shop
   bool lpotionshop = false;
@@ -1364,7 +1351,7 @@ void ZeldaImageProcessor::CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx
       maxSim = item.Similarity(recorder);
       type = Dungeon::DungeonItems::RECORDER;
     }
-    if (item.Similarity(redcandle) > maxSim) {
+    if (item.Similarity(redcandle) > maxSim && itemColored.PixelsWithRGB(HEART_RED_R, HEART_RED_G, HEART_RED_B).size() > 0) {
       maxSim = item.Similarity(redcandle);
       type = Dungeon::DungeonItems::RED_CANDLE;
     }
@@ -1380,7 +1367,8 @@ void ZeldaImageProcessor::CheckWhiteSwordCaveItem(ImageHandler& screen, int mapx
       maxSim = item.Similarity(wand);
       type = Dungeon::DungeonItems::WAND;
     }
-    if (item.Similarity(whitesworditem) > maxSim) {
+    ImageHandler sword = screen.Crop(REFERENCE_WHITE_SWORD_XCOOR*SCALE_X, REFERENCE_WHITE_SWORD_YCOOR*SCALE_Y, REFERENCE_WHITE_SWORD_WIDTH*SCALE_X, REFERENCE_WHITE_SWORD_HEIGHT*SCALE_Y).FilterRGB(CAPTURED_WHITE_R, CAPTURED_WHITE_G, CAPTURED_WHITE_B, CAPTURED_DUGEON_ROOM_COLOR_TOLERANCE);
+    if (sword.Similarity(whitesword) > maxSim) {
       maxSim = item.Similarity(whitesworditem);
       type = Dungeon::DungeonItems::WHITE_SWORD;
     }
